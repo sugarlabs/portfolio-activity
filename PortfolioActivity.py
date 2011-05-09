@@ -58,11 +58,10 @@ PREVIEWW = 450
 PREVIEWH = 338
 PREVIEWY = 80
 TITLEH = 60
-TITLEF = 36
-DESCRIPTIONF = 24
 DESCRIPTIONH = 350
 DESCRIPTIONX = 50
 DESCRIPTIONY = 450
+
 
 def _svg_str_to_pixbuf(svg_string):
     ''' Load pixbuf from SVG string '''
@@ -173,13 +172,20 @@ class PortfolioActivity(activity.Activity):
         self._height = gtk.gdk.screen_height()
         self._scale = gtk.gdk.screen_width() / 1200.
 
+        if get_hardware()[0:2] == 'XO':
+            titlef = 18
+            descriptionf = 12
+        else:
+            titlef = 36
+            descriptionf = 24
+
         # Generate the sprites we'll need...
         self._sprites = Sprites(self._canvas)
 
         self._title = Sprite(self._sprites, 0, 0, _svg_str_to_pixbuf(
                 _genblank(self._width, int(TITLEH * self._scale),
                           self._colors)))
-        self._title.set_label_attributes(int(TITLEF * self._scale),
+        self._title.set_label_attributes(int(titlef * self._scale),
                                          rescale=False)
         self._preview = Sprite(self._sprites,
             int((self._width - int(PREVIEWW * self._scale)) / 2),
@@ -194,7 +200,7 @@ class PortfolioActivity(activity.Activity):
                 _genblank(int(self._width - (2 * DESCRIPTIONX * self._scale)),
                           int(DESCRIPTIONH * self._scale),
                           self._colors)))
-        self._description.set_label_attributes(int(DESCRIPTIONF * self._scale))
+        self._description.set_label_attributes(int(descriptionf * self._scale))
 
         self._my_canvas = Sprite(self._sprites, 0, 0,
                                 gtk.gdk.Pixmap(self._canvas.window,
@@ -396,6 +402,32 @@ def _genblank(w, h, colors):
     return svg_string
 
 
+'''
+Are we on an OLPC XO?
+'''
+
+
+def get_hardware():
+    """ Determine whether we are using XO 1.0, 1.5, or "unknown" hardware """
+    if _get_dmi('product_name') != 'XO':
+        return 'UNKNOWN'
+    version = _get_dmi('product_version')
+    if version == '1':
+        return 'XO1'
+    elif version == '1.5':
+        return 'XO15'
+    else:
+        return 'UNKNOWN'
+
+
+def _get_dmi(node):
+    path = os.path.join('/sys/class/dmi/id', node)
+    try:
+        return open(path).readline().strip()
+    except:
+        return None
+
+
 class SVG:
     ''' SVG generators '''
 
@@ -460,4 +492,3 @@ class SVG:
 
     def set_stroke_width(self, stroke_width=1.0):
         self._stroke_width = stroke_width
-

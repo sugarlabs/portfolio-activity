@@ -37,6 +37,7 @@ from sugar.graphics.toolbutton import ToolButton
 from sugar.graphics.menuitem import MenuItem
 from sugar.datastore import datastore
 from sugar import mime
+from sugar import profile
 
 from sprites import Sprites, Sprite
 
@@ -119,8 +120,6 @@ def _slider_factory(tooltip, callback, toolbar, cb_arg=None):
                                  1, 5, 0)
     _adjustment.connect('value_changed', callback)
     _range = gtk.HScale(_adjustment)
-    # _range.set_draw_value(False)
-    # _range.set_update_policy(gtk.UPDATE_CONTINUOUS)
     _range.set_size_request(240, 15)
     _range_tool = gtk.ToolItem()
     _range_tool.add(_range)
@@ -130,11 +129,7 @@ def _slider_factory(tooltip, callback, toolbar, cb_arg=None):
 
 
 class PortfolioActivity(activity.Activity):
-    ''' Portfolio's bones: Portfolio's bones were invented by John Portfolio
-    (1550-1617), a Scottish mathematician and scientist. They help you
-    to do multiplication. '''
-
-    # TODO: Define your own bone.
+    ''' Make a slideshow from starred Journal entries. '''
 
     def __init__(self, handle):
         ''' Initialize the toolbars and the work surface '''
@@ -159,23 +154,24 @@ class PortfolioActivity(activity.Activity):
         self._canvas.add_events(gtk.gdk.BUTTON_RELEASE_MASK)
         self._canvas.add_events(gtk.gdk.POINTER_MOTION_MASK)
         self._canvas.connect("expose-event", self._expose_cb)
-        # self._canvas.connect("motion-notify-event", self._mouse_move_cb)
-        # self._canvas.connect("key_press_event", self._key_press_cb)
 
     def _setup_workspace(self):
         ''' Prepare to render the datastore entries. '''
+        self._colors = profile.get_color().to_string().split(',')
+        print self._colors
+
         self._width = gtk.gdk.screen_width()
         self._height = gtk.gdk.screen_height()
-        self._scale = gtk.gdk.screen_width()/1200.
+        self._scale = gtk.gdk.screen_width() / 1200.
 
         # Generate the sprites we'll need...
         self._sprites = Sprites(self._canvas)
 
         self._preview = None
         self._title = Sprite(self._sprites, 0, 0, _svg_str_to_pixbuf(
-                _genblank(self._width - 300, 40)))
-        self._description = Sprite(self._sprites, 0, 0, _svg_str_to_pixbuf(
-                _genblank(self._width - 300, self._height - 225)))
+                _genblank(self._width, 40, self._colors)))
+        self._description = Sprite(self._sprites, 50, 325, _svg_str_to_pixbuf(
+                _genblank(self._width - 100, self._height - 400, self._colors)))
         self._my_canvas = Sprite(self._sprites, 0, 0,
                                 gtk.gdk.Pixmap(self._canvas.window,
                                                self._width,
@@ -249,10 +245,6 @@ class PortfolioActivity(activity.Activity):
             toolbox.toolbar.insert(stop_button, -1)
             stop_button.show()
 
-    def _key_press_cb(self, win, event):
-        ''' TODO: '''
-        return True
-
     def _expose_cb(self, win, event):
         ''' Have to refresh after a change in window status. '''
         self._sprites.redraw_sprites()
@@ -302,7 +294,7 @@ class PortfolioActivity(activity.Activity):
 
     def _clear_screen(self):
         self._my_gc.set_foreground(
-            self._my_gc.get_colormap().alloc_color('#FFFFFF'))
+            self._my_gc.get_colormap().alloc_color(self._colors[0]))
         rect = gtk.gdk.Rectangle(0, 0, self._width, self._height)
         self._my_canvas.images[0].draw_rectangle(self._my_gc, True, *rect)
         self.invalt(0, 0, self._width, self._height)
@@ -323,20 +315,20 @@ class PortfolioActivity(activity.Activity):
         pixbuf = get_pixbuf_from_journal(self._dsobjects[i], 300, 225)
         if pixbuf is not None:
             if self._preview is None:
-                self._preview = Sprite(self._sprites, 0, 0, pixbuf)
+                self._preview = Sprite(self._sprites,
+                                       int((self._width - 300) / 2), 60, pixbuf)
             else:
                 self._preview.images[0] = pixbuf
-                self._preview.move((0, 0))
             self._preview.set_layer(1000)
         else:
             if self._preview is not None:
                 self._preview.hide()
             print 'pixbuf is None'
-        self._title.move((300, 0))
+        self._title.set_label_attributes(24, rescale=False)
+
         self._title.set_label(self._dsobjects[i].metadata['title'])
         self._title.set_layer(1000)
         if 'description' in self._dsobjects[i].metadata:
-            self._description.move((300, 40))
             self._description.set_label(
                 self._dsobjects[i].metadata['description'])
             self._description.set_layer(1000)
@@ -366,8 +358,9 @@ def get_pixbuf_from_journal(dsobject, w, h):
     return _pixbuf
 
 
-def _genblank(w, h):
+def _genblank(w, h, colors):
     svg = SVG()
+    svg.set_colors(colors)
     svg_string = svg.header(w, h)
     svg_string += svg.footer()
     return svg_string
@@ -380,7 +373,7 @@ class SVG:
         self._scale = 1
         self._stroke_width = 1
         self._fill = '#FFFFFF'
-        self._stroke = '#000000'
+        self._stroke = '#FFFFFF'
 
     def _svg_style(self, extras=""):
         return "%s%s%s%s%s%f%s%s%s" % ("style=\"fill:", self._fill, ";stroke:",

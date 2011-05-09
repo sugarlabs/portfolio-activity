@@ -1,3 +1,10 @@
+2
+
+* fixed problem when no entries are starred
+* scale to variable screen sizes
+* fix font-scaling issue on XO hardware
+* if entry is a picture, use it instead of preview image
+
 1
 
 Simple portfolio program that generates a slide show based on items

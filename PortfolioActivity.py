@@ -212,13 +212,13 @@ class PortfolioActivity(activity.Activity):
 
         else:
             # Use pre-0.86 toolbar design
-            self.toolbar = gtk.Toolbar()
-            toolbox.add_toolbar(_('Page'), primary_toolbar)
-            toolbox.show()
+            primary_toolbar = gtk.Toolbar()
             toolbox = activity.ActivityToolbox(self)
             self.set_toolbox(toolbox)
+            toolbox.add_toolbar(_('Page'), primary_toolbar)
             toolbox.show()
             toolbox.set_current_toolbar(1)
+            self.toolbar = primary_toolbar
 
         self._prev_button = _button_factory(
             'go-previous-inactive', _('Prev slide'), self._prev_cb,

@@ -301,6 +301,12 @@ class PortfolioActivity(activity.Activity):
 
     def _show_slide(self, i):
         self._clear_screen()
+
+        if self._nobjects == 0:
+            self._prev_button.set_icon('go-previous-inactive')
+            self._next_button.set_icon('go-next-inactive')
+            return
+
         print self._dsobjects[i].metadata['title']
 
         if self.i == 0:

@@ -108,6 +108,27 @@ def _separator_factory(toolbar, visible=True, expand=False):
     separator.show()
 
 
+LOWER = 1
+DEFAULT = 2
+UPPER = 30
+
+
+def _slider_factory(tooltip, callback, toolbar, cb_arg=None):
+    ''' Factory for adding a slider to a toolbar '''
+    _adjustment = gtk.Adjustment(DEFAULT, LOWER, UPPER,
+                                 1, 5, 0)
+    _adjustment.connect('value_changed', callback)
+    _range = gtk.HScale(_adjustment)
+    # _range.set_draw_value(False)
+    # _range.set_update_policy(gtk.UPDATE_CONTINUOUS)
+    _range.set_size_request(240, 15)
+    _range_tool = gtk.ToolItem()
+    _range_tool.add(_range)
+
+    toolbar.insert(_range_tool, -1)
+    return _adjustment
+
+
 class PortfolioActivity(activity.Activity):
     ''' Portfolio's bones: Portfolio's bones were invented by John Portfolio
     (1550-1617), a Scottish mathematician and scientist. They help you
@@ -173,6 +194,7 @@ class PortfolioActivity(activity.Activity):
         self._show_slide(self.i)
 
         self._playing = False
+        self._rate = DEFAULT
 
     def _setup_toolbars(self, have_toolbox):
         ''' Setup the toolbars. '''
@@ -210,9 +232,14 @@ class PortfolioActivity(activity.Activity):
             'go-next', _('Next slide'), self._next_cb,
             self.toolbar)
 
+        _separator_factory(self.toolbar)
+
         self._auto_button = _button_factory(
             'media-playlist-repeat', _('Autoplay'), self._autoplay_cb,
             self.toolbar)
+
+        self._slider = _slider_factory(
+            _('Adjust playback speed'), self._speed_cb, self.toolbar)
 
         if _have_toolbox:
             _separator_factory(toolbox.toolbar, False, True)
@@ -265,7 +292,13 @@ class PortfolioActivity(activity.Activity):
         if self.i == self._nobjects:
             self.i = 0
         self._show_slide(self.i)
-        self._timeout_id = gobject.timeout_add(2000, self._loop)
+        self._timeout_id = gobject.timeout_add(int(self._rate * 1000),
+                                               self._loop)
+
+    def _speed_cb(self, button=None):
+        print self._slider.value
+        self._rate = self._slider.value
+        self._slider.set_value(int(self._rate + 0.5))
 
     def _clear_screen(self):
         self._my_gc.set_foreground(

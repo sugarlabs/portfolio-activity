@@ -14,6 +14,7 @@
 import gtk
 import gobject
 import os
+import gobject
 
 import pango
 
@@ -171,6 +172,8 @@ class PortfolioActivity(activity.Activity):
         self.i = 0
         self._show_slide(self.i)
 
+        self._playing = False
+
     def _setup_toolbars(self, have_toolbox):
         ''' Setup the toolbars. '''
 
@@ -200,11 +203,15 @@ class PortfolioActivity(activity.Activity):
             toolbox.set_current_toolbar(1)
 
         self._prev_button = _button_factory(
-            'go-previous', _('Prev slide'), self._prev_cb,
+            'go-previous-inactive', _('Prev slide'), self._prev_cb,
             self.toolbar)
 
         self._next_button = _button_factory(
             'go-next', _('Next slide'), self._next_cb,
+            self.toolbar)
+
+        self._auto_button = _button_factory(
+            'media-playlist-repeat', _('Autoplay'), self._autoplay_cb,
             self.toolbar)
 
         if _have_toolbox:
@@ -237,9 +244,28 @@ class PortfolioActivity(activity.Activity):
             self._show_slide(self.i)
 
     def _next_cb(self, button=None):
-        if self.i < self._nobjects:
+        if self.i < self._nobjects - 1:
             self.i += 1
             self._show_slide(self.i)
+
+    def _autoplay_cb(self, button=None):
+        if self._playing:
+            print 'stop somehow'
+            self._playing = False
+            self._auto_button.set_icon('media-playlist-repeat')
+            if hasattr(self, '_timeout_id') and self._timeout_id is not None:
+                gobject.source_remove(self._timeout_id)
+        else:
+            self._playing = True
+            self._auto_button.set_icon('media-playback-pause')
+            self._loop()
+
+    def _loop(self):
+        self.i += 1
+        if self.i == self._nobjects:
+            self.i = 0
+        self._show_slide(self.i)
+        self._timeout_id = gobject.timeout_add(2000, self._loop)
 
     def _clear_screen(self):
         self._my_gc.set_foreground(
@@ -251,6 +277,15 @@ class PortfolioActivity(activity.Activity):
     def _show_slide(self, i):
         self._clear_screen()
         print self._dsobjects[i].metadata['title']
+
+        if self.i == 0:
+            self._prev_button.set_icon('go-previous-inactive')
+        else:
+            self._prev_button.set_icon('go-previous')
+        if self.i == self._nobjects - 1:
+            self._next_button.set_icon('go-next-inactive')
+        else:
+            self._next_button.set_icon('go-next')
 
         pixbuf = get_pixbuf_from_journal(self._dsobjects[i], 300, 225)
         if pixbuf is not None:

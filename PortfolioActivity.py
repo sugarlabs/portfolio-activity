@@ -53,6 +53,16 @@ SERVICE = 'org.sugarlabs.PortfolioActivity'
 IFACE = SERVICE
 PATH = '/org/augarlabs/PortfolioActivity'
 
+# Size and position of title, preview image, and description
+PREVIEWW = 450
+PREVIEWH = 338
+PREVIEWY = 80
+TITLEH = 60
+TITLEF = 36
+DESCRIPTIONF = 24
+DESCRIPTIONH = 350
+DESCRIPTIONX = 50
+DESCRIPTIONY = 450
 
 def _svg_str_to_pixbuf(svg_string):
     ''' Load pixbuf from SVG string '''
@@ -158,7 +168,6 @@ class PortfolioActivity(activity.Activity):
     def _setup_workspace(self):
         ''' Prepare to render the datastore entries. '''
         self._colors = profile.get_color().to_string().split(',')
-        print self._colors
 
         self._width = gtk.gdk.screen_width()
         self._height = gtk.gdk.screen_height()
@@ -167,11 +176,26 @@ class PortfolioActivity(activity.Activity):
         # Generate the sprites we'll need...
         self._sprites = Sprites(self._canvas)
 
-        self._preview = None
         self._title = Sprite(self._sprites, 0, 0, _svg_str_to_pixbuf(
-                _genblank(self._width, 40, self._colors)))
-        self._description = Sprite(self._sprites, 50, 325, _svg_str_to_pixbuf(
-                _genblank(self._width - 100, self._height - 400, self._colors)))
+                _genblank(self._width, int(TITLEH * self._scale),
+                          self._colors)))
+        self._title.set_label_attributes(int(TITLEF * self._scale),
+                                         rescale=False)
+        self._preview = Sprite(self._sprites,
+            int((self._width - int(PREVIEWW * self._scale)) / 2),
+            int(PREVIEWY * self._scale), _svg_str_to_pixbuf(_genblank(
+                    int(PREVIEWW * self._scale), int(PREVIEWH * self._scale),
+                    self._colors)))
+
+        self._description = Sprite(self._sprites,
+                                   int(DESCRIPTIONX * self._scale),
+                                   int(DESCRIPTIONY * self._scale),
+                                   _svg_str_to_pixbuf(
+                _genblank(int(self._width - (2 * DESCRIPTIONX * self._scale)),
+                          int(DESCRIPTIONH * self._scale),
+                          self._colors)))
+        self._description.set_label_attributes(int(DESCRIPTIONF * self._scale))
+
         self._my_canvas = Sprite(self._sprites, 0, 0,
                                 gtk.gdk.Pixmap(self._canvas.window,
                                                self._width,
@@ -269,7 +293,6 @@ class PortfolioActivity(activity.Activity):
 
     def _autoplay_cb(self, button=None):
         if self._playing:
-            print 'stop somehow'
             self._playing = False
             self._auto_button.set_icon('media-playlist-repeat')
             if hasattr(self, '_timeout_id') and self._timeout_id is not None:
@@ -288,7 +311,6 @@ class PortfolioActivity(activity.Activity):
                                                self._loop)
 
     def _speed_cb(self, button=None):
-        print self._slider.value
         self._rate = self._slider.value
         self._slider.set_value(int(self._rate + 0.5))
 
@@ -307,8 +329,6 @@ class PortfolioActivity(activity.Activity):
             self._next_button.set_icon('go-next-inactive')
             return
 
-        print self._dsobjects[i].metadata['title']
-
         if self.i == 0:
             self._prev_button.set_icon('go-previous-inactive')
         else:
@@ -318,19 +338,23 @@ class PortfolioActivity(activity.Activity):
         else:
             self._next_button.set_icon('go-next')
 
-        pixbuf = get_pixbuf_from_journal(self._dsobjects[i], 300, 225)
+        pixbuf = None
+        try:
+            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+                self._dsobjects[i].file_path, int(PREVIEWW * self._scale),
+                int(PREVIEWH * self._scale))
+        except:
+            pixbuf = get_pixbuf_from_journal(self._dsobjects[i], 300, 225)
+
         if pixbuf is not None:
-            if self._preview is None:
-                self._preview = Sprite(self._sprites,
-                                       int((self._width - 300) / 2), 60, pixbuf)
-            else:
-                self._preview.images[0] = pixbuf
+            self._preview.images[0] = pixbuf.scale_simple(
+                int(PREVIEWW * self._scale),
+                int(PREVIEWH * self._scale),
+                gtk.gdk.INTERP_TILES)
             self._preview.set_layer(1000)
         else:
             if self._preview is not None:
                 self._preview.hide()
-            print 'pixbuf is None'
-        self._title.set_label_attributes(24, rescale=False)
 
         self._title.set_label(self._dsobjects[i].metadata['title'])
         self._title.set_layer(1000)

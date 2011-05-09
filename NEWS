@@ -1,19 +1,4 @@
-4
-
-* Added COPYING file
-
-3
-
-* Added save/restore
-* Tune graphics to make rows more evident
-* Fixed IndexError when cleaning up overlays
-
-2
-
-* Changed icon for Clear Button to eraser.
-* Added white fill color to bones.
-
 1
 
-Napier's bones were invented by John Napier (1550-1617), a Scottish
-mathematician and scientist. They help you to do multiplication.
+Simple portfolio program that generates a slide show based on items
+starred in the Sugar Journal

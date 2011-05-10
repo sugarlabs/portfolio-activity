@@ -57,11 +57,15 @@ PATH = '/org/augarlabs/PortfolioActivity'
 PREVIEWW = 450
 PREVIEWH = 338
 PREVIEWY = 80
+FULLW = 800 
+FULLH = 600
 TITLEH = 60
 DESCRIPTIONH = 350
 DESCRIPTIONX = 50
 DESCRIPTIONY = 450
-
+SHORTH = 100
+SHORTX = 50
+SHORTY = 700
 
 def _svg_str_to_pixbuf(svg_string):
     ''' Load pixbuf from SVG string '''
@@ -193,6 +197,12 @@ class PortfolioActivity(activity.Activity):
                     int(PREVIEWW * self._scale), int(PREVIEWH * self._scale),
                     self._colors)))
 
+        self._full_screen = Sprite(self._sprites,
+            int((self._width - int(FULLW * self._scale)) / 2),
+            int(PREVIEWY * self._scale), _svg_str_to_pixbuf(
+                _genblank(int(FULLW * self._scale), int(FULLH * self._scale),
+                          self._colors)))
+
         self._description = Sprite(self._sprites,
                                    int(DESCRIPTIONX * self._scale),
                                    int(DESCRIPTIONY * self._scale),
@@ -201,6 +211,15 @@ class PortfolioActivity(activity.Activity):
                           int(DESCRIPTIONH * self._scale),
                           self._colors)))
         self._description.set_label_attributes(int(descriptionf * self._scale))
+
+        self._description2 = Sprite(self._sprites,
+                                   int(SHORTX * self._scale),
+                                   int(SHORTY * self._scale),
+                                   _svg_str_to_pixbuf(
+                _genblank(int(self._width - (2 * SHORTX * self._scale)),
+                          int(SHORTH * self._scale),
+                          self._colors)))
+        self._description2.set_label_attributes(int(descriptionf * self._scale))
 
         self._my_canvas = Sprite(self._sprites, 0, 0,
                                 gtk.gdk.Pixmap(self._canvas.window,
@@ -333,6 +352,9 @@ class PortfolioActivity(activity.Activity):
         if self._nobjects == 0:
             self._prev_button.set_icon('go-previous-inactive')
             self._next_button.set_icon('go-next-inactive')
+            self._description.set_label(
+                _('Do you have any items in your Journal starred?'))
+            self._description.set_layer(1000)
             return
 
         if self.i == 0:
@@ -345,32 +367,56 @@ class PortfolioActivity(activity.Activity):
             self._next_button.set_icon('go-next')
 
         pixbuf = None
+        media_object = False
         try:
             pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                 self._dsobjects[i].file_path, int(PREVIEWW * self._scale),
                 int(PREVIEWH * self._scale))
+            media_object = True
         except:
             pixbuf = get_pixbuf_from_journal(self._dsobjects[i], 300, 225)
 
         if pixbuf is not None:
-            self._preview.images[0] = pixbuf.scale_simple(
-                int(PREVIEWW * self._scale),
-                int(PREVIEWH * self._scale),
-                gtk.gdk.INTERP_TILES)
-            self._preview.set_layer(1000)
+            if not media_object:
+                self._preview.images[0] = pixbuf.scale_simple(
+                    int(PREVIEWW * self._scale),
+                    int(PREVIEWH * self._scale),
+                    gtk.gdk.INTERP_TILES)
+                self._full_screen.hide()
+                self._preview.set_layer(1000)
+            else:
+                self._full_screen.images[0] = pixbuf.scale_simple(
+                    int(FULLW * self._scale),
+                    int(FULLH * self._scale),
+                    gtk.gdk.INTERP_TILES)
+                self._full_screen.set_layer(1000)
+                self._preview.hide()
         else:
             if self._preview is not None:
                 self._preview.hide()
+                self._full_screen.hide()
 
         self._title.set_label(self._dsobjects[i].metadata['title'])
         self._title.set_layer(1000)
+
         if 'description' in self._dsobjects[i].metadata:
-            self._description.set_label(
-                self._dsobjects[i].metadata['description'])
-            self._description.set_layer(1000)
+            if media_object:
+                self._description2.set_label(
+                    self._dsobjects[i].metadata['description'])
+                self._description2.set_layer(1000)
+                self._description.set_label('')
+                self._description.hide()
+            else:
+                self._description.set_label(
+                    self._dsobjects[i].metadata['description'])
+                self._description.set_layer(1000)
+                self._description2.set_label('')
+                self._description2.hide()
         else:
             self._description.set_label('')
             self._description.hide()
+            self._description2.set_label('')
+            self._description2.hide()
             print 'description is None'
 
     def invalt(self, x, y, w, h):

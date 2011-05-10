@@ -1,3 +1,9 @@
+3
+
+* added warning message when no favorites are starred in the Journal
+* media objects are rendered larger
+* set scaling factor based on vertical dimension to better fit 'wide' screens
+
 2
 
 * fixed problem when no entries are starred

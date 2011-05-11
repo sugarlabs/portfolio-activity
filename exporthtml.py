@@ -31,23 +31,16 @@ HTML_GLUE = {
     'meta': '<meta http-equiv="content-type" content="text/html; ' + \
         'charset=UTF-8"/>\n',
     'title': ('<title>', '</title>\n'),
-    'style': ('<style type="text/css">\n<!--\n', '-->\n</style>\n'),
-    'body': ('<body>\n', '\n</body>\n'),
-    'div': ('<div>\n', '</div>\n'),
+    'body': ('<body><center>\n', '\n</center></body>\n'),
+    'div': ('<div class="box">\n', '</div>\n'),
     'slide': ('\n<a name="slide', '"></a>\n'),
-    'h1': ('<h1>', '</h1>\n'),
-    'table': ('<table cellpadding="10\'>\n', '</table>\n'),
-    'tr': ('<tr>\n', '</tr>\n'),
-    'td': ('<td valign="top" width="400" height="300">\n',
-           '\n</td>\n'),
+    'h1': ('<p class="head">', '</p>\n'),
     'img': ('<img width="300" height="225" alt=' + \
                 '"Image" src="data:image/png;base64,\n',
             '"/>\n'),
-    'img2': ('<img width="800" height="600" alt=' + \
+    'img2': ('<img width="600" height="450" alt=' + \
                 '"Image" src="data:image/png;base64,\n',
-            '"/>\n'),
-    'ul': ('<table>\n', '</table>\n'),
-    'li': ('<tr><td>', '</td></tr>\n')}
+            '"/>\n')}
 
 COMMENT = '<!--\n\<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"' + \
     ' "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [\n\
@@ -57,7 +50,7 @@ COMMENT = '<!--\n\<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"' + \
 -->\n'
 
 
-def save_html(dsobjects, nick, tmp_path):
+def save_html(dsobjects, nick, colors, tmp_path):
     ''' Output a series of HTML pages from the title, pictures, and
     descriptions '''
 
@@ -90,7 +83,7 @@ def save_html(dsobjects, nick, tmp_path):
             tmp += HTML_GLUE[key][1]
 
         if 'description' in dsobj.metadata:
-            tmp += '<p>' + dsobj.metadata['description'] + '</p>'
+            tmp += '<p class="body">' + dsobj.metadata['description'] + '</p>'
 
         htmlcode += tmp + \
             HTML_GLUE['div'][1]
@@ -102,8 +95,7 @@ def save_html(dsobjects, nick, tmp_path):
         HTML_GLUE['title'][0] + \
         nick + ' ' + _('Portfolio') + \
         HTML_GLUE['title'][1] + \
-        HTML_GLUE['style'][0] + \
-        HTML_GLUE['style'][1] + \
+        '<style type="text/css">\n<!--\n-->\nbody {background-color:' + colors[0] + ';}\np.head {font-size: 18pt; font-weight: bold; font-family: "Sans"; }\np.body  {font-size: 12pt; font-weight: regular; font-family: "Sans"; }\ndiv.box{width:630px; padding:10px; border:5px; margin:7px; background:' + colors[1] + '}\n</style>\n' +\
         HTML_GLUE['head'][1] + \
         HTML_GLUE['body'][0] + \
         htmlcode + \

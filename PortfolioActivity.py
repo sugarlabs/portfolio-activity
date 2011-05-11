@@ -281,7 +281,7 @@ class PortfolioActivity(activity.Activity):
     def _save_as_html_cb(self, button=None):
         self._save_button.set_icon('save-in-progress')
         results = save_html(self._dsobjects, profile.get_nick_name(),
-                            self._tmp_path)
+                            self._colors, self._tmp_path)
         html_file = os.path.join(self._tmp_path, 'tmp.html')
         f = open(html_file, 'w')
         f.write(results)

@@ -13,6 +13,7 @@
 
 import gtk
 import os
+import subprocess
 
 from gettext import gettext as _
 

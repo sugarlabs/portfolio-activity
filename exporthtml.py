@@ -15,7 +15,6 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import os.path
-import subprocess
 from cgi import escape
 from gettext import gettext as _
 

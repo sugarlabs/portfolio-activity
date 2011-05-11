@@ -67,6 +67,19 @@ SHORTH = 100
 SHORTX = 50
 SHORTY = 700
 
+
+def _luminance(color):
+    ''' Calculate luminance value '''
+    return int(color[0:2], 16) * 0.3 + int(color[2:4], 16) * 0.6 + int(color[4:6]) * 0.1
+
+
+def _lighter_color(colors):
+    ''' Which color is lighter? Use that one for the text background '''
+    if _luminance(colors[0][1:6]) > _luminance(colors[1][1:6]):
+        return 0
+    return 1
+
+
 def _svg_str_to_pixbuf(svg_string):
     ''' Load pixbuf from SVG string '''
     pl = gtk.gdk.PixbufLoader('svg')
@@ -171,6 +184,12 @@ class PortfolioActivity(activity.Activity):
     def _setup_workspace(self):
         ''' Prepare to render the datastore entries. '''
         self._colors = profile.get_color().to_string().split(',')
+
+        # Use the lighter color for the text background
+        if _lighter_color(self._colors) == 0:
+            tmp = self._colors[0]
+            self._colors[0] = self._colors[1]
+            self._colors[1] = tmp
 
         self._width = gtk.gdk.screen_width()
         self._height = gtk.gdk.screen_height()

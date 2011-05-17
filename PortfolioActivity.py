@@ -15,30 +15,24 @@ import gtk
 import gobject
 import os
 
-import sugar
 from sugar.activity import activity
 from sugar import profile
 try:
     from sugar.graphics.toolbarbox import ToolbarBox
-    _have_toolbox = True
+    HAVE_TOOLBOX = True
 except ImportError:
-    _have_toolbox = False
+    HAVE_TOOLBOX = False
 
-if _have_toolbox:
-    from sugar.bundle.activitybundle import ActivityBundle
+if HAVE_TOOLBOX:
     from sugar.activity.widgets import ActivityToolbarButton
     from sugar.activity.widgets import StopButton
-    from sugar.graphics.toolbarbox import ToolbarButton
 
-from sugar.graphics.menuitem import MenuItem
 from sugar.datastore import datastore
-from sugar import mime
-from sugar import profile
 
 from sprites import Sprites, Sprite
 from exporthtml import save_html
 from utils import get_path, lighter_color, svg_str_to_pixbuf, \
-    load_svg_from_file, button_factory, label_factory, separator_factory, \
+    load_svg_from_file, button_factory, separator_factory, \
     slider_factory, get_pixbuf_from_journal, genblank, get_hardware
 
 from gettext import gettext as _
@@ -57,12 +51,15 @@ PATH = '/org/augarlabs/PortfolioActivity'
 PREVIEWW = 450
 PREVIEWH = 338
 PREVIEWY = 80
-FULLW = 800 
-FULLH = 600
 TITLEH = 60
 DESCRIPTIONH = 350
 DESCRIPTIONX = 50
 DESCRIPTIONY = 450
+# If the entry is an image, it is used instead of the preview
+# and shown at a larger size...
+FULLW = 800
+FULLH = 600
+# ...leaving less room for a description.
 SHORTH = 100
 SHORTX = 50
 SHORTY = 700
@@ -77,7 +74,7 @@ class PortfolioActivity(activity.Activity):
 
         self._tmp_path = get_path(activity, 'instance')
 
-        self._setup_toolbars(_have_toolbox)
+        self._setup_toolbars()
         self._setup_canvas()
         self._setup_workspace()
 
@@ -154,7 +151,8 @@ class PortfolioActivity(activity.Activity):
                 genblank(int(self._width - (2 * SHORTX * self._scale)),
                           int(SHORTH * self._scale),
                           self._colors)))
-        self._description2.set_label_attributes(int(descriptionf * self._scale))
+        self._description2.set_label_attributes(
+            int(descriptionf * self._scale))
 
         self._my_canvas = Sprite(self._sprites, 0, 0,
                                 gtk.gdk.Pixmap(self._canvas.window,
@@ -169,17 +167,17 @@ class PortfolioActivity(activity.Activity):
 
         self._find_starred()
         self.i = 0
-        self._show_slide(self.i)
+        self._show_slide()
 
         self._playing = False
         self._rate = 2
 
-    def _setup_toolbars(self, have_toolbox):
+    def _setup_toolbars(self):
         ''' Setup the toolbars. '''
 
         self.max_participants = 1  # no sharing
 
-        if have_toolbox:
+        if HAVE_TOOLBOX:
             toolbox = ToolbarBox()
 
             # Activity toolbar
@@ -225,7 +223,7 @@ class PortfolioActivity(activity.Activity):
             'transfer-from-text-uri-list', _('Save as HTML'),
             self._save_as_html_cb, self.toolbar)
 
-        if _have_toolbox:
+        if HAVE_TOOLBOX:
             separator_factory(toolbox.toolbar, False, True)
 
             stop_button = StopButton(self)
@@ -239,23 +237,28 @@ class PortfolioActivity(activity.Activity):
         return True
 
     def _destroy_cb(self, win, event):
+        ''' Clean up on the way out. '''
         gtk.main_quit()
 
     def _find_starred(self):
-        self._dsobjects, self._nobjects = datastore.find({'keep':'1'})
+        ''' Find all the favorites in the Journal. '''
+        self._dsobjects, self._nobjects = datastore.find({'keep': '1'})
         return
 
     def _prev_cb(self, button=None):
+        ''' The previous button has been clicked; goto previous slide. '''
         if self.i > 0:
             self.i -= 1
-            self._show_slide(self.i)
+            self._show_slide()
 
     def _next_cb(self, button=None):
+        ''' The next button has been clicked; goto next slide. '''
         if self.i < self._nobjects - 1:
             self.i += 1
-            self._show_slide(self.i)
+            self._show_slide()
 
     def _autoplay_cb(self, button=None):
+        ''' The autoplay button has been clicked; step through slides. '''
         if self._playing:
             self._playing = False
             self._auto_button.set_icon('media-playlist-repeat')
@@ -267,25 +270,28 @@ class PortfolioActivity(activity.Activity):
             self._loop()
 
     def _loop(self):
+        ''' Show a slide and then call oneself with a timeout. '''
         self.i += 1
         if self.i == self._nobjects:
             self.i = 0
-        self._show_slide(self.i)
+        self._show_slide()
         self._timeout_id = gobject.timeout_add(int(self._rate * 1000),
                                                self._loop)
 
     def _speed_cb(self, button=None):
+        ''' The rate slide has changed; update the value. '''
         self._rate = self._slider.value
         self._slider.set_value(int(self._rate + 0.5))
 
     def _save_as_html_cb(self, button=None):
+        ''' Export an HTML version of the slideshow to the Journal. '''
         self._save_button.set_icon('save-in-progress')
         results = save_html(self._dsobjects, profile.get_nick_name(),
                             self._colors, self._tmp_path)
         html_file = os.path.join(self._tmp_path, 'tmp.html')
-        f = open(html_file, 'w')
-        f.write(results)
-        f.close()
+        tmp_file = open(html_file, 'w')
+        tmp_file.write(results)
+        tmp_file.close()
 
         dsobject = datastore.create()
         dsobject.metadata['title'] = profile.get_nick_name() + ' ' + \
@@ -302,13 +308,15 @@ class PortfolioActivity(activity.Activity):
         return
 
     def _clear_screen(self):
+        ''' Clear the screen to the darker of the two XO colors. '''
         self._my_gc.set_foreground(
             self._my_gc.get_colormap().alloc_color(self._colors[0]))
-        rect = gtk.gdk.Rectangle(0, 0, self._width, self._height)
-        self._my_canvas.images[0].draw_rectangle(self._my_gc, True, *rect)
+        self._my_canvas.images[0].draw_rectangle(self._my_gc, True, 0, 0,
+                                                 self._width, self._height)
         self.invalt(0, 0, self._width, self._height)
 
-    def _show_slide(self, i):
+    def _show_slide(self):
+        ''' Display a title, preview image, and decription for slide i. '''
         self._clear_screen()
 
         if self._nobjects == 0:
@@ -332,11 +340,11 @@ class PortfolioActivity(activity.Activity):
         media_object = False
         try:
             pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-                self._dsobjects[i].file_path, int(PREVIEWW * self._scale),
+                self._dsobjects[self.i].file_path, int(PREVIEWW * self._scale),
                 int(PREVIEWH * self._scale))
             media_object = True
         except:
-            pixbuf = get_pixbuf_from_journal(self._dsobjects[i], 300, 225)
+            pixbuf = get_pixbuf_from_journal(self._dsobjects[self.i], 300, 225)
 
         if pixbuf is not None:
             if not media_object:
@@ -358,19 +366,19 @@ class PortfolioActivity(activity.Activity):
                 self._preview.hide()
                 self._full_screen.hide()
 
-        self._title.set_label(self._dsobjects[i].metadata['title'])
+        self._title.set_label(self._dsobjects[self.i].metadata['title'])
         self._title.set_layer(1000)
 
-        if 'description' in self._dsobjects[i].metadata:
+        if 'description' in self._dsobjects[self.i].metadata:
             if media_object:
                 self._description2.set_label(
-                    self._dsobjects[i].metadata['description'])
+                    self._dsobjects[self.i].metadata['description'])
                 self._description2.set_layer(1000)
                 self._description.set_label('')
                 self._description.hide()
             else:
                 self._description.set_label(
-                    self._dsobjects[i].metadata['description'])
+                    self._dsobjects[self.i].metadata['description'])
                 self._description.set_layer(1000)
                 self._description2.set_label('')
                 self._description2.hide()

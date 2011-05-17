@@ -1,3 +1,7 @@
+5
+
+* fix bug in determining lightest color that caused occasional crashes
+
 4
 
 * save slide show as HTML

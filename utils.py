@@ -32,12 +32,13 @@ def get_path(activity, subpath):
 
 def _luminance(color):
     ''' Calculate luminance value '''
-    return int(color[0:2], 16) * 0.3 + int(color[2:4], 16) * 0.6 + int(color[4:6]) * 0.1
+    return int(color[1:3], 16) * 0.3 + int(color[3:5], 16) * 0.6 + \
+           int(color[5:7], 16) * 0.1
 
 
 def lighter_color(colors):
     ''' Which color is lighter? Use that one for the text background '''
-    if _luminance(colors[0][1:6]) > _luminance(colors[1][1:6]):
+    if _luminance(colors[0]) > _luminance(colors[1]):
         return 0
     return 1
 

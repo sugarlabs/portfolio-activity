@@ -45,7 +45,7 @@ except ImportError:
 
 SERVICE = 'org.sugarlabs.PortfolioActivity'
 IFACE = SERVICE
-PATH = '/org/augarlabs/PortfolioActivity'
+PATH = '/org/sugarlabs/PortfolioActivity'
 
 # Size and position of title, preview image, and description
 PREVIEWW = 450

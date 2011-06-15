@@ -1,3 +1,9 @@
+6
+
+ENHANCEMENT
+* advance to next slide with mouse-button click 
+* added accelerator keys
+
 5
 
 * fix bug in determining lightest color that caused occasional crashes

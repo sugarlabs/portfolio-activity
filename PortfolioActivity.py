@@ -43,10 +43,6 @@ try:
 except ImportError:
     GRID_CELL_SIZE = 0
 
-SERVICE = 'org.sugarlabs.PortfolioActivity'
-IFACE = SERVICE
-PATH = '/org/sugarlabs/PortfolioActivity'
-
 # Size and position of title, preview image, and description
 PREVIEWW = 450
 PREVIEWH = 338
@@ -91,8 +87,9 @@ class PortfolioActivity(activity.Activity):
         self._canvas.set_flags(gtk.CAN_FOCUS)
         self._canvas.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self._canvas.add_events(gtk.gdk.BUTTON_RELEASE_MASK)
-        self._canvas.add_events(gtk.gdk.POINTER_MOTION_MASK)
+        self._canvas.add_events(gtk.gdk.KEY_PRESS_MASK)
         self._canvas.connect("expose-event", self._expose_cb)
+        self._canvas.connect("button-release-event", self._button_release_cb)
 
     def _setup_workspace(self):
         ''' Prepare to render the datastore entries. '''
@@ -202,11 +199,11 @@ class PortfolioActivity(activity.Activity):
 
         self._prev_button = button_factory(
             'go-previous-inactive', _('Prev slide'), self._prev_cb,
-            self.toolbar)
+            self.toolbar, accelerator='<Ctrl>P')
 
         self._next_button = button_factory(
             'go-next', _('Next slide'), self._next_cb,
-            self.toolbar)
+            self.toolbar, accelerator='<Ctrl>N')
 
         separator_factory(self.toolbar)
 
@@ -393,3 +390,7 @@ class PortfolioActivity(activity.Activity):
         ''' Mark a region for refresh '''
         self._canvas.window.invalidate_rect(
             gtk.gdk.Rectangle(int(x), int(y), int(w), int(h)), False)
+
+    def _button_release_cb(self, win, event):
+        ''' Button press is used to goto next slide.'''
+        self._next_cb()

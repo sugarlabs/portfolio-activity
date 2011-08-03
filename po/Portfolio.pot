@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-10 10:44-0400\n"
+"POT-Creation-Date: 2011-08-03 10:27-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,30 +17,34 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: activity/activity.info:2
+#: activity/activity.info:2 exporthtml.py:96 PortfolioActivity.py:295
 msgid "Portfolio"
 msgstr ""
 
-#: PortfolioActivity.py:248
+#: PortfolioActivity.py:195
 msgid "Page"
 msgstr ""
 
-#: PortfolioActivity.py:254
+#: PortfolioActivity.py:201
 msgid "Prev slide"
 msgstr ""
 
-#: PortfolioActivity.py:258
+#: PortfolioActivity.py:205
 msgid "Next slide"
 msgstr ""
 
-#: PortfolioActivity.py:264
+#: PortfolioActivity.py:211
 msgid "Autoplay"
 msgstr ""
 
-#: PortfolioActivity.py:268
+#: PortfolioActivity.py:215
 msgid "Adjust playback speed"
 msgstr ""
 
-#: PortfolioActivity.py:337
+#: PortfolioActivity.py:220
+msgid "Save as HTML"
+msgstr ""
+
+#: PortfolioActivity.py:323
 msgid "Do you have any items in your Journal starred?"
 msgstr ""

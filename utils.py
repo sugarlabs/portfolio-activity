@@ -18,6 +18,8 @@ import subprocess
 from gettext import gettext as _
 
 from sugar.graphics.toolbutton import ToolButton
+from sugar.graphics.combobox import ComboBox
+from sugar.graphics.toolcombobox import ToolComboBox
 
 
 def get_path(activity, subpath):
@@ -109,6 +111,24 @@ def slider_factory(tooltip, callback, toolbar, cb_arg=None):
 
     toolbar.insert(range_tool, -1)
     return adjustment
+
+
+def combo_factory(combo_array, default, tooltip, callback, toolbar):
+    '''Factory for making a toolbar combo box'''
+    my_combo = ComboBox()
+    if hasattr(my_combo, 'set_tooltip_text'):
+        my_combo.set_tooltip_text(tooltip)
+
+    my_combo.connect('changed', callback)
+
+    for i, s in enumerate(combo_array):
+        my_combo.append_item(i, s, None)
+
+    toolbar.insert(ToolComboBox(my_combo), -1)
+
+    my_combo.set_active(default)
+
+    return my_combo
 
 
 def image_to_base64(pixbuf, path_name):

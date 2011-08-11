@@ -33,7 +33,8 @@ from sprites import Sprites, Sprite
 from exporthtml import save_html
 from utils import get_path, lighter_color, svg_str_to_pixbuf, \
     load_svg_from_file, button_factory, separator_factory, \
-    slider_factory, get_pixbuf_from_journal, genblank, get_hardware
+    combo_factory, label_factory, slider_factory, get_pixbuf_from_journal, \
+    genblank, get_hardware
 
 from gettext import gettext as _
 
@@ -59,6 +60,16 @@ FULLH = 600
 SHORTH = 100
 SHORTX = 50
 SHORTY = 700
+
+TWO = 0
+TEN = 1
+THIRTY = 2
+SIXTY = 3
+UNITS = [_('2 seconds'), _('10 seconds'), _('30 seconds'), _('1 minute')]
+UNIT_DICTIONARY = {TWO: (UNITS[TWO], 2),
+                   TEN: (UNITS[TEN], 10),
+                   THIRTY: (UNITS[THIRTY], 30),
+                   SIXTY: (UNITS[SIXTY], 60)}
 
 
 class PortfolioActivity(activity.Activity):
@@ -167,7 +178,7 @@ class PortfolioActivity(activity.Activity):
         self._show_slide()
 
         self._playing = False
-        self._rate = 2
+        self._rate = 10
 
     def _setup_toolbars(self):
         ''' Setup the toolbars. '''
@@ -211,13 +222,18 @@ class PortfolioActivity(activity.Activity):
             'media-playlist-repeat', _('Autoplay'), self._autoplay_cb,
             self.toolbar)
 
-        self._slider = slider_factory(
-            _('Adjust playback speed'), self._speed_cb, self.toolbar)
+        label = label_factory(_('Adjust playback speed'), self.toolbar)
+        label.show()
+
+        self._unit_combo = combo_factory(UNITS, TEN,
+                                        _('Adjust playback speed'),
+                                        self._unit_combo_cb, self.toolbar)
+        self._unit_combo.show()
 
         separator_factory(self.toolbar)
 
         self._save_button = button_factory(
-            'transfer-from-text-uri-list', _('Save as HTML'),
+            'save-as-html', _('Save as HTML'),
             self._save_as_html_cb, self.toolbar)
 
         if HAVE_TOOLBOX:
@@ -275,11 +291,6 @@ class PortfolioActivity(activity.Activity):
         self._timeout_id = gobject.timeout_add(int(self._rate * 1000),
                                                self._loop)
 
-    def _speed_cb(self, button=None):
-        ''' The rate slide has changed; update the value. '''
-        self._rate = self._slider.value
-        self._slider.set_value(int(self._rate + 0.5))
-
     def _save_as_html_cb(self, button=None):
         ''' Export an HTML version of the slideshow to the Journal. '''
         self._save_button.set_icon('save-in-progress')
@@ -301,7 +312,7 @@ class PortfolioActivity(activity.Activity):
         dsobject.destroy()
 
         gobject.timeout_add(250, self._save_button.set_icon,
-                            'transfer-from-text-uri-list')
+                            'save-as-html')
         return
 
     def _clear_screen(self):
@@ -394,3 +405,10 @@ class PortfolioActivity(activity.Activity):
     def _button_release_cb(self, win, event):
         ''' Button press is used to goto next slide.'''
         self._next_cb()
+
+    def _unit_combo_cb(self, arg=None):
+        ''' Read value of predefined conversion factors from combo box '''
+        if hasattr(self, '_unit_combo'):
+            active = self._unit_combo.get_active()
+            if active in UNIT_DICTIONARY:
+                self._rate = UNIT_DICTIONARY[active][1]

@@ -1,0 +1,50 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-08-03 10:27-0400\n"
+"PO-Revision-Date: 2011-08-07 16:19+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 2.0.1\n"
+
+#: activity/activity.info:2 exporthtml.py:96 PortfolioActivity.py:295
+msgid "Portfolio"
+msgstr "Portfolio"
+
+#: PortfolioActivity.py:195
+msgid "Page"
+msgstr "Page"
+
+#: PortfolioActivity.py:201
+msgid "Prev slide"
+msgstr "Prev slide"
+
+#: PortfolioActivity.py:205
+msgid "Next slide"
+msgstr "Next slide"
+
+#: PortfolioActivity.py:211
+msgid "Autoplay"
+msgstr "Autoplay"
+
+#: PortfolioActivity.py:215
+msgid "Adjust playback speed"
+msgstr "Adjust playback speed"
+
+#: PortfolioActivity.py:220
+msgid "Save as HTML"
+msgstr "Save as HTML"
+
+#: PortfolioActivity.py:323
+msgid "Do you have any items in your Journal starred?"
+msgstr "Do you have any items in your Journal starred?"

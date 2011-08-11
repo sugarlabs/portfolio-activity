@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-03 10:27-0400\n"
-"PO-Revision-Date: 2011-08-11 06:51+0200\n"
+"POT-Creation-Date: 2011-08-11 12:02-0400\n"
+"PO-Revision-Date: 2011-08-11 23:03+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
@@ -17,34 +17,50 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.1\n"
 
-#: activity/activity.info:2 exporthtml.py:96 PortfolioActivity.py:295
+#: activity/activity.info:2 exporthtml.py:96 PortfolioActivity.py:306
 msgid "Portfolio"
 msgstr "Obras"
 
-#: PortfolioActivity.py:195
+#: PortfolioActivity.py:68
+msgid "2 seconds"
+msgstr "2 segundos"
+
+#: PortfolioActivity.py:68
+msgid "10 seconds"
+msgstr "10 segundos"
+
+#: PortfolioActivity.py:68
+msgid "30 seconds"
+msgstr "30 segundos"
+
+#: PortfolioActivity.py:68
+msgid "1 minute"
+msgstr "1 minuto"
+
+#: PortfolioActivity.py:206
 msgid "Page"
 msgstr "Página"
 
-#: PortfolioActivity.py:201
+#: PortfolioActivity.py:212
 msgid "Prev slide"
 msgstr "Filmina anterior"
 
-#: PortfolioActivity.py:205
+#: PortfolioActivity.py:216
 msgid "Next slide"
 msgstr "Filmina siguiente"
 
-#: PortfolioActivity.py:211
+#: PortfolioActivity.py:222
 msgid "Autoplay"
 msgstr "Reproducción automática"
 
-#: PortfolioActivity.py:215
+#: PortfolioActivity.py:225 PortfolioActivity.py:229
 msgid "Adjust playback speed"
 msgstr "Ajustar velocidad de reproducción"
 
-#: PortfolioActivity.py:220
+#: PortfolioActivity.py:236
 msgid "Save as HTML"
 msgstr "Guardar como HTML"
 
-#: PortfolioActivity.py:323
+#: PortfolioActivity.py:334
 msgid "Do you have any items in your Journal starred?"
 msgstr "Tienes entradas en tu diario marcadas como favoritas?"

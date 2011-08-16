@@ -15,6 +15,8 @@ import gtk
 import gobject
 import os
 
+from math import sqrt
+
 from sugar.activity import activity
 from sugar import profile
 try:
@@ -26,6 +28,7 @@ except ImportError:
 if HAVE_TOOLBOX:
     from sugar.activity.widgets import ActivityToolbarButton
     from sugar.activity.widgets import StopButton
+    from sugar.graphics.toolbarbox import ToolbarButton
 
 from sugar.datastore import datastore
 
@@ -37,6 +40,9 @@ from utils import get_path, lighter_color, svg_str_to_pixbuf, \
     genblank, get_hardware
 
 from gettext import gettext as _
+
+import logging
+_logger = logging.getLogger("portfolio-activity")
 
 try:
     from sugar.graphics import style
@@ -84,6 +90,9 @@ class PortfolioActivity(activity.Activity):
         self._setup_toolbars()
         self._setup_canvas()
         self._setup_workspace()
+
+        self._thumbs = []
+        self._thumbnail_mode = False
 
     def _setup_canvas(self):
         ''' Create a canvas '''
@@ -198,12 +207,22 @@ class PortfolioActivity(activity.Activity):
             toolbox.show()
             self.toolbar = toolbox.toolbar
 
+            adjust_toolbar = gtk.Toolbar()
+            adjust_toolbar_button = ToolbarButton(
+                label=_('Adjust'),
+                page=adjust_toolbar,
+                icon_name='preferences-system')
+            adjust_toolbar.show_all()
+            toolbox.toolbar.insert(adjust_toolbar_button, -1)
+            adjust_toolbar_button.show()
         else:
             # Use pre-0.86 toolbar design
             primary_toolbar = gtk.Toolbar()
             toolbox = activity.ActivityToolbox(self)
             self.set_toolbox(toolbox)
             toolbox.add_toolbar(_('Page'), primary_toolbar)
+            adjust_toolbar = gtk.Toolbar()
+            toolbox.add_toolbar(_('Adjust'), adjust_toolbar)
             toolbox.show()
             toolbox.set_current_toolbar(1)
             self.toolbar = primary_toolbar
@@ -222,13 +241,19 @@ class PortfolioActivity(activity.Activity):
             'media-playlist-repeat', _('Autoplay'), self._autoplay_cb,
             self.toolbar)
 
-        label = label_factory(_('Adjust playback speed'), self.toolbar)
+        label = label_factory(_('Adjust playback speed'), adjust_toolbar)
         label.show()
 
         self._unit_combo = combo_factory(UNITS, TEN,
                                         _('Adjust playback speed'),
-                                        self._unit_combo_cb, self.toolbar)
+                                        self._unit_combo_cb, adjust_toolbar)
         self._unit_combo.show()
+
+        separator_factory(self.toolbar)
+
+        self._thumb_button = button_factory(
+            'insert-table', _('Thumbnail view'),
+            self._thumbs_cb, self.toolbar)
 
         separator_factory(self.toolbar)
 
@@ -321,6 +346,9 @@ class PortfolioActivity(activity.Activity):
             self._my_gc.get_colormap().alloc_color(self._colors[0]))
         self._my_canvas.images[0].draw_rectangle(self._my_gc, True, 0, 0,
                                                  self._width, self._height)
+        if hasattr(self, '_thumbs'):
+            for thumbnail in self._thumbs:
+                thumbnail.hide()
         self.invalt(0, 0, self._width, self._height)
 
     def _show_slide(self):
@@ -396,6 +424,48 @@ class PortfolioActivity(activity.Activity):
             self._description2.set_label('')
             self._description2.hide()
             print 'description is None'
+
+    def _thumbs_cb(self, button=None):
+        if self._thumbnail_mode:
+            self._thumbnail_mode = False
+            self._show_slide()
+        else:
+            self._thumbnail_mode = True
+            self._clear_screen()  
+
+            self._prev_button.set_icon('go-previous-inactive')
+            self._next_button.set_icon('go-next-inactive')
+            x = 0
+            y = 0
+            w = int(self._width / (sqrt(self._nobjects) + 0.5))
+            h = int(w * 0.75)  # maintain 4:3 aspect ratio
+            for i in range(self._nobjects):
+                self.i = i
+                self._show_thumb(x, y, w, h)
+                x += w
+                if x + w > self._width:
+                    x = 0
+                    y += h
+            self.i = 0  # Reset position in slideshow to the beginning
+        return False
+
+    def _show_thumb(self, x, y, w, h):
+        ''' Display a preview image and title as a thumbnail. '''
+
+        if len(self._thumbs) < self.i + 1:
+            # Create a Sprite for this thumbnail
+            pixbuf = None
+            media_object = False
+            try:
+                pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+                    self._dsobjects[self.i].file_path, int(w), int(h))
+                media_object = True
+            except:
+                pixbuf = get_pixbuf_from_journal(self._dsobjects[self.i],
+                                                 int(w), int(h))
+            self._thumbs.append(Sprite(self._sprites, x, y, pixbuf))
+            self._thumbs[-1].set_label(str(self.i + 1))
+        self._thumbs[self.i].set_layer(2000)
 
     def invalt(self, x, y, w, h):
         ''' Mark a region for refresh '''

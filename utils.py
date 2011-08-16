@@ -124,10 +124,13 @@ def combo_factory(combo_array, default, tooltip, callback, toolbar):
     for i, s in enumerate(combo_array):
         my_combo.append_item(i, s, None)
 
-    toolbar.insert(ToolComboBox(my_combo), -1)
-
+    tool = ToolComboBox(my_combo)
+    if hasattr(toolbar, 'insert'):  # the main toolbar
+        toolbar.insert(tool, -1)
+    else:  # or a secondary toolbar
+        toolbar.props.page.insert(tool, -1)
+    tool.show()
     my_combo.set_active(default)
-
     return my_combo
 
 

@@ -233,6 +233,12 @@ class PortfolioActivity(activity.Activity):
             toolbox.set_current_toolbar(1)
             self.toolbar = primary_toolbar
 
+        self._auto_button = button_factory(
+            'media-playlist-repeat', _('Autoplay'), self._autoplay_cb,
+            self.toolbar)
+
+        separator_factory(self.toolbar)
+
         self._prev_button = button_factory(
             'go-previous-inactive', _('Prev slide'), self._prev_cb,
             self.toolbar, accelerator='<Ctrl>P')
@@ -240,12 +246,6 @@ class PortfolioActivity(activity.Activity):
         self._next_button = button_factory(
             'go-next', _('Next slide'), self._next_cb,
             self.toolbar, accelerator='<Ctrl>N')
-
-        separator_factory(self.toolbar)
-
-        self._auto_button = button_factory(
-            'media-playlist-repeat', _('Autoplay'), self._autoplay_cb,
-            self.toolbar)
 
         label = label_factory(_('Adjust playback speed'), adjust_toolbar)
         label.show()
@@ -308,14 +308,17 @@ class PortfolioActivity(activity.Activity):
     def _autoplay_cb(self, button=None):
         ''' The autoplay button has been clicked; step through slides. '''
         if self._playing:
-            self._playing = False
-            self._auto_button.set_icon('media-playlist-repeat')
-            if hasattr(self, '_timeout_id') and self._timeout_id is not None:
-                gobject.source_remove(self._timeout_id)
+            self._stop_autoplay()
         else:
             self._playing = True
             self._auto_button.set_icon('media-playback-pause')
             self._loop()
+
+    def _stop_autoplay(self):
+        self._playing = False
+        self._auto_button.set_icon('media-playlist-repeat')
+        if hasattr(self, '_timeout_id') and self._timeout_id is not None:
+            gobject.source_remove(self._timeout_id)
 
     def _loop(self):
         ''' Show a slide and then call oneself with a timeout. '''
@@ -444,6 +447,7 @@ class PortfolioActivity(activity.Activity):
             self._set_view_mode()
             self._show_slide(self._current_slide)
         else:
+            self._stop_autoplay()
             self._current_slide = self.i
             self._thumbnail_mode = True
             self._clear_screen()

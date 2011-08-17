@@ -76,6 +76,10 @@ UNIT_DICTIONARY = {TWO: (UNITS[TWO], 2),
                    TEN: (UNITS[TEN], 10),
                    THIRTY: (UNITS[THIRTY], 30),
                    SIXTY: (UNITS[SIXTY], 60)}
+XO1 = 'xo1'
+XO15 = 'xo1.5'
+XO175 = 'xo1.75'
+UNKNOWN = 'unknown'
 
 
 class PortfolioActivity(activity.Activity):
@@ -86,6 +90,8 @@ class PortfolioActivity(activity.Activity):
         super(PortfolioActivity, self).__init__(handle)
 
         self._tmp_path = get_path(activity, 'instance')
+
+        self._hw = get_hardware()
 
         self._setup_toolbars()
         self._setup_canvas()
@@ -125,7 +131,7 @@ class PortfolioActivity(activity.Activity):
         self._height = gtk.gdk.screen_height()
         self._scale = gtk.gdk.screen_height() / 900.
 
-        if get_hardware()[0:2] == 'XO':
+        if get_hardware()[0:2] == 'xo':
             titlef = 18
             descriptionf = 12
         else:
@@ -435,17 +441,12 @@ class PortfolioActivity(activity.Activity):
 
     def _thumbs_cb(self, button=None):
         if self._thumbnail_mode:
-            self._thumbnail_mode = False
-            self.i = self._current_slide
-            if hasattr(self, '_overlay'):
-                self._overlay.set_layer(0)
-            self._show_slide()
-
-            self._thumb_button.set_tooltip(_('Thumbnail view'))
+            self._set_view_mode()
+            self._show_slide(self._current_slide)
         else:
             self._current_slide = self.i
             self._thumbnail_mode = True
-            self._clear_screen()  
+            self._clear_screen()
 
             self._prev_button.set_icon('go-previous-inactive')
             self._next_button.set_icon('go-next-inactive')
@@ -509,7 +510,24 @@ class PortfolioActivity(activity.Activity):
 
     def _button_release_cb(self, win, event):
         ''' Button press is used to goto next slide.'''
-        self._next_cb()
+        if self._thumbnail_mode:
+            x, y = map(int, event.get_coords())
+            spr = self._sprites.find_sprite((x, y))
+            for i, thumbnail in enumerate(self._thumbs):
+                if thumbnail[0] == spr:
+                    self._set_view_mode(i)
+                    break
+            self._show_slide()
+        else:
+            self._next_cb()
+
+    def _set_view_mode(self, i):
+        ''' Switch to slide-viewing mode '''
+        self._thumbnail_mode = False
+        self.i = i
+        if hasattr(self, '_overlay'):
+            self._overlay.set_layer(0)
+        self._thumb_button.set_tooltip(_('Thumbnail view'))
 
     def _unit_combo_cb(self, arg=None):
         ''' Read value of predefined conversion factors from combo box '''

@@ -352,7 +352,7 @@ class PortfolioActivity(activity.Activity):
         self._description.hide()
         if hasattr(self, '_thumbs'):
             for thumbnail in self._thumbs:
-                thumbnail.hide()
+                thumbnail[0].hide()
         self.invalt(0, 0, self._width, self._height)
 
     def _show_slide(self):
@@ -432,8 +432,10 @@ class PortfolioActivity(activity.Activity):
     def _thumbs_cb(self, button=None):
         if self._thumbnail_mode:
             self._thumbnail_mode = False
+            self.i = self._current_slide
             self._show_slide()
         else:
+            self._current_slide = self.i
             self._thumbnail_mode = True
             self._clear_screen()  
 
@@ -451,6 +453,7 @@ class PortfolioActivity(activity.Activity):
                     x = 0
                     y += h
             self.i = 0  # Reset position in slideshow to the beginning
+            # self._highlight(self._current_slide)
         return False
 
     def _show_thumb(self, x, y, w, h):
@@ -467,9 +470,9 @@ class PortfolioActivity(activity.Activity):
             except:
                 pixbuf = get_pixbuf_from_journal(self._dsobjects[self.i],
                                                  int(w), int(h))
-            self._thumbs.append(Sprite(self._sprites, x, y, pixbuf))
-            self._thumbs[-1].set_label(str(self.i + 1))
-        self._thumbs[self.i].set_layer(2000)
+            self._thumbs.append([Sprite(self._sprites, x, y, pixbuf), x, y, self.i])
+            self._thumbs[-1][0].set_label(str(self.i + 1))
+        self._thumbs[self.i][0].set_layer(2000)
 
     def invalt(self, x, y, w, h):
         ''' Mark a region for refresh '''

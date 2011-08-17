@@ -255,6 +255,10 @@ class PortfolioActivity(activity.Activity):
             'insert-table', _('Thumbnail view'),
             self._thumbs_cb, self.toolbar)
 
+        button_factory ('view-fullscreen', _('Fullscreen'),
+                        self.do_fullscreen_cb, self.toolbar,
+                        accelerator='<Alt>Return')
+
         separator_factory(self.toolbar)
 
         self._save_button = button_factory(
@@ -434,6 +438,8 @@ class PortfolioActivity(activity.Activity):
             self._thumbnail_mode = False
             self.i = self._current_slide
             self._show_slide()
+
+            self._thumb_button.set_label(_('Thumbnail view'))
         else:
             self._current_slide = self.i
             self._thumbnail_mode = True
@@ -441,16 +447,19 @@ class PortfolioActivity(activity.Activity):
 
             self._prev_button.set_icon('go-previous-inactive')
             self._next_button.set_icon('go-next-inactive')
-            x = 0
-            y = 0
-            w = int(self._width / (sqrt(self._nobjects) + 0.5))
+            self._thumb_button.set_label(_('Slide view'))
+            n = int(sqrt(self._nobjects) + 0.5)
+            w = int(self._width / n)
             h = int(w * 0.75)  # maintain 4:3 aspect ratio
+            x_off = int((self._width - n * w) / 2)
+            x = x_off
+            y = 0
             for i in range(self._nobjects):
                 self.i = i
                 self._show_thumb(x, y, w, h)
                 x += w
                 if x + w > self._width:
-                    x = 0
+                    x = x_off
                     y += h
             self.i = 0  # Reset position in slideshow to the beginning
             # self._highlight(self._current_slide)
@@ -470,9 +479,17 @@ class PortfolioActivity(activity.Activity):
             except:
                 pixbuf = get_pixbuf_from_journal(self._dsobjects[self.i],
                                                  int(w), int(h))
-            self._thumbs.append([Sprite(self._sprites, x, y, pixbuf), x, y, self.i])
+            pixbuf_thumb = pixbuf.scale_simple(int(w), int(h),
+                                               gtk.gdk.INTERP_TILES)
+
+            self._thumbs.append([Sprite(self._sprites, x, y, pixbuf_thumb),
+                                 x, y, self.i])
             self._thumbs[-1][0].set_label(str(self.i + 1))
         self._thumbs[self.i][0].set_layer(2000)
+
+    def do_fullscreen_cb(self, button):
+        ''' Hide the Sugar toolbars. '''
+        self.fullscreen()
 
     def invalt(self, x, y, w, h):
         ''' Mark a region for refresh '''

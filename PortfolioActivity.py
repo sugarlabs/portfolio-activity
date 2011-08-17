@@ -444,7 +444,7 @@ class PortfolioActivity(activity.Activity):
 
     def _thumbs_cb(self, button=None):
         if self._thumbnail_mode:
-            self._set_view_mode()
+            self._set_view_mode(self.i)
             self._show_slide(self._current_slide)
         else:
             self._stop_autoplay()

@@ -163,9 +163,10 @@ def get_pixbuf_from_journal(dsobject, w, h):
     return pixbuf
 
 
-def genblank(w, h, colors):
+def genblank(w, h, colors, stroke_width=1.0):
     svg = SVG()
     svg.set_colors(colors)
+    svg.set_stroke_width(stroke_width)
     svg_string = svg.header(w, h)
     svg_string += svg.footer()
     return svg_string
@@ -215,7 +216,7 @@ class SVG:
         svg_string += "          ry=\"%f\"\n" % (ry)
         svg_string += "          x=\"%f\"\n" % (x)
         svg_string += "          y=\"%f\"\n" % (y)
-        self.set_stroke_width(1.0)
+        self.set_stroke_width(self._stroke_width)
         svg_string += self._svg_style()
         return svg_string
 

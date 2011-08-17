@@ -437,9 +437,11 @@ class PortfolioActivity(activity.Activity):
         if self._thumbnail_mode:
             self._thumbnail_mode = False
             self.i = self._current_slide
+            if hasattr(self, '_overlay'):
+                self._overlay.set_layer(0)
             self._show_slide()
 
-            self._thumb_button.set_label(_('Thumbnail view'))
+            self._thumb_button.set_tooltip(_('Thumbnail view'))
         else:
             self._current_slide = self.i
             self._thumbnail_mode = True
@@ -447,10 +449,17 @@ class PortfolioActivity(activity.Activity):
 
             self._prev_button.set_icon('go-previous-inactive')
             self._next_button.set_icon('go-next-inactive')
-            self._thumb_button.set_label(_('Slide view'))
+            self._thumb_button.set_tooltip(_('Slide view'))
+
             n = int(sqrt(self._nobjects) + 0.5)
             w = int(self._width / n)
             h = int(w * 0.75)  # maintain 4:3 aspect ratio
+
+            if not hasattr(self, '_overlay'):
+                self._overlay = Sprite(self._sprites, 0, 0, svg_str_to_pixbuf(
+                        genblank(w, h, (self._colors[0], 'none'),
+                                 stroke_width=20)))
+
             x_off = int((self._width - n * w) / 2)
             x = x_off
             y = 0
@@ -462,7 +471,9 @@ class PortfolioActivity(activity.Activity):
                     x = x_off
                     y += h
             self.i = 0  # Reset position in slideshow to the beginning
-            # self._highlight(self._current_slide)
+            self._overlay.move((self._thumbs[self._current_slide][1],
+                                self._thumbs[self._current_slide][2]))
+            self._overlay.set_layer(5000)
         return False
 
     def _show_thumb(self, x, y, w, h):

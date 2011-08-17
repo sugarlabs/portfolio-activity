@@ -346,6 +346,10 @@ class PortfolioActivity(activity.Activity):
             self._my_gc.get_colormap().alloc_color(self._colors[0]))
         self._my_canvas.images[0].draw_rectangle(self._my_gc, True, 0, 0,
                                                  self._width, self._height)
+        self._title.hide()
+        self._full_screen.hide()
+        self._preview.hide()
+        self._description.hide()
         if hasattr(self, '_thumbs'):
             for thumbnail in self._thumbs:
                 thumbnail.hide()

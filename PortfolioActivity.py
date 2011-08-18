@@ -15,7 +15,7 @@ import gtk
 import gobject
 import os
 
-from math import sqrt
+from math import sqrt, ceil
 
 from sugar.activity import activity
 from sugar import profile
@@ -343,6 +343,9 @@ class PortfolioActivity(activity.Activity):
 
     def _bump_test(self):
         ''' Test for accelerometer event (XO 1.75 only). '''
+        if self._thumbnail_mode:
+            return
+
         fh = open('/sys/devices/platform/lis3lv02d/position')
         string = fh.read()
         xyz = string[1:-2].split(',')
@@ -350,16 +353,14 @@ class PortfolioActivity(activity.Activity):
         fh.close()
         
         if dx > 250:
-            self.i += 1
-            if self.i == self._nobjects:
-                self.i = 0
-            self._show_slide()
+            if self.i < self._nobjects -2:
+                self.i += 1
+                self._show_slide()
         elif dx < -250:
-            self.i -= 1
-            if self.i < 0:
-                self.i = self._nobjects - 1
-            self._show_slide()
-        elif not self._thumbnail_mode:
+            if self.i > 0:
+                self.i -= 1
+                self._show_slide()
+        else:
             self._bump_id = gobject.timeout_add(int(100), self._bump_test)
 
     def _save_as_html_cb(self, button=None):
@@ -481,7 +482,7 @@ class PortfolioActivity(activity.Activity):
             self._description2.set_label('')
             self._description2.hide()
         if self._hw == XO175:
-            self._bump_id = gobject.timeout_add(int(500), self._bump_test)
+            self._bump_id = gobject.timeout_add(1000, self._bump_test)
 
     def _thumbs_cb(self, button=None):
         ''' Toggle between thumbnail view and slideshow view. '''
@@ -499,7 +500,7 @@ class PortfolioActivity(activity.Activity):
             self._thumb_button.set_icon('slide-view')
             self._thumb_button.set_tooltip(_('Slide view'))
 
-            n = int(sqrt(self._nobjects) + 0.5)
+            n = int(ceil(sqrt(self._nobjects)))
             w = int(self._width / n)
             h = int(w * 0.75)  # maintain 4:3 aspect ratio
             x_off = int((self._width - n * w) / 2)
@@ -574,7 +575,6 @@ class PortfolioActivity(activity.Activity):
         if not self._spr_is_thumbnail(spr):
             return False
 
-        _logger.debug('found a thumbnail')
         self.last_spr_moved = spr
         self._press = spr
         self._press.set_layer(DRAG)

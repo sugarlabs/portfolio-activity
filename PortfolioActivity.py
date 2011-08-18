@@ -342,25 +342,25 @@ class PortfolioActivity(activity.Activity):
                                                self._loop)
 
     def _bump_test(self):
-        ''' Test for accelerometer event. '''
+        ''' Test for accelerometer event (XO 1.75 only). '''
         fh = open('/sys/devices/platform/lis3lv02d/position')
         string = fh.read()
         xyz = string[1:-2].split(',')
         dx = int(xyz[0])
         fh.close()
         
-        if dx > 100:
+        if dx > 250:
             self.i += 1
             if self.i == self._nobjects:
                 self.i = 0
             self._show_slide()
-        elif dx < -100:
+        elif dx < -250:
             self.i -= 1
             if self.i < 0:
                 self.i = self._nobjects - 1
             self._show_slide()
-        self._timeout_id = gobject.timeout_add(int(100),
-                                               self._bump_test)
+        elif not self._thumbnail_mode:
+            self._bump_id = gobject.timeout_add(int(100), self._bump_test)
 
     def _save_as_html_cb(self, button=None):
         ''' Export an HTML version of the slideshow to the Journal. '''
@@ -481,7 +481,7 @@ class PortfolioActivity(activity.Activity):
             self._description2.set_label('')
             self._description2.hide()
         if self._hw == XO175:
-            self._bump_test()
+            self._bump_id = gobject.timeout_add(int(500), self._bump_test)
 
     def _thumbs_cb(self, button=None):
         ''' Toggle between thumbnail view and slideshow view. '''

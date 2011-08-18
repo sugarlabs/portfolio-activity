@@ -84,8 +84,8 @@ UNKNOWN = 'unknown'
 DRAG = 5
 TOP = 4
 UNDRAG = 3
-MID = 2
-BOT = 1
+MIDDLE = 2
+BOTTOM = 1
 HIDE = 0
 
 
@@ -140,7 +140,7 @@ class PortfolioActivity(activity.Activity):
         self._height = gtk.gdk.screen_height()
         self._scale = gtk.gdk.screen_height() / 900.
 
-        if get_hardware()[0:2] == 'xo':
+        if self._hw[0:2] == 'xo':
             titlef = 18
             descriptionf = 12
         else:
@@ -190,10 +190,8 @@ class PortfolioActivity(activity.Activity):
                                 gtk.gdk.Pixmap(self._canvas.window,
                                                self._width,
                                                self._height, -1))
-        self._my_canvas.set_layer(HIDE)
         self._my_gc = self._my_canvas.images[0].new_gc()
-
-        self._my_canvas.set_layer(BOT)
+        self._my_canvas.set_layer(BOTTOM)
 
         self._clear_screen()
 
@@ -343,6 +341,27 @@ class PortfolioActivity(activity.Activity):
         self._timeout_id = gobject.timeout_add(int(self._rate * 1000),
                                                self._loop)
 
+    def _bump_test(self):
+        ''' Test for accelerometer event. '''
+        fh = open('/sys/devices/platform/lis3lv02d/position')
+        string = fh.read()
+        xyz = string[1:-2].split(',')
+        dx = int(xyz[0])
+        fh.close()
+        
+        if dx > 100:
+            self.i += 1
+            if self.i == self._nobjects:
+                self.i = 0
+            self._show_slide()
+        elif dx < -100:
+            self.i -= 1
+            if self.i < 0:
+                self.i = self._nobjects - 1
+            self._show_slide()
+        self._timeout_id = gobject.timeout_add(int(100),
+                                               self._bump_test)
+
     def _save_as_html_cb(self, button=None):
         ''' Export an HTML version of the slideshow to the Journal. '''
         self._save_button.set_icon('save-in-progress')
@@ -398,7 +417,7 @@ class PortfolioActivity(activity.Activity):
             self._next_button.set_icon('go-next-inactive')
             self._description.set_label(
                 _('Do you have any items in your Journal starred?'))
-            self._description.set_layer(MID)
+            self._description.set_layer(MIDDLE)
             return
 
         if self.i == 0:
@@ -427,13 +446,13 @@ class PortfolioActivity(activity.Activity):
                     int(PREVIEWH * self._scale),
                     gtk.gdk.INTERP_TILES)
                 self._full_screen.hide()
-                self._preview.set_layer(MID)
+                self._preview.set_layer(MIDDLE)
             else:
                 self._full_screen.images[0] = pixbuf.scale_simple(
                     int(FULLW * self._scale),
                     int(FULLH * self._scale),
                     gtk.gdk.INTERP_TILES)
-                self._full_screen.set_layer(MID)
+                self._full_screen.set_layer(MIDDLE)
                 self._preview.hide()
         else:
             if self._preview is not None:
@@ -441,19 +460,19 @@ class PortfolioActivity(activity.Activity):
                 self._full_screen.hide()
 
         self._title.set_label(self._dsobjects[self.i].metadata['title'])
-        self._title.set_layer(MID)
+        self._title.set_layer(MIDDLE)
 
         if 'description' in self._dsobjects[self.i].metadata:
             if media_object:
                 self._description2.set_label(
                     self._dsobjects[self.i].metadata['description'])
-                self._description2.set_layer(MID)
+                self._description2.set_layer(MIDDLE)
                 self._description.set_label('')
                 self._description.hide()
             else:
                 self._description.set_label(
                     self._dsobjects[self.i].metadata['description'])
-                self._description.set_layer(MID)
+                self._description.set_layer(MIDDLE)
                 self._description2.set_label('')
                 self._description2.hide()
         else:
@@ -461,6 +480,8 @@ class PortfolioActivity(activity.Activity):
             self._description.hide()
             self._description2.set_label('')
             self._description2.hide()
+        if self._hw == XO175:
+            self._bump_test()
 
     def _thumbs_cb(self, button=None):
         ''' Toggle between thumbnail view and slideshow view. '''

@@ -21,6 +21,43 @@ from sugar.graphics.toolbutton import ToolButton
 from sugar.graphics.combobox import ComboBox
 from sugar.graphics.toolcombobox import ToolComboBox
 
+XO1 = 'xo1'
+XO15 = 'xo1.5'
+XO175 = 'xo1.75'
+UNKNOWN = 'unknown'
+
+
+def get_hardware():
+    """ Determine whether we are using XO 1.0, 1.5, or "unknown" hardware """
+    product = _get_dmi('product_name')
+    if product is None:
+        if os.path.exists('/sys/devices/platform/lis3lv02d/position'):
+            return XO175  # FIXME: temporary check for XO 1.75
+        elif os.path.exists('/etc/olpc-release') or \
+           os.path.exists('/sys/power/olpc-pm'):
+            return XO1
+        else:
+            return UNKNOWN
+    if product != 'XO':
+        return UNKNOWN
+    version = _get_dmi('product_version')
+    if version == '1':
+        return XO1
+    elif version == '1.5':
+        return XO15
+    else:
+        return XO175
+
+
+def _get_dmi(node):
+    ''' The desktop management interface should be a reliable source
+    for product and version information. '''
+    path = os.path.join('/sys/class/dmi/id', node)
+    try:
+        return open(path).readline().strip()
+    except:
+        return None
+
 
 def get_path(activity, subpath):
     """ Find a Rainbow-approved place for temporary files. """
@@ -170,27 +207,6 @@ def genblank(w, h, colors, stroke_width=1.0):
     svg_string = svg.header(w, h)
     svg_string += svg.footer()
     return svg_string
-
-
-def get_hardware():
-    """ Determine whether we are using XO 1.0, 1.5, or "unknown" hardware """
-    if _get_dmi('product_name') != 'XO':
-        return 'UNKNOWN'
-    version = _get_dmi('product_version')
-    if version == '1':
-        return 'XO1'
-    elif version == '1.5':
-        return 'XO15'
-    else:
-        return 'UNKNOWN'
-
-
-def _get_dmi(node):
-    path = os.path.join('/sys/class/dmi/id', node)
-    try:
-        return open(path).readline().strip()
-    except:
-        return None
 
 
 class SVG:

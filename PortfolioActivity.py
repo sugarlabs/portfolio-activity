@@ -35,9 +35,8 @@ from sugar.datastore import datastore
 from sprites import Sprites, Sprite
 from exporthtml import save_html
 from utils import get_path, lighter_color, svg_str_to_pixbuf, \
-    load_svg_from_file, button_factory, separator_factory, \
-    combo_factory, label_factory, slider_factory, get_pixbuf_from_journal, \
-    genblank, get_hardware
+    button_factory, separator_factory, combo_factory, label_factory, \
+    get_pixbuf_from_journal, genblank, get_hardware
 
 from gettext import gettext as _
 
@@ -273,9 +272,9 @@ class PortfolioActivity(activity.Activity):
             'thumbs-view', _('Thumbnail view'),
             self._thumbs_cb, self.toolbar)
 
-        button_factory ('view-fullscreen', _('Fullscreen'),
-                        self.do_fullscreen_cb, self.toolbar,
-                        accelerator='<Alt>Return')
+        button_factory('view-fullscreen', _('Fullscreen'),
+                       self.do_fullscreen_cb, self.toolbar,
+                       accelerator='<Alt>Return')
 
         separator_factory(self.toolbar)
 
@@ -501,11 +500,9 @@ class PortfolioActivity(activity.Activity):
         if len(self._thumbs) < self.i + 1:
             # Create a Sprite for this thumbnail
             pixbuf = None
-            media_object = False
             try:
                 pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                     self._dsobjects[self.i].file_path, int(w), int(h))
-                media_object = True
             except:
                 pixbuf = get_pixbuf_from_journal(self._dsobjects[self.i],
                                                  int(w), int(h))
@@ -527,18 +524,21 @@ class PortfolioActivity(activity.Activity):
             gtk.gdk.Rectangle(int(x), int(y), int(w), int(h)), False)
 
     def _spr_to_thumb(self, spr):
+        ''' Find which entry in the thumbnails table matches spr. '''
         for i, thumb in enumerate(self._thumbs):
             if spr == thumb[0]:
                 return i
         return -1
 
     def _spr_is_thumbnail(self, spr):
-        for thumb in self._thumbs:
-            if spr == thumb[0]:
-                return True
-        return False
+        ''' Does spr match an entry in the thumbnails table? '''
+        if self._spr_to_thumb(spr) == -1:
+            return False
+        else:
+            return True
 
     def _button_press_cb(self, win, event):
+        ''' The mouse button was pressed. Is it on a thumbnail sprite? '''
         win.grab_focus()
         x, y = map(int, event.get_coords())
 
@@ -560,7 +560,7 @@ class PortfolioActivity(activity.Activity):
         return False
 
     def _mouse_move_cb(self, win, event):
-        """ Drag a tile with the mouse. """
+        """ Drag a thumbnail with the mouse. """
         spr = self._press
         if spr is None:
             self._dragpos = [0, 0]
@@ -576,17 +576,21 @@ class PortfolioActivity(activity.Activity):
         return False
 
     def _button_release_cb(self, win, event):
-        ''' Button press is used to swap slides or goto next slide. '''
+        ''' Button event is used to swap slides or goto next slide. '''
         win.grab_focus()
         self._dragpos = [0, 0]
         x, y = map(int, event.get_coords())
 
         if self._thumbnail_mode:
+            # Drop the dragged thumbnail below the other thumbnails so
+            # that you can find the thumbnail beneath it.
             self._press.set_layer(UNDRAG)
             i = self._spr_to_thumb(self._press)
             spr = self._sprites.find_sprite((x, y))
             if self._spr_is_thumbnail(spr):
                 self._release = spr
+                # If we found a thumbnail and it is not the one we
+                # dragged, swap their positions.
                 if not self._press == self._release:
                     j = self._spr_to_thumb(self._release)
                     self._thumbs[i][0] = self._release

@@ -81,6 +81,14 @@ XO15 = 'xo1.5'
 XO175 = 'xo1.75'
 UNKNOWN = 'unknown'
 
+# sprite layers
+DRAG = 5
+TOP = 4
+UNDRAG = 3
+MID = 2
+BOT = 1
+HIDE = 0
+
 
 class PortfolioActivity(activity.Activity):
     ''' Make a slideshow from starred Journal entries. '''
@@ -102,7 +110,6 @@ class PortfolioActivity(activity.Activity):
 
     def _setup_canvas(self):
         ''' Create a canvas '''
-
         self._canvas = gtk.DrawingArea()
         self._canvas.set_size_request(gtk.gdk.screen_width(),
                                       gtk.gdk.screen_height())
@@ -112,10 +119,13 @@ class PortfolioActivity(activity.Activity):
 
         self._canvas.set_flags(gtk.CAN_FOCUS)
         self._canvas.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self._canvas.add_events(gtk.gdk.POINTER_MOTION_MASK)
         self._canvas.add_events(gtk.gdk.BUTTON_RELEASE_MASK)
         self._canvas.add_events(gtk.gdk.KEY_PRESS_MASK)
         self._canvas.connect("expose-event", self._expose_cb)
+        self._canvas.connect("button-press-event", self._button_press_cb)
         self._canvas.connect("button-release-event", self._button_release_cb)
+        self._canvas.connect("motion-notify-event", self._mouse_move_cb)
 
     def _setup_workspace(self):
         ''' Prepare to render the datastore entries. '''
@@ -181,10 +191,10 @@ class PortfolioActivity(activity.Activity):
                                 gtk.gdk.Pixmap(self._canvas.window,
                                                self._width,
                                                self._height, -1))
-        self._my_canvas.set_layer(0)
+        self._my_canvas.set_layer(HIDE)
         self._my_gc = self._my_canvas.images[0].new_gc()
 
-        self._my_canvas.set_layer(1)
+        self._my_canvas.set_layer(BOT)
 
         self._clear_screen()
 
@@ -219,7 +229,6 @@ class PortfolioActivity(activity.Activity):
                 page=adjust_toolbar,
                 icon_name='preferences-system')
             adjust_toolbar.show_all()
-            toolbox.toolbar.insert(adjust_toolbar_button, -1)
             adjust_toolbar_button.show()
         else:
             # Use pre-0.86 toolbar design
@@ -233,12 +242,6 @@ class PortfolioActivity(activity.Activity):
             toolbox.set_current_toolbar(1)
             self.toolbar = primary_toolbar
 
-        self._auto_button = button_factory(
-            'media-playlist-repeat', _('Autoplay'), self._autoplay_cb,
-            self.toolbar)
-
-        separator_factory(self.toolbar)
-
         self._prev_button = button_factory(
             'go-previous-inactive', _('Prev slide'), self._prev_cb,
             self.toolbar, accelerator='<Ctrl>P')
@@ -246,6 +249,15 @@ class PortfolioActivity(activity.Activity):
         self._next_button = button_factory(
             'go-next', _('Next slide'), self._next_cb,
             self.toolbar, accelerator='<Ctrl>N')
+
+        separator_factory(self.toolbar)
+
+        self._auto_button = button_factory(
+            'media-playlist-repeat', _('Autoplay'), self._autoplay_cb,
+            self.toolbar)
+
+        if HAVE_TOOLBOX:
+            toolbox.toolbar.insert(adjust_toolbar_button, -1)
 
         label = label_factory(_('Adjust playback speed'), adjust_toolbar)
         label.show()
@@ -258,7 +270,7 @@ class PortfolioActivity(activity.Activity):
         separator_factory(self.toolbar)
 
         self._thumb_button = button_factory(
-            'insert-table', _('Thumbnail view'),
+            'thumbs-view', _('Thumbnail view'),
             self._thumbs_cb, self.toolbar)
 
         button_factory ('view-fullscreen', _('Fullscreen'),
@@ -310,11 +322,14 @@ class PortfolioActivity(activity.Activity):
         if self._playing:
             self._stop_autoplay()
         else:
+            if self._thumbnail_mode:
+                self._set_view_mode(self._current_slide)
             self._playing = True
             self._auto_button.set_icon('media-playback-pause')
             self._loop()
 
     def _stop_autoplay(self):
+        ''' Stop autoplaying. '''
         self._playing = False
         self._auto_button.set_icon('media-playlist-repeat')
         if hasattr(self, '_timeout_id') and self._timeout_id is not None:
@@ -368,6 +383,13 @@ class PortfolioActivity(activity.Activity):
                 thumbnail[0].hide()
         self.invalt(0, 0, self._width, self._height)
 
+        # Reset drag settings
+        self._press = None
+        self._release = None
+        self._dragpos = [0, 0]
+        self._total_drag = [0, 0]
+        self.last_spr_moved = None
+
     def _show_slide(self):
         ''' Display a title, preview image, and decription for slide i. '''
         self._clear_screen()
@@ -377,7 +399,7 @@ class PortfolioActivity(activity.Activity):
             self._next_button.set_icon('go-next-inactive')
             self._description.set_label(
                 _('Do you have any items in your Journal starred?'))
-            self._description.set_layer(1000)
+            self._description.set_layer(MID)
             return
 
         if self.i == 0:
@@ -406,13 +428,13 @@ class PortfolioActivity(activity.Activity):
                     int(PREVIEWH * self._scale),
                     gtk.gdk.INTERP_TILES)
                 self._full_screen.hide()
-                self._preview.set_layer(1000)
+                self._preview.set_layer(MID)
             else:
                 self._full_screen.images[0] = pixbuf.scale_simple(
                     int(FULLW * self._scale),
                     int(FULLH * self._scale),
                     gtk.gdk.INTERP_TILES)
-                self._full_screen.set_layer(1000)
+                self._full_screen.set_layer(MID)
                 self._preview.hide()
         else:
             if self._preview is not None:
@@ -420,19 +442,19 @@ class PortfolioActivity(activity.Activity):
                 self._full_screen.hide()
 
         self._title.set_label(self._dsobjects[self.i].metadata['title'])
-        self._title.set_layer(1000)
+        self._title.set_layer(MID)
 
         if 'description' in self._dsobjects[self.i].metadata:
             if media_object:
                 self._description2.set_label(
                     self._dsobjects[self.i].metadata['description'])
-                self._description2.set_layer(1000)
+                self._description2.set_layer(MID)
                 self._description.set_label('')
                 self._description.hide()
             else:
                 self._description.set_label(
                     self._dsobjects[self.i].metadata['description'])
-                self._description.set_layer(1000)
+                self._description.set_layer(MID)
                 self._description2.set_label('')
                 self._description2.hide()
         else:
@@ -440,12 +462,12 @@ class PortfolioActivity(activity.Activity):
             self._description.hide()
             self._description2.set_label('')
             self._description2.hide()
-            print 'description is None'
 
     def _thumbs_cb(self, button=None):
+        ''' Toggle between thumbnail view and slideshow view. '''
         if self._thumbnail_mode:
             self._set_view_mode(self._current_slide)
-            self._show_slide(self.i)
+            self._show_slide()
         else:
             self._stop_autoplay()
             self._current_slide = self.i
@@ -454,17 +476,12 @@ class PortfolioActivity(activity.Activity):
 
             self._prev_button.set_icon('go-previous-inactive')
             self._next_button.set_icon('go-next-inactive')
+            self._thumb_button.set_icon('slide-view')
             self._thumb_button.set_tooltip(_('Slide view'))
 
             n = int(sqrt(self._nobjects) + 0.5)
             w = int(self._width / n)
             h = int(w * 0.75)  # maintain 4:3 aspect ratio
-
-            if not hasattr(self, '_overlay'):
-                self._overlay = Sprite(self._sprites, 0, 0, svg_str_to_pixbuf(
-                        genblank(w, h, (self._colors[0], 'none'),
-                                 stroke_width=20)))
-
             x_off = int((self._width - n * w) / 2)
             x = x_off
             y = 0
@@ -476,9 +493,6 @@ class PortfolioActivity(activity.Activity):
                     x = x_off
                     y += h
             self.i = 0  # Reset position in slideshow to the beginning
-            self._overlay.move((self._thumbs[self._current_slide][1],
-                                self._thumbs[self._current_slide][2]))
-            self._overlay.set_layer(5000)
         return False
 
     def _show_thumb(self, x, y, w, h):
@@ -501,7 +515,7 @@ class PortfolioActivity(activity.Activity):
             self._thumbs.append([Sprite(self._sprites, x, y, pixbuf_thumb),
                                  x, y, self.i])
             self._thumbs[-1][0].set_label(str(self.i + 1))
-        self._thumbs[self.i][0].set_layer(2000)
+        self._thumbs[self.i][0].set_layer(TOP)
 
     def do_fullscreen_cb(self, button):
         ''' Hide the Sugar toolbars. '''
@@ -512,25 +526,89 @@ class PortfolioActivity(activity.Activity):
         self._canvas.window.invalidate_rect(
             gtk.gdk.Rectangle(int(x), int(y), int(w), int(h)), False)
 
+    def _spr_to_thumb(self, spr):
+        for i, thumb in enumerate(self._thumbs):
+            if spr == thumb[0]:
+                return i
+        return -1
+
+    def _spr_is_thumbnail(self, spr):
+        for thumb in self._thumbs:
+            if spr == thumb[0]:
+                return True
+        return False
+
+    def _button_press_cb(self, win, event):
+        win.grab_focus()
+        x, y = map(int, event.get_coords())
+
+        self._dragpos = [x, y]
+        self._total_drag = [0, 0]
+
+        spr = self._sprites.find_sprite((x, y))
+        self._press = None
+        self._release = None
+
+        # Are we clicking on a thumbnail?
+        if not self._spr_is_thumbnail(spr):
+            return False
+
+        _logger.debug('found a thumbnail')
+        self.last_spr_moved = spr
+        self._press = spr
+        self._press.set_layer(DRAG)
+        return False
+
+    def _mouse_move_cb(self, win, event):
+        """ Drag a tile with the mouse. """
+        spr = self._press
+        if spr is None:
+            self._dragpos = [0, 0]
+            return False
+        win.grab_focus()
+        x, y = map(int, event.get_coords())
+        dx = x - self._dragpos[0]
+        dy = y - self._dragpos[1]
+        spr.move_relative([dx, dy])
+        self._dragpos = [x, y]
+        self._total_drag[0] += dx
+        self._total_drag[1] += dy
+        return False
+
     def _button_release_cb(self, win, event):
-        ''' Button press is used to goto next slide.'''
+        ''' Button press is used to swap slides or goto next slide. '''
+        win.grab_focus()
+        self._dragpos = [0, 0]
+        x, y = map(int, event.get_coords())
+
         if self._thumbnail_mode:
-            x, y = map(int, event.get_coords())
+            self._press.set_layer(UNDRAG)
+            i = self._spr_to_thumb(self._press)
             spr = self._sprites.find_sprite((x, y))
-            for i, thumbnail in enumerate(self._thumbs):
-                if thumbnail[0] == spr:
-                    self._set_view_mode(i)
-                    break
-            self._show_slide()
+            if self._spr_is_thumbnail(spr):
+                self._release = spr
+                if not self._press == self._release:
+                    j = self._spr_to_thumb(self._release)
+                    self._thumbs[i][0] = self._release
+                    self._thumbs[j][0] = self._press
+                    tmp = self._dsobjects[i]
+                    self._dsobjects[i] = self._dsobjects[j]
+                    self._dsobjects[j] = tmp
+                    self._thumbs[j][0].move((self._thumbs[j][1],
+                                             self._thumbs[j][2]))
+            self._thumbs[i][0].move((self._thumbs[i][1], self._thumbs[i][2]))
+            self._press.set_layer(TOP)
+            self._press = None
+            self._release = None
         else:
             self._next_cb()
+        return False
 
     def _set_view_mode(self, i):
-        ''' Switch to slide-viewing mode '''
+        ''' Switch to slide-viewing mode. '''
         self._thumbnail_mode = False
         self.i = i
-        if hasattr(self, '_overlay'):
-            self._overlay.set_layer(0)
+        self._thumb_button.set_icon('thumbs-view')
         self._thumb_button.set_tooltip(_('Thumbnail view'))
 
     def _unit_combo_cb(self, arg=None):

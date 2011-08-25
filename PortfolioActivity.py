@@ -266,6 +266,10 @@ class PortfolioActivity(activity.Activity):
 
         separator_factory(self.toolbar)
 
+        self._rescan_button = button_factory(
+            'system-restart', _('Refresh'),
+            self._rescan_cb, self.toolbar)
+
         self._thumb_button = button_factory(
             'thumbs-view', _('Thumbnail view'),
             self._thumbs_cb, self.toolbar)
@@ -313,6 +317,15 @@ class PortfolioActivity(activity.Activity):
         if self.i < self._nobjects - 1:
             self.i += 1
             self._show_slide()
+
+    def _rescan_cb(self, button=None):
+        ''' Rescan the Journal for changes in starred items. '''
+        self._find_starred()
+        # Reset thumbnails
+        self._thumbs = []
+        if self._thumbnail_mode:
+            self._thumbnail_mode = False
+            self._thumbs_cb()
 
     def _autoplay_cb(self, button=None):
         ''' The autoplay button has been clicked; step through slides. '''

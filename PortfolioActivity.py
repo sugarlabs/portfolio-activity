@@ -304,6 +304,7 @@ class PortfolioActivity(activity.Activity):
     def _find_starred(self):
         ''' Find all the favorites in the Journal. '''
         self._dsobjects, self._nobjects = datastore.find({'keep': '1'})
+        _logger.debug('found %d starred items', self._nobjects)
         return
 
     def _prev_cb(self, button=None):
@@ -321,11 +322,14 @@ class PortfolioActivity(activity.Activity):
     def _rescan_cb(self, button=None):
         ''' Rescan the Journal for changes in starred items. '''
         self._find_starred()
+        self.i = 0
         # Reset thumbnails
         self._thumbs = []
         if self._thumbnail_mode:
             self._thumbnail_mode = False
             self._thumbs_cb()
+        else:
+            self._show_slide()
 
     def _autoplay_cb(self, button=None):
         ''' The autoplay button has been clicked; step through slides. '''

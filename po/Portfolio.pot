@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-11 12:02-0400\n"
+"POT-Creation-Date: 2011-08-25 12:17-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,50 +17,70 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: activity/activity.info:2 exporthtml.py:96 PortfolioActivity.py:306
+#: activity/activity.info:2 exporthtml.py:96 PortfolioActivity.py:395
 msgid "Portfolio"
 msgstr ""
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:73
 msgid "2 seconds"
 msgstr ""
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:73
 msgid "10 seconds"
 msgstr ""
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:73
 msgid "30 seconds"
 msgstr ""
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:73
 msgid "1 minute"
 msgstr ""
 
-#: PortfolioActivity.py:206
+#: PortfolioActivity.py:225 PortfolioActivity.py:237
+msgid "Adjust"
+msgstr ""
+
+#: PortfolioActivity.py:235
 msgid "Page"
 msgstr ""
 
-#: PortfolioActivity.py:212
+#: PortfolioActivity.py:243
 msgid "Prev slide"
 msgstr ""
 
-#: PortfolioActivity.py:216
+#: PortfolioActivity.py:247
 msgid "Next slide"
 msgstr ""
 
-#: PortfolioActivity.py:222
+#: PortfolioActivity.py:253
 msgid "Autoplay"
 msgstr ""
 
-#: PortfolioActivity.py:225 PortfolioActivity.py:229
+#: PortfolioActivity.py:259 PortfolioActivity.py:263
 msgid "Adjust playback speed"
 msgstr ""
 
-#: PortfolioActivity.py:236
+#: PortfolioActivity.py:270
+msgid "Refresh"
+msgstr ""
+
+#: PortfolioActivity.py:274 PortfolioActivity.py:654
+msgid "Thumbnail view"
+msgstr ""
+
+#: PortfolioActivity.py:277
+msgid "Fullscreen"
+msgstr ""
+
+#: PortfolioActivity.py:284
 msgid "Save as HTML"
 msgstr ""
 
-#: PortfolioActivity.py:334
+#: PortfolioActivity.py:437
 msgid "Do you have any items in your Journal starred?"
+msgstr ""
+
+#: PortfolioActivity.py:518
+msgid "Slide view"
 msgstr ""

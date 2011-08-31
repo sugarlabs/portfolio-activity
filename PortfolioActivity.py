@@ -545,11 +545,15 @@ class PortfolioActivity(activity.Activity):
             except:
                 pixbuf = get_pixbuf_from_journal(self._dsobjects[self.i],
                                                  int(w), int(h))
-            pixbuf_thumb = pixbuf.scale_simple(int(w), int(h),
-                                               gtk.gdk.INTERP_TILES)
 
+            if pixbuf is not None:
+                pixbuf_thumb = pixbuf.scale_simple(int(w), int(h),
+                                                   gtk.gdk.INTERP_TILES)
+            else:
+                pixbuf_thumb = svg_str_to_pixbuf(genblank(int(w), int(h),
+                                                          self._colors))
             self._thumbs.append([Sprite(self._sprites, x, y, pixbuf_thumb),
-                                 x, y, self.i])
+                                     x, y, self.i])
             self._thumbs[-1][0].set_label(str(self.i + 1))
         self._thumbs[self.i][0].set_layer(TOP)
 

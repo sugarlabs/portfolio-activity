@@ -35,6 +35,7 @@ from sugar.datastore import datastore
 from sprites import Sprites, Sprite
 from exporthtml import save_html
 from utils import get_path, lighter_color, svg_str_to_pixbuf, \
+    radio_button_factory, \
     button_factory, separator_factory, combo_factory, label_factory, \
     get_pixbuf_from_journal, genblank, get_hardware
 
@@ -266,13 +267,16 @@ class PortfolioActivity(activity.Activity):
 
         separator_factory(self.toolbar)
 
-        self._rescan_button = button_factory(
-            'system-restart', _('Refresh'),
-            self._rescan_cb, self.toolbar)
+        slide_button = radio_button_factory('slide-view', self.toolbar,
+                                            self._slides_cb, group=None,
+                                            tooltip=_('Slide view'))
 
-        self._thumb_button = button_factory(
-            'thumbs-view', _('Thumbnail view'),
-            self._thumbs_cb, self.toolbar)
+        radio_button_factory('thumbs-view', self.toolbar, self._thumbs_cb,
+                             tooltip=_('Thumbnail view'),
+                             group=slide_button)
+
+        button_factory('system-restart', _('Refresh'), self._rescan_cb,
+                       self.toolbar)
 
         button_factory('view-fullscreen', _('Fullscreen'),
                        self.do_fullscreen_cb, self.toolbar,
@@ -337,7 +341,8 @@ class PortfolioActivity(activity.Activity):
             self._stop_autoplay()
         else:
             if self._thumbnail_mode:
-                self._set_view_mode(self._current_slide)
+                self._thumbnail_mode = False
+                self.i = self._current_slide
             self._playing = True
             self._auto_button.set_icon('media-playback-pause')
             self._loop()
@@ -501,12 +506,15 @@ class PortfolioActivity(activity.Activity):
         if self._hw == XO175:
             self._bump_id = gobject.timeout_add(1000, self._bump_test)
 
+    def _slides_cb(self, button=None):
+        if self._thumbnail_mode:
+            self._thumbnail_mode = False
+            self.i = self._current_slide
+            self._show_slide()
+
     def _thumbs_cb(self, button=None):
         ''' Toggle between thumbnail view and slideshow view. '''
-        if self._thumbnail_mode:
-            self._set_view_mode(self._current_slide)
-            self._show_slide()
-        else:
+        if not self._thumbnail_mode:
             self._stop_autoplay()
             self._current_slide = self.i
             self._thumbnail_mode = True
@@ -514,8 +522,6 @@ class PortfolioActivity(activity.Activity):
 
             self._prev_button.set_icon('go-previous-inactive')
             self._next_button.set_icon('go-next-inactive')
-            self._thumb_button.set_icon('slide-view')
-            self._thumb_button.set_tooltip(_('Slide view'))
 
             n = int(ceil(sqrt(self._nobjects)))
             w = int(self._width / n)
@@ -649,13 +655,6 @@ class PortfolioActivity(activity.Activity):
         else:
             self._next_cb()
         return False
-
-    def _set_view_mode(self, i):
-        ''' Switch to slide-viewing mode. '''
-        self._thumbnail_mode = False
-        self.i = i
-        self._thumb_button.set_icon('thumbs-view')
-        self._thumb_button.set_tooltip(_('Thumbnail view'))
 
     def _unit_combo_cb(self, arg=None):
         ''' Read value of predefined conversion factors from combo box '''

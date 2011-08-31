@@ -18,8 +18,10 @@ import subprocess
 from gettext import gettext as _
 
 from sugar.graphics.toolbutton import ToolButton
+from sugar.graphics.radiotoolbutton import RadioToolButton
 from sugar.graphics.combobox import ComboBox
 from sugar.graphics.toolcombobox import ToolComboBox
+
 
 XO1 = 'xo1'
 XO15 = 'xo1.5'
@@ -94,6 +96,23 @@ def svg_str_to_pixbuf(svg_string):
 def load_svg_from_file(file_path, width, height):
     '''Create a pixbuf from SVG in a file. '''
     return gtk.gdk.pixbuf_new_from_file_at_size(file_path, width, height)
+
+
+def radio_button_factory(icon_name, toolbar, callback, cb_arg=None,
+                          tooltip=None, group=None):
+    ''' Add a radio button to a toolbar '''
+    button = RadioToolButton(group=group)
+    button.set_named_icon(icon_name)
+    if cb_arg is None:
+        button.connect('clicked', callback)
+    else:
+        button.connect('clicked', callback, cb_arg)
+    if hasattr(toolbar, 'insert'):  # the main toolbar
+        toolbar.insert(button, -1)
+    else:  # or a secondary toolbar
+        toolbar.props.page.insert(button, -1)
+    button.show()
+    return button
 
 
 def button_factory(icon_name, tooltip, callback, toolbar, cb_arg=None,
@@ -187,16 +206,15 @@ def image_to_base64(pixbuf, path_name):
 
 def get_pixbuf_from_journal(dsobject, w, h):
     """ Load a pixbuf from a Journal object. """
-    # _pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(dsobject.file_path,
+    pixbufloader = \
+        gtk.gdk.pixbuf_loader_new_with_mime_type('image/png')
+    pixbufloader.set_size(min(300, int(w)), min(225, int(h)))
     try:
-        pixbufloader = \
-            gtk.gdk.pixbuf_loader_new_with_mime_type('image/png')
-        pixbufloader.set_size(min(300, int(w)), min(225, int(h)))
         pixbufloader.write(dsobject.metadata['preview'])
-        pixbufloader.close()
         pixbuf = pixbufloader.get_pixbuf()
     except:
         pixbuf = None
+    pixbufloader.close()
     return pixbuf
 
 

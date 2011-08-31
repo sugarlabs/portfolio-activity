@@ -1,3 +1,16 @@
+11
+
+ENHANCEMENT
+* using radio buttons for switching betweem slide view and thumbnail view
+* update to standard icons
+
+BUG FIX
+* don't crash when displaying thumbnail of entry with no preview image
+
+10
+
+* add rescan button
+
 9
 
 * add thumbnail support for reordering slides

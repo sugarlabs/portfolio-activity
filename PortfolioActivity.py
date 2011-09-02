@@ -368,11 +368,13 @@ class PortfolioActivity(activity.Activity):
         if self._thumbnail_mode:
             return
 
+        self._bump_id = None
+
         fh = open('/sys/devices/platform/lis3lv02d/position')
         string = fh.read()
+        fh.close()
         xyz = string[1:-2].split(',')
         dx = int(xyz[0])
-        fh.close()
         
         if dx > 250:
             if self.i < self._nobjects -2:
@@ -503,7 +505,10 @@ class PortfolioActivity(activity.Activity):
             self._description.hide()
             self._description2.set_label('')
             self._description2.hide()
+
         if self._hw == XO175:
+            if hasattr(self, '_bump_id') and self._bump_id is not None:
+                gobject.source_remove(self._bump_id)
             self._bump_id = gobject.timeout_add(1000, self._bump_test)
 
     def _slides_cb(self, button=None):

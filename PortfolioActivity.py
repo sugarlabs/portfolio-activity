@@ -248,8 +248,6 @@ class PortfolioActivity(activity.Activity):
             'go-next', _('Next slide'), self._next_cb,
             self.toolbar, accelerator='<Ctrl>N')
 
-        separator_factory(self.toolbar)
-
         self._auto_button = button_factory(
             'media-playlist-repeat', _('Autoplay'), self._autoplay_cb,
             self.toolbar)
@@ -529,7 +527,10 @@ class PortfolioActivity(activity.Activity):
             self._next_button.set_icon('go-next-inactive')
 
             n = int(ceil(sqrt(self._nobjects)))
-            w = int(self._width / n)
+            if n > 0:
+                w = int(self._width / n)
+            else:
+                w = self._width
             h = int(w * 0.75)  # maintain 4:3 aspect ratio
             x_off = int((self._width - n * w) / 2)
             x = x_off

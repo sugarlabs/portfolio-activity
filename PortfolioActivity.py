@@ -249,7 +249,7 @@ class PortfolioActivity(activity.Activity):
             self.toolbar, accelerator='<Ctrl>N')
 
         self._auto_button = button_factory(
-            'media-playlist-repeat', _('Autoplay'), self._autoplay_cb,
+            'media-playback-start', _('Autoplay'), self._autoplay_cb,
             self.toolbar)
 
         if HAVE_TOOLBOX:
@@ -348,7 +348,7 @@ class PortfolioActivity(activity.Activity):
     def _stop_autoplay(self):
         ''' Stop autoplaying. '''
         self._playing = False
-        self._auto_button.set_icon('media-playlist-repeat')
+        self._auto_button.set_icon('media-playback-start')
         if hasattr(self, '_timeout_id') and self._timeout_id is not None:
             gobject.source_remove(self._timeout_id)
 

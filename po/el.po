@@ -1,0 +1,86 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-08-25 12:17-0400\n"
+"PO-Revision-Date: 2011-09-03 19:46+0200\n"
+"Last-Translator: Yannis <kiolalis@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 2.0.1\n"
+
+#: activity/activity.info:2 exporthtml.py:96 PortfolioActivity.py:395
+msgid "Portfolio"
+msgstr "Χαρτοφυλάκιο"
+
+#: PortfolioActivity.py:73
+msgid "2 seconds"
+msgstr "2 δευτερόλεπτα"
+
+#: PortfolioActivity.py:73
+msgid "10 seconds"
+msgstr "10 δευτερόλεπτα"
+
+#: PortfolioActivity.py:73
+msgid "30 seconds"
+msgstr "30 δευτερόλεπτα"
+
+#: PortfolioActivity.py:73
+msgid "1 minute"
+msgstr "1 λεπτό"
+
+#: PortfolioActivity.py:225 PortfolioActivity.py:237
+msgid "Adjust"
+msgstr "Ρύθμιση"
+
+#: PortfolioActivity.py:235
+msgid "Page"
+msgstr "Σελίδα"
+
+#: PortfolioActivity.py:243
+msgid "Prev slide"
+msgstr "Προηγούμενη διαφάνεια"
+
+#: PortfolioActivity.py:247
+msgid "Next slide"
+msgstr "Επόμενη διαφάνεια"
+
+#: PortfolioActivity.py:253
+msgid "Autoplay"
+msgstr "Αυτόματη αναπαραγωγή"
+
+#: PortfolioActivity.py:259 PortfolioActivity.py:263
+msgid "Adjust playback speed"
+msgstr "Ρύθμιση ταχύτητας αναπαραγωγής"
+
+#: PortfolioActivity.py:270
+msgid "Refresh"
+msgstr "Ανανέωση"
+
+#: PortfolioActivity.py:274 PortfolioActivity.py:654
+msgid "Thumbnail view"
+msgstr "Προβολή μικρογραφίας"
+
+#: PortfolioActivity.py:277
+msgid "Fullscreen"
+msgstr "Πλήρης οθόνη"
+
+#: PortfolioActivity.py:284
+msgid "Save as HTML"
+msgstr "Αποθήκευση ως HMTL"
+
+#: PortfolioActivity.py:437
+msgid "Do you have any items in your Journal starred?"
+msgstr "Έχετε αντικείμενα στο Ημερολόγιό σας που πρωταγωνιστούν;"
+
+#: PortfolioActivity.py:518
+msgid "Slide view"
+msgstr "Προβολή διαφανειών"

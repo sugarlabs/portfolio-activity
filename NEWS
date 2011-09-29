@@ -1,3 +1,18 @@
+13
+
+ENHANCEMENT
+* new translations
+
+BUG FIX
+* added missing call to set_tooltips for Radio Buttons
+* fixed potential divide-by-zero error in Thumbnail view
+
+12
+
+BUG FIX
+* fix XO 1.75 bug related to accelerometer tracking for slide advance
+that was causing the activity to hang
+
 11
 
 ENHANCEMENT

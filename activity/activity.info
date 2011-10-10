@@ -1,6 +1,6 @@
 [Activity]
 name = Portfolio
-activity_version = 13
+activity_version = 14
 license = GPLv3
 bundle_id = org.sugarlabs.PortfolioActivity
 exec = sugar-activity PortfolioActivity.PortfolioActivity

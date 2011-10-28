@@ -1,0 +1,90 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-08-25 12:17-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 1.7.0\n"
+
+#: activity/activity.info:2 exporthtml.py:96 PortfolioActivity.py:395
+msgid "Portfolio"
+msgstr ""
+
+#: PortfolioActivity.py:73
+#, fuzzy
+msgid "2 seconds"
+msgstr " វិនាទី"
+
+#: PortfolioActivity.py:73
+#, fuzzy
+msgid "10 seconds"
+msgstr "១ វិនាទី"
+
+#: PortfolioActivity.py:73
+#, fuzzy
+msgid "30 seconds"
+msgstr " វិនាទី"
+
+#: PortfolioActivity.py:73
+#, fuzzy
+msgid "1 minute"
+msgstr "៥ នាទី"
+
+#: PortfolioActivity.py:225 PortfolioActivity.py:237
+msgid "Adjust"
+msgstr ""
+
+#: PortfolioActivity.py:235
+msgid "Page"
+msgstr "ទំព័រ"
+
+#: PortfolioActivity.py:243
+msgid "Prev slide"
+msgstr ""
+
+#: PortfolioActivity.py:247
+msgid "Next slide"
+msgstr "ស្លាយ​បន្ទាប់"
+
+#: PortfolioActivity.py:253
+msgid "Autoplay"
+msgstr ""
+
+#: PortfolioActivity.py:259 PortfolioActivity.py:263
+msgid "Adjust playback speed"
+msgstr ""
+
+#: PortfolioActivity.py:270
+msgid "Refresh"
+msgstr "ធ្វើ​ឲ្យ​ស្រស់"
+
+#: PortfolioActivity.py:274 PortfolioActivity.py:654
+msgid "Thumbnail view"
+msgstr ""
+
+#: PortfolioActivity.py:277
+msgid "Fullscreen"
+msgstr "ពេញ​អេក្រង់"
+
+#: PortfolioActivity.py:284
+msgid "Save as HTML"
+msgstr ""
+
+#: PortfolioActivity.py:437
+msgid "Do you have any items in your Journal starred?"
+msgstr ""
+
+#: PortfolioActivity.py:518
+msgid "Slide view"
+msgstr ""

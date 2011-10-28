@@ -1,3 +1,8 @@
+15
+
+ENHANCEMENT
+* New translations
+
 14
 
 BUG FIX
@@ -6,72 +11,82 @@ BUG FIX
 13
 
 ENHANCEMENT
-* new translations
+* New translations
 
 BUG FIX
-* added missing call to set_tooltips for Radio Buttons
-* fixed potential divide-by-zero error in Thumbnail view
+* Added missing call to set_tooltips for Radio Buttons
+* Fixed potential divide-by-zero error in Thumbnail view
 
 12
 
 BUG FIX
-* fix XO 1.75 bug related to accelerometer tracking for slide advance
-that was causing the activity to hang
+* Fix XO 1.75 bug related to accelerometer tracking for slide advance
+  that was causing the activity to hang
 
 11
 
-ENHANCEMENT
-* using radio buttons for switching betweem slide view and thumbnail view
-* update to standard icons
+ENHANCEMENTS
+* Using radio buttons for switching betweem slide view and thumbnail view
+* Update to standard icons
 
 BUG FIX
-* don't crash when displaying thumbnail of entry with no preview image
+* Don't crash when displaying thumbnail of entry with no preview image
 
 10
 
-* add rescan button
+ENHANCEMENT
+* Add rescan button
 
 9
 
-* add thumbnail support for reordering slides
-* add support for using full screen (hiding toolbars) during slide show
+ENHANCEMENTS
+* Add thumbnail support for reordering slides
+* Add support for using full screen (hiding toolbars) during slide show
 
 8
 
-* switch from slider to combo box for setting autoplay speeds
-* updated translations
+ENHANCEMENTS
+* Switch from slider to combo box for setting autoplay speeds
+* Updated translations
 
 7
 
-* update to Spanish translations
+ENHANCEMENT
+* Update to Spanish translations
 
 6
 
-ENHANCEMENT
-* advance to next slide with mouse-button click 
-* added accelerator keys
+ENHANCEMENTS
+* Advance to next slide with mouse-button click 
+* Added accelerator keys
 
 5
 
-* fix bug in determining lightest color that caused occasional crashes
+BUG FIXES
+* Fix bug in determining lightest color that caused occasional crashes
 
 4
 
+ENHANCEMENTS
 * save slide show as HTML
 * use the lighter of the two background colors for the text background
 
 3
 
-* added warning message when no favorites are starred in the Journal
-* media objects are rendered larger
-* set scaling factor based on vertical dimension to better fit 'wide' screens
+ENHANCEMENTS
+* Added warning message when no favorites are starred in the Journal
+* Media objects are rendered larger
+* Set scaling factor based on vertical dimension to better fit 'wide' screens
 
 2
 
-* fixed problem when no entries are starred
-* scale to variable screen sizes
-* fix font-scaling issue on XO hardware
-* if entry is a picture, use it instead of preview image
+ENHANCEMENTS
+* Scale to variable screen sizes
+* If entry is a picture, use it instead of preview image
+
+BUG FIXES
+* Fixed problem when no entries are starred
+* Fix font-scaling issue on XO hardware
 
 1
 

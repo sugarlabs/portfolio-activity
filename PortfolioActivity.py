@@ -35,9 +35,10 @@ from sugar.datastore import datastore
 from sprites import Sprites, Sprite
 from exporthtml import save_html
 from utils import get_path, lighter_color, svg_str_to_pixbuf, \
-    get_pixbuf_from_journal, genblank, get_hardware
+    play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware
 from toolbar_utils import radio_factory, \
     button_factory, separator_factory, combo_factory, label_factory
+from grecord import Grecord
 
 from gettext import gettext as _
 
@@ -107,6 +108,10 @@ class PortfolioActivity(activity.Activity):
 
         self._thumbs = []
         self._thumbnail_mode = False
+
+        self._recording = False
+        self._grecord = None
+        self.datapath = get_path(activity, 'instance')
 
     def _setup_canvas(self):
         ''' Create a canvas '''
@@ -187,9 +192,10 @@ class PortfolioActivity(activity.Activity):
         self._description2.set_label_attributes(
             int(descriptionf * self._scale))
 
-        self._my_canvas = Sprite(self._sprites, 0, 0,
-                                   svg_str_to_pixbuf(
-                genblank(self._width, self._height, (self._colors[0], self._colors[0]))))
+        self._my_canvas = Sprite(
+            self._sprites, 0, 0, svg_str_to_pixbuf(genblank(
+                    self._width, self._height, (self._colors[0],
+                                                self._colors[0]))))
         self._my_canvas.set_layer(BOTTOM)
 
         self._clear_screen()
@@ -210,10 +216,10 @@ class PortfolioActivity(activity.Activity):
             toolbox = ToolbarBox()
 
             # Activity toolbar
-            activity_button = ActivityToolbarButton(self)
+            activity_button_toolbar = ActivityToolbarButton(self)
 
-            toolbox.toolbar.insert(activity_button, 0)
-            activity_button.show()
+            toolbox.toolbar.insert(activity_button_toolbar, 0)
+            activity_button_toolbar.show()
 
             self.set_toolbar_box(toolbox)
             toolbox.show()
@@ -226,6 +232,14 @@ class PortfolioActivity(activity.Activity):
                 icon_name='preferences-system')
             adjust_toolbar.show_all()
             adjust_toolbar_button.show()
+
+            record_toolbar = gtk.Toolbar()
+            record_toolbar_button = ToolbarButton(
+                label=_('Record a sound'),
+                page=record_toolbar,
+                icon_name='media-audio')
+            record_toolbar.show_all()
+            record_toolbar_button.show()
         else:
             # Use pre-0.86 toolbar design
             primary_toolbar = gtk.Toolbar()
@@ -234,6 +248,8 @@ class PortfolioActivity(activity.Activity):
             toolbox.add_toolbar(_('Page'), primary_toolbar)
             adjust_toolbar = gtk.Toolbar()
             toolbox.add_toolbar(_('Adjust'), adjust_toolbar)
+            record_toolbar = gtk.Toolbar()
+            toolbox.add_toolbar(_('Record'), record_toolbar)
             toolbox.show()
             toolbox.set_current_toolbar(1)
             self.toolbar = primary_toolbar
@@ -253,15 +269,23 @@ class PortfolioActivity(activity.Activity):
 
         if HAVE_TOOLBOX:
             toolbox.toolbar.insert(adjust_toolbar_button, -1)
+            toolbox.toolbar.insert(record_toolbar_button, -1)
 
         label = label_factory(adjust_toolbar, _('Adjust playback speed'))
         label.show()
+
+        separator_factory(adjust_toolbar, False, False)
 
         self._unit_combo = combo_factory(UNITS, adjust_toolbar,
                                          self._unit_combo_cb,
                                          default=UNITS[TEN],
                                          tooltip=_('Adjust playback speed'))
         self._unit_combo.show()
+
+        separator_factory(adjust_toolbar)
+
+        button_factory('system-restart', adjust_toolbar, self._rescan_cb,
+                       tooltip=_('Refresh'))
 
         separator_factory(self.toolbar)
 
@@ -273,18 +297,37 @@ class PortfolioActivity(activity.Activity):
                       tooltip=_('Thumbnail view'),
                       group=slide_button)
 
-        button_factory('system-restart', self.toolbar, self._rescan_cb,
-                       tooltip=_('Refresh'))
-
         button_factory('view-fullscreen', self.toolbar,
                        self.do_fullscreen_cb, tooltip=_('Fullscreen'),
                        accelerator='<Alt>Return')
 
-        separator_factory(self.toolbar)
+        label_factory(record_toolbar, _('Record a sound') + ':')
+        self._record_button = button_factory(
+            'media-record', record_toolbar,
+            self._record_cb, tooltip=_('Start recording'))
 
-        self._save_button = button_factory(
-            'save-as-html', self.toolbar,
-            self._save_as_html_cb, tooltip=_('Save as HTML'))
+        separator_factory(record_toolbar)
+
+        self._playback_button = button_factory(
+            'media-playback-start-insensitive',  record_toolbar,
+            self._playback_recording_cb, tooltip=_('Nothing to play'))
+
+        self._save_recording_button = button_factory(
+            'sound-save-insensitive', record_toolbar,
+            self._save_recording_cb, tooltip=_('Nothing to save'))
+
+        if HAVE_TOOLBOX:        
+            separator_factory(activity_button_toolbar)
+
+            self._save_button = button_factory(
+                'save-as-html', activity_button_toolbar,
+                self._save_as_html_cb, tooltip=_('Save as HTML'))
+        else:
+            separator_factory(self.toolbar)
+
+            self._save_button = button_factory(
+                'save-as-html', self.toolbar,
+                self._save_as_html_cb, tooltip=_('Save as HTML'))
 
         if HAVE_TOOLBOX:
             separator_factory(toolbox.toolbar, False, True)
@@ -678,3 +721,41 @@ class PortfolioActivity(activity.Activity):
             active = self._unit_combo.get_active()
             if active in UNIT_DICTIONARY:
                 self._rate = UNIT_DICTIONARY[active][1]
+
+    def _record_cb(self, button=None):
+        if self._grecord is None:
+            self._grecord = Grecord(self)
+        if self._recording:
+            self._grecord.stop_recording_audio()
+            self._recording = False
+            self._record_button.set_icon('media-record')
+            self._record_button.set_tooltip(_('Start recording'))
+            self._playback_button.set_icon('media-playback-start')
+            self._playback_button.set_tooltip(_('Play recording'))
+            self._save_recording_button.set_icon('sound-save')
+            self._save_recording_button.set_tooltip(_('Save recording'))
+        else:
+            self._grecord.record_audio()
+            self._recording = True
+            self._record_button.set_icon('media-recording')
+            self._record_button.set_tooltip(_('Stop recording'))
+
+    def _playback_recording_cb(self, button=None):
+        # Todo: need some way of mapping sounds to pages/Journal enties
+        play_audio_from_file(os.path.join(self.datapath,
+                                          'output.ogg'))
+        return
+
+    def _save_recording_cb(self, button=None):
+        # Todo: come up with naming scheme to map sounds to Journal entries
+        savename = 'tmp' # self._sounds[self._selected_sound].lower() + '.ogg'
+        if os.path.exists(os.path.join(self.datapath, 'output.ogg')):
+            dsobject = datastore.create()
+            dsobject.metadata['title'] = savename
+            dsobject.metadata['icon-color'] = \
+                profile.get_color().to_string()
+            dsobject.metadata['mime_type'] = 'audio/ogg'
+            dsobject.set_file_path(os.path.join(self.datapath, 'output.ogg'))
+            datastore.write(dsobject)
+            dsobject.destroy()
+        return

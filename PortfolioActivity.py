@@ -294,11 +294,6 @@ class PortfolioActivity(activity.Activity):
             toolbox.toolbar.insert(stop_button, -1)
             stop_button.show()
 
-    def _expose_cb(self, win, event):
-        ''' Have to refresh after a change in window status. '''
-        self._sprites.redraw_sprites()
-        return True
-
     def _destroy_cb(self, win, event):
         ''' Clean up on the way out. '''
         gtk.main_quit()

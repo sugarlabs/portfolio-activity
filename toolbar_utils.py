@@ -112,7 +112,10 @@ def label_factory(toolbar, label_text, width=None):
     label.show()
     toolitem = gtk.ToolItem()
     toolitem.add(label)
-    toolbar.insert(toolitem, -1)
+    if hasattr(toolbar, 'insert'):  # the main toolbar
+        toolbar.insert(toolitem, -1)
+    else:  # or a secondary toolbar
+        toolbar.props.page.insert(toolitem, -1)
     toolitem.show()
     return label
 
@@ -122,7 +125,10 @@ def separator_factory(toolbar, expand=False, visible=True):
     separator = gtk.SeparatorToolItem()
     separator.props.draw = visible
     separator.set_expand(expand)
-    toolbar.insert(separator, -1)
+    if hasattr(toolbar, 'insert'):  # the main toolbar
+        toolbar.insert(separator, -1)
+    else:  # or a secondary toolbar
+        toolbar.props.page.insert(separator, -1)
     separator.show()
 
 

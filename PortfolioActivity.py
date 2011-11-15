@@ -330,7 +330,7 @@ class PortfolioActivity(activity.Activity):
                 self._save_as_html_cb, tooltip=_('Save as HTML'))
 
         if HAVE_TOOLBOX:
-            separator_factory(toolbox.toolbar, False, True)
+            separator_factory(toolbox.toolbar, True, False)
 
             stop_button = StopButton(self)
             stop_button.props.accelerator = '<Ctrl>q'
@@ -466,7 +466,9 @@ class PortfolioActivity(activity.Activity):
         self.last_spr_moved = None
 
     def _show_slide(self):
-        ''' Display a title, preview image, and decription for slide i. '''
+        ''' Display a title, preview image, and decription for slide
+        i. Play an audio note if there is one recorded for this
+        object. '''
         self._clear_screen()
 
         if self._nobjects == 0:
@@ -537,6 +539,11 @@ class PortfolioActivity(activity.Activity):
             self._description.hide()
             self._description2.set_label('')
             self._description2.hide()
+
+        audio_obj = self._search_for_audio_note(
+            self._dsobjects[self.i].object_id)
+        if audio_obj is not None:
+            gobject.idle_add(play_audio_from_file, audio_obj.file_path)
 
         if self._hw == XO175:
             if hasattr(self, '_bump_id') and self._bump_id is not None:
@@ -747,15 +754,33 @@ class PortfolioActivity(activity.Activity):
         return
 
     def _save_recording_cb(self, button=None):
-        # Todo: come up with naming scheme to map sounds to Journal entries
-        savename = 'tmp' # self._sounds[self._selected_sound].lower() + '.ogg'
         if os.path.exists(os.path.join(self.datapath, 'output.ogg')):
-            dsobject = datastore.create()
-            dsobject.metadata['title'] = savename
-            dsobject.metadata['icon-color'] = \
-                profile.get_color().to_string()
-            dsobject.metadata['mime_type'] = 'audio/ogg'
-            dsobject.set_file_path(os.path.join(self.datapath, 'output.ogg'))
-            datastore.write(dsobject)
-            dsobject.destroy()
+            obj_id = self._dsobjects[self.i].object_id
+            dsobject = self._search_for_audio_note(obj_id)
+            if dsobject is None:
+                dsobject = datastore.create()
+
+            if dsobject is not None:
+                dsobject.metadata['title'] = _('audio note for %s') % \
+                    self._dsobjects[self.i].metadata['title']
+                dsobject.metadata['icon-color'] = \
+                    profile.get_color().to_string()
+                dsobject.metadata['tags'] = obj_id
+                dsobject.metadata['mime_type'] = 'audio/ogg'
+                dsobject.set_file_path(os.path.join(self.datapath,
+                                                    'output.ogg'))
+                datastore.write(dsobject)
+                dsobject.destroy()
         return
+
+    def _search_for_audio_note(self, obj_id):
+        ''' Look to see if there is already a sound recorded for this
+        dsobject '''
+        dsobjects, nobjects = datastore.find({'mime_type': ['audio/ogg']})
+        # Look for tag that matches the target object id
+        for dsobject in dsobjects:
+            if 'tags' in dsobject.metadata and \
+                    obj_id in dsobject.metadata['tags']:
+                _logger.debug('found a previously recorded audio note')
+                return dsobject
+        return None

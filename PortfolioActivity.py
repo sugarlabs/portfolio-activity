@@ -265,7 +265,6 @@ class PortfolioActivity(activity.Activity):
         self._auto_button = button_factory(
             'media-playback-start', self.toolbar,
             self._autoplay_cb, tooltip=_('Autoplay'))
-            
 
         if HAVE_TOOLBOX:
             toolbox.toolbar.insert(adjust_toolbar_button, -1)
@@ -316,7 +315,7 @@ class PortfolioActivity(activity.Activity):
             'sound-save-insensitive', record_toolbar,
             self._save_recording_cb, tooltip=_('Nothing to save'))
 
-        if HAVE_TOOLBOX:        
+        if HAVE_TOOLBOX:
             separator_factory(activity_button_toolbar)
 
             self._save_button = button_factory(
@@ -411,9 +410,9 @@ class PortfolioActivity(activity.Activity):
         fh.close()
         xyz = string[1:-2].split(',')
         dx = int(xyz[0])
-        
+
         if dx > 250:
-            if self.i < self._nobjects -2:
+            if self.i < self._nobjects - 2:
                 self.i += 1
                 self._show_slide()
         elif dx < -250:

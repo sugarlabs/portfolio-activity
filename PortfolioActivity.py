@@ -543,6 +543,11 @@ class PortfolioActivity(activity.Activity):
             self._dsobjects[self.i].object_id)
         if audio_obj is not None:
             gobject.idle_add(play_audio_from_file, audio_obj.file_path)
+            self._playback_button.set_icon('media-playback-start')
+            self._playback_button.set_tooltip(_('Play recording'))
+        else:
+            self._playback_button.set_icon('media-playback-start-insensitive')
+            self._playback_button.set_tooltip(_('Nothing to play'))
 
         if self._hw == XO175:
             if hasattr(self, '_bump_id') and self._bump_id is not None:

@@ -1,3 +1,12 @@
+17
+
+ENHANCEMENT
+* New translations
+
+BUG FIX
+* Update audio playback button depending upon whether or not there is an
+  audio note associated with the current slide
+
 16
 
 ENHANCEMENT

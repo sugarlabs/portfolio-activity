@@ -35,9 +35,9 @@ from sugar.datastore import datastore
 from sprites import Sprites, Sprite
 from exporthtml import save_html
 from utils import get_path, lighter_color, svg_str_to_pixbuf, \
-    radio_button_factory, \
-    button_factory, separator_factory, combo_factory, label_factory, \
     get_pixbuf_from_journal, genblank, get_hardware
+from toolbar_utils import radio_factory, \
+    button_factory, separator_factory, combo_factory, label_factory
 
 from gettext import gettext as _
 
@@ -188,10 +188,8 @@ class PortfolioActivity(activity.Activity):
             int(descriptionf * self._scale))
 
         self._my_canvas = Sprite(self._sprites, 0, 0,
-                                gtk.gdk.Pixmap(self._canvas.window,
-                                               self._width,
-                                               self._height, -1))
-        self._my_gc = self._my_canvas.images[0].new_gc()
+                                   svg_str_to_pixbuf(
+                genblank(self._width, self._height, (self._colors[0], self._colors[0]))))
         self._my_canvas.set_layer(BOTTOM)
 
         self._clear_screen()
@@ -241,50 +239,52 @@ class PortfolioActivity(activity.Activity):
             self.toolbar = primary_toolbar
 
         self._prev_button = button_factory(
-            'go-previous-inactive', _('Prev slide'), self._prev_cb,
-            self.toolbar, accelerator='<Ctrl>P')
+            'go-previous-inactive', self.toolbar, self._prev_cb,
+            tooltip=_('Prev slide'), accelerator='<Ctrl>P')
 
         self._next_button = button_factory(
-            'go-next', _('Next slide'), self._next_cb,
-            self.toolbar, accelerator='<Ctrl>N')
+            'go-next', self.toolbar, self._next_cb,
+            tooltip=_('Next slide'), accelerator='<Ctrl>N')
 
         self._auto_button = button_factory(
-            'media-playback-start', _('Autoplay'), self._autoplay_cb,
-            self.toolbar)
+            'media-playback-start', self.toolbar,
+            self._autoplay_cb, tooltip=_('Autoplay'))
+            
 
         if HAVE_TOOLBOX:
             toolbox.toolbar.insert(adjust_toolbar_button, -1)
 
-        label = label_factory(_('Adjust playback speed'), adjust_toolbar)
+        label = label_factory(adjust_toolbar, _('Adjust playback speed'))
         label.show()
 
-        self._unit_combo = combo_factory(UNITS, TEN,
-                                        _('Adjust playback speed'),
-                                        self._unit_combo_cb, adjust_toolbar)
+        self._unit_combo = combo_factory(UNITS, adjust_toolbar,
+                                         self._unit_combo_cb,
+                                         default=UNITS[TEN],
+                                         tooltip=_('Adjust playback speed'))
         self._unit_combo.show()
 
         separator_factory(self.toolbar)
 
-        slide_button = radio_button_factory('slide-view', self.toolbar,
-                                            self._slides_cb, group=None,
-                                            tooltip=_('Slide view'))
+        slide_button = radio_factory('slide-view', self.toolbar,
+                                     self._slides_cb, group=None,
+                                     tooltip=_('Slide view'))
 
-        radio_button_factory('thumbs-view', self.toolbar, self._thumbs_cb,
-                             tooltip=_('Thumbnail view'),
-                             group=slide_button)
+        radio_factory('thumbs-view', self.toolbar, self._thumbs_cb,
+                      tooltip=_('Thumbnail view'),
+                      group=slide_button)
 
-        button_factory('system-restart', _('Refresh'), self._rescan_cb,
-                       self.toolbar)
+        button_factory('system-restart', self.toolbar, self._rescan_cb,
+                       tooltip=_('Refresh'))
 
-        button_factory('view-fullscreen', _('Fullscreen'),
-                       self.do_fullscreen_cb, self.toolbar,
+        button_factory('view-fullscreen', self.toolbar,
+                       self.do_fullscreen_cb, tooltip=_('Fullscreen'),
                        accelerator='<Alt>Return')
 
         separator_factory(self.toolbar)
 
         self._save_button = button_factory(
-            'save-as-html', _('Save as HTML'),
-            self._save_as_html_cb, self.toolbar)
+            'save-as-html', self.toolbar,
+            self._save_as_html_cb, tooltip=_('Save as HTML'))
 
         if HAVE_TOOLBOX:
             separator_factory(toolbox.toolbar, False, True)
@@ -411,10 +411,6 @@ class PortfolioActivity(activity.Activity):
 
     def _clear_screen(self):
         ''' Clear the screen to the darker of the two XO colors. '''
-        self._my_gc.set_foreground(
-            self._my_gc.get_colormap().alloc_color(self._colors[0]))
-        self._my_canvas.images[0].draw_rectangle(self._my_gc, True, 0, 0,
-                                                 self._width, self._height)
         self._title.hide()
         self._full_screen.hide()
         self._preview.hide()
@@ -464,17 +460,17 @@ class PortfolioActivity(activity.Activity):
 
         if pixbuf is not None:
             if not media_object:
-                self._preview.images[0] = pixbuf.scale_simple(
+                self._preview.set_shape(pixbuf.scale_simple(
                     int(PREVIEWW * self._scale),
                     int(PREVIEWH * self._scale),
-                    gtk.gdk.INTERP_TILES)
+                    gtk.gdk.INTERP_TILES))
                 self._full_screen.hide()
                 self._preview.set_layer(MIDDLE)
             else:
-                self._full_screen.images[0] = pixbuf.scale_simple(
+                self._full_screen.set_shape(pixbuf.scale_simple(
                     int(FULLW * self._scale),
                     int(FULLH * self._scale),
-                    gtk.gdk.INTERP_TILES)
+                    gtk.gdk.INTERP_TILES))
                 self._full_screen.set_layer(MIDDLE)
                 self._preview.hide()
         else:
@@ -568,6 +564,25 @@ class PortfolioActivity(activity.Activity):
                                      x, y, self.i])
             self._thumbs[-1][0].set_label(str(self.i + 1))
         self._thumbs[self.i][0].set_layer(TOP)
+
+    def _expose_cb(self, win, event):
+        ''' Callback to handle window expose events '''
+        self.do_expose_event(event)
+        return True
+
+    # Handle the expose-event by drawing
+    def do_expose_event(self, event):
+
+        # Create the cairo context
+        cr = self.canvas.window.cairo_create()
+
+        # Restrict Cairo to the exposed area; avoid extra work
+        cr.rectangle(event.area.x, event.area.y,
+                event.area.width, event.area.height)
+        cr.clip()
+
+        # Refresh sprite list
+        self._sprites.redraw_sprites(cr=cr)
 
     def do_fullscreen_cb(self, button):
         ''' Hide the Sugar toolbars. '''

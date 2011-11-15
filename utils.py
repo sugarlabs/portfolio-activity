@@ -17,12 +17,6 @@ import subprocess
 
 from gettext import gettext as _
 
-from sugar.graphics.toolbutton import ToolButton
-from sugar.graphics.radiotoolbutton import RadioToolButton
-from sugar.graphics.combobox import ComboBox
-from sugar.graphics.toolcombobox import ToolComboBox
-
-
 XO1 = 'xo1'
 XO15 = 'xo1.5'
 XO175 = 'xo1.75'
@@ -96,100 +90,6 @@ def svg_str_to_pixbuf(svg_string):
 def load_svg_from_file(file_path, width, height):
     '''Create a pixbuf from SVG in a file. '''
     return gtk.gdk.pixbuf_new_from_file_at_size(file_path, width, height)
-
-
-def radio_button_factory(icon_name, toolbar, callback, cb_arg=None,
-                          tooltip=None, group=None):
-    ''' Add a radio button to a toolbar '''
-    button = RadioToolButton(group=group)
-    button.set_named_icon(icon_name)
-    if tooltip is not None:
-        button.set_tooltip(tooltip)
-    if cb_arg is None:
-        button.connect('clicked', callback)
-    else:
-        button.connect('clicked', callback, cb_arg)
-    if hasattr(toolbar, 'insert'):  # the main toolbar
-        toolbar.insert(button, -1)
-    else:  # or a secondary toolbar
-        toolbar.props.page.insert(button, -1)
-    button.show()
-    return button
-
-
-def button_factory(icon_name, tooltip, callback, toolbar, cb_arg=None,
-                    accelerator=None):
-    '''Factory for making toolbar buttons'''
-    my_button = ToolButton(icon_name)
-    my_button.set_tooltip(tooltip)
-    my_button.props.sensitive = True
-    if accelerator is not None:
-        my_button.props.accelerator = accelerator
-    if cb_arg is not None:
-        my_button.connect('clicked', callback, cb_arg)
-    else:
-        my_button.connect('clicked', callback)
-    if hasattr(toolbar, 'insert'):  # the main toolbar
-        toolbar.insert(my_button, -1)
-    else:  # or a secondary toolbar
-        toolbar.props.page.insert(my_button, -1)
-    my_button.show()
-    return my_button
-
-
-def label_factory(label, toolbar):
-    ''' Factory for adding a label to a toolbar '''
-    my_label = gtk.Label(label)
-    my_label.set_line_wrap(True)
-    my_label.show()
-    toolitem = gtk.ToolItem()
-    toolitem.add(my_label)
-    toolbar.insert(toolitem, -1)
-    toolitem.show()
-    return my_label
-
-
-def separator_factory(toolbar, visible=True, expand=False):
-    ''' Factory for adding a separator to a toolbar '''
-    separator = gtk.SeparatorToolItem()
-    separator.props.draw = visible
-    separator.set_expand(expand)
-    toolbar.insert(separator, -1)
-    separator.show()
-
-
-def slider_factory(tooltip, callback, toolbar, cb_arg=None):
-    ''' Factory for adding a slider to a toolbar '''
-    adjustment = gtk.Adjustment(2, 1, 30, 1, 5, 0)
-    adjustment.connect('value_changed', callback)
-    range = gtk.HScale(adjustment)
-    range.set_size_request(240, 15)
-    range_tool = gtk.ToolItem()
-    range_tool.add(range)
-
-    toolbar.insert(range_tool, -1)
-    return adjustment
-
-
-def combo_factory(combo_array, default, tooltip, callback, toolbar):
-    '''Factory for making a toolbar combo box'''
-    my_combo = ComboBox()
-    if hasattr(my_combo, 'set_tooltip_text'):
-        my_combo.set_tooltip_text(tooltip)
-
-    my_combo.connect('changed', callback)
-
-    for i, s in enumerate(combo_array):
-        my_combo.append_item(i, s, None)
-
-    tool = ToolComboBox(my_combo)
-    if hasattr(toolbar, 'insert'):  # the main toolbar
-        toolbar.insert(tool, -1)
-    else:  # or a secondary toolbar
-        toolbar.props.page.insert(tool, -1)
-    tool.show()
-    my_combo.set_active(default)
-    return my_combo
 
 
 def image_to_base64(pixbuf, path_name):

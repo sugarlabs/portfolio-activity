@@ -16,6 +16,7 @@ pygtk.require('2.0')
 import gtk
 from glib import GError
 import os.path
+import time
 import cairo
 from gettext import gettext as _
 
@@ -37,6 +38,9 @@ def save_pdf(activity,  nick):
     cr.set_font_size(40)
     cr.move_to(10, 50)
     cr.show_text(nick)
+    cr.move_to(10, 100)
+    cr.set_font_size(12)
+    cr.show_text(time.strftime('%x', time.localtime()))
     cr.show_page()
 
     for i, dsobj in enumerate(activity.dsobjects):
@@ -50,8 +54,8 @@ def save_pdf(activity,  nick):
         try:
             w = 600
             h = 450
-            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-                dsobj.file_path, w, h)
+            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(dsobj.file_path,
+                                                          w, h)
         except(GError, IOError):
             try:
                 w = 300

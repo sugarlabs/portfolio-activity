@@ -16,6 +16,7 @@ pygtk.require('2.0')
 import gtk
 from glib import GError
 import os.path
+import time
 from cgi import escape
 from gettext import gettext as _
 
@@ -66,8 +67,10 @@ def save_html(activity,  nick):
     htmlcode += HTML_GLUE['slide'][1] + \
         HTML_GLUE['div'][0]
     htmlcode += HTML_GLUE['h1'][0] + nick + HTML_GLUE['h1'][1]
+    htmlcode += HTML_GLUE['body'][0] + \
+        time.strftime('%x', time.localtime()) + \
+        HTML_GLUE['body'][1]
     htmlcode += HTML_GLUE['div'][1]
-    # TODO: Add date
 
     for i, dsobj in enumerate(activity.dsobjects):
         htmlcode += HTML_GLUE['slide'][0] + str(i)

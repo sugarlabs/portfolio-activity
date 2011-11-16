@@ -18,9 +18,19 @@ from glib import GError
 import os.path
 import time
 import cairo
+import pango
+import pangocairo
 from gettext import gettext as _
 
 from utils import get_pixbuf_from_journal
+
+
+HEAD = 32
+BODY = 12
+PAGE_WIDTH = 504
+PAGE_HEIGHT = 648
+LEFT_MARGIN = 10
+TOP_MARGIN = 20
 
 
 def save_pdf(activity,  nick):
@@ -30,30 +40,30 @@ def save_pdf(activity,  nick):
         return None
 
     tmp_file = os.path.join(activity.datapath, 'output.pdf') 
-    pdf_surface = cairo.PDFSurface(tmp_file, 600, 800)
+    pdf_surface = cairo.PDFSurface(tmp_file, 504, 648)
 
+    fd = pango.FontDescription('Sans')
     cr = cairo.Context(pdf_surface)
     cr.set_source_rgb(0, 0, 0)
 
-    cr.set_font_size(40)
-    cr.move_to(10, 50)
-    cr.show_text(nick)
-    cr.move_to(10, 100)
-    cr.set_font_size(12)
-    cr.show_text(time.strftime('%x', time.localtime()))
+    show_text(cr, fd, nick, HEAD, LEFT_MARGIN, TOP_MARGIN)
+    show_text(cr, fd, time.strftime('%x', time.localtime()),
+              BODY, LEFT_MARGIN, TOP_MARGIN + 3 * HEAD)
     cr.show_page()
 
     for i, dsobj in enumerate(activity.dsobjects):
-        cr.set_font_size(40)
-        cr.move_to(10, 50)
         if 'title' in dsobj.metadata:
-            cr.show_text(dsobj.metadata['title'])
+            # cr.show_text(dsobj.metadata['title'])
+            show_text(cr, fd, dsobj.metadata['title'], HEAD, LEFT_MARGIN,
+                      TOP_MARGIN)
         else:
-            cr.show_text(_('untitled'))
+            # cr.show_text(_('untitled'))
+            show_text(cr, fd, _('untitles'), HEAD, LEFT_MARGIN,
+                      TOP_MARGIN)
 
         try:
-            w = 600
-            h = 450
+            w = int(PAGE_WIDTH - LEFT_MARGIN * 2)
+            h = int(w * 3 / 4)
             pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(dsobj.file_path,
                                                           w, h)
         except(GError, IOError):
@@ -66,19 +76,33 @@ def save_pdf(activity,  nick):
                 h = 0
                 pixbuf = None
 
-        cr.move_to(10, 150)
         if pixbuf is not None:
             cr.save()
             cr = gtk.gdk.CairoContext(cr)
-            cr.set_source_pixbuf(pixbuf, 10, 150)
-            cr.rectangle(10, 150, w, h)
+            cr.set_source_pixbuf(pixbuf, LEFT_MARGIN, TOP_MARGIN + 150)
+            cr.rectangle(LEFT_MARGIN, TOP_MARGIN + 150, w, h)
             cr.fill()
             cr.restore()
 
-        cr.set_font_size(12)
-        cr.move_to(10, h + 175)
         if 'description' in dsobj.metadata:
-            cr.show_text(dsobj.metadata['description'])
+            show_text(cr, fd, dsobj.metadata['description'], BODY,
+                      LEFT_MARGIN, h + 175)
         cr.show_page()
 
     return tmp_file
+
+def show_text(cr, fd, label, size, x, y):
+    cr = pangocairo.CairoContext(cr)
+    pl = cr.create_layout()
+    fd.set_size(int(size * pango.SCALE))
+    pl.set_font_description(fd)
+    if type(label) == str or type(label) == unicode:
+        pl.set_text(label.replace('\0', ' '))
+    else:
+        pl.set_text(str(label))
+    pl.set_width((PAGE_WIDTH - LEFT_MARGIN * 2) * pango.SCALE)
+    cr.save()
+    cr.translate(x, y)
+    cr.update_layout(pl)
+    cr.show_layout(pl)
+    cr.restore()

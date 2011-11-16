@@ -53,12 +53,10 @@ def save_pdf(activity,  nick):
 
     for i, dsobj in enumerate(activity.dsobjects):
         if 'title' in dsobj.metadata:
-            # cr.show_text(dsobj.metadata['title'])
             show_text(cr, fd, dsobj.metadata['title'], HEAD, LEFT_MARGIN,
                       TOP_MARGIN)
         else:
-            # cr.show_text(_('untitled'))
-            show_text(cr, fd, _('untitles'), HEAD, LEFT_MARGIN,
+            show_text(cr, fd, _('untitled'), HEAD, LEFT_MARGIN,
                       TOP_MARGIN)
 
         try:

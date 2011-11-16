@@ -105,6 +105,10 @@ def image_to_base64(pixbuf, path_name):
     file_name = os.path.join(path_name, 'imagetmp.png')
     if pixbuf != None:
         pixbuf.save(file_name, "png")
+    return file_to_base64(file_name, path_name)
+
+
+def file_to_base64(file_name, path_name):
     base64 = os.path.join(path_name, 'base64tmp')
     cmd = "base64 <" + file_name + " >" + base64
     subprocess.check_call(cmd, shell=True)

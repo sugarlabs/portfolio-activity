@@ -424,9 +424,7 @@ class PortfolioActivity(activity.Activity):
 
     def _save_as_html_cb(self, button=None):
         ''' Export an HTML version of the slideshow to the Journal. '''
-        self._save_button.set_icon('save-in-progress')
-        results = save_html(self._dsobjects, profile.get_nick_name(),
-                            self._colors, self._tmp_path)
+        results = save_html(self, profile.get_nick_name())
         html_file = os.path.join(self._tmp_path, 'tmp.html')
         tmp_file = open(html_file, 'w')
         tmp_file.write(results)
@@ -441,9 +439,6 @@ class PortfolioActivity(activity.Activity):
         dsobject.metadata['activity'] = 'org.laptop.WebActivity'
         datastore.write(dsobject)
         dsobject.destroy()
-
-        gobject.timeout_add(250, self._save_button.set_icon,
-                            'save-as-html')
         return
 
     def _clear_screen(self):
@@ -750,9 +745,13 @@ class PortfolioActivity(activity.Activity):
             self._recording = True
             self._record_button.set_icon('media-recording')
             self._record_button.set_tooltip(_('Stop recording'))
+            # Autosave if there was not already a recording
+            if self._search_for_audio_note(
+                self._dsobjects[self.i].object_id) is None:
+                self._save_recording_cb()
 
     def _playback_recording_cb(self, button=None):
-        # Todo: need some way of mapping sounds to pages/Journal enties
+        ''' Play back current recording '''
         play_audio_from_file(os.path.join(self.datapath,
                                           'output.ogg'))
         return
@@ -760,6 +759,8 @@ class PortfolioActivity(activity.Activity):
     def _save_recording_cb(self, button=None):
         if os.path.exists(os.path.join(self.datapath, 'output.ogg')):
             obj_id = self._dsobjects[self.i].object_id
+            os.rename(os.path.join(self.datapath, 'output.ogg'),
+                      os.path.join(self.datapath, obj_id + '.ogg'))
             dsobject = self._search_for_audio_note(obj_id)
             if dsobject is None:
                 dsobject = datastore.create()
@@ -772,7 +773,7 @@ class PortfolioActivity(activity.Activity):
                 dsobject.metadata['tags'] = obj_id
                 dsobject.metadata['mime_type'] = 'audio/ogg'
                 dsobject.set_file_path(os.path.join(self.datapath,
-                                                    'output.ogg'))
+                                                    obj_id + '.ogg'))
                 datastore.write(dsobject)
                 dsobject.destroy()
         return
@@ -785,6 +786,8 @@ class PortfolioActivity(activity.Activity):
         for dsobject in dsobjects:
             if 'tags' in dsobject.metadata and \
                     obj_id in dsobject.metadata['tags']:
+                _logger.debug('obj_id: %s' % (str(obj_id)))
+                _logger.debug('>>>>>>>>>>>>>>>>> metadata tags: %s' % (str(dsobject.metadata['tags'])))
                 _logger.debug('found a previously recorded audio note')
                 return dsobject
         return None

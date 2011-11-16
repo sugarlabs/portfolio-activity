@@ -19,47 +19,50 @@ import os.path
 from cgi import escape
 from gettext import gettext as _
 
-from utils import get_pixbuf_from_journal, image_to_base64
+from utils import get_pixbuf_from_journal, image_to_base64, file_to_base64
 
 # A dictionary to define the HTML wrappers around template elements
 HTML_GLUE = {
-    'doctype': '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 ' + \
-        'Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">\n',
+    'doctype': '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 \
+Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">\n',
     'html': ('<html>\n', '</html>\n'),
     'html_svg': ('<html xmlns="http://www.w3.org/1999/xhtml">\n',
                  '</html>\n'),
     'head': ('<head>\n<!-- Created by Portfolio -->\n', '</head>\n'),
-    'meta': '<meta http-equiv="content-type" content="text/html; ' + \
-        'charset=UTF-8"/>\n',
+    'meta': '<meta http-equiv="content-type" content="text/html; \
+charset=UTF-8"/>\n',
     'title': ('<title>', '</title>\n'),
     'body': ('<body><center>\n', '\n</center></body>\n'),
     'div': ('<div class="box">\n', '</div>\n'),
     'slide': ('\n<a name="slide', '"></a>\n'),
     'h1': ('<p class="head">', '</p>\n'),
-    'img': ('<img width="300" height="225" alt=' + \
-                '"Image" src="data:image/png;base64,\n',
+    'audio': ('<embed src="data:audio/ogg;base64,\n',
+              '" controller="true" autoplay="false" autostart="false" \
+type="audio/ogg" />\n'),
+    'img': ('<img width="300" height="225" alt=\
+"Image" src="data:image/png;base64,\n',
             '"/>\n'),
-    'img2': ('<img width="600" height="450" alt=' + \
-                '"Image" src="data:image/png;base64,\n',
+    'img2': ('<img width="600" height="450" alt=\
+"Image" src="data:image/png;base64,\n',
             '"/>\n')}
 
-COMMENT = '<!--\n\<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"' + \
-    ' "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [\n\
+COMMENT = '<!--\n\<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" \
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [\n\
     <!ENTITY ns_svg "http://www.w3.org/2000/svg">\n\
     <!ENTITY ns_xlink "http://www.w3.org/1999/xlink">\n\
 ]>\n\
 -->\n'
 
 
-def save_html(dsobjects, nick, colors, tmp_path):
+def save_html(activity,  nick):
     ''' Output a series of HTML pages from the title, pictures, and
     descriptions '''
 
     htmlcode = ''
-    if len(dsobjects) == 0:
+    if len(activity._dsobjects) == 0:
         return None
 
-    for i, dsobj in enumerate(dsobjects):
+    for i, dsobj in enumerate(activity._dsobjects):
         htmlcode += HTML_GLUE['slide'][0] + str(i)
         htmlcode += HTML_GLUE['slide'][1] + \
             HTML_GLUE['div'][0]
@@ -85,16 +88,25 @@ def save_html(dsobjects, nick, colors, tmp_path):
 
         if pixbuf is not None:
             tmp = HTML_GLUE[image_key][0]
-            tmp += image_to_base64(pixbuf, tmp_path)
+            tmp += image_to_base64(pixbuf, activity._tmp_path)
             tmp += HTML_GLUE[image_key][1]
         else:  # No image
             tmp = ''
 
         if 'description' in dsobj.metadata:
-            tmp += '<p class="body">' + dsobj.metadata['description'] + '</p>'
+            tmp += HTML_GLUE['body'][0] \
+                + dsobj.metadata['description'] + \
+                HTML_GLUE['body'][1]
+
+        audio_obj = activity._search_for_audio_note(dsobj.object_id)
+        if audio_obj is not None:
+            tmp += HTML_GLUE['audio'][0]
+            tmp += file_to_base64(audio_obj.file_path, activity._tmp_path)
+            tmp += HTML_GLUE['audio'][1]
 
         htmlcode += tmp + \
             HTML_GLUE['div'][1]
+
 
     return HTML_GLUE['doctype'] + \
         HTML_GLUE['html'][0] + \
@@ -103,7 +115,11 @@ def save_html(dsobjects, nick, colors, tmp_path):
         HTML_GLUE['title'][0] + \
         nick + ' ' + _('Portfolio') + \
         HTML_GLUE['title'][1] + \
-        '<style type="text/css">\n<!--\n-->\nbody {background-color:' + colors[0] + ';}\np.head {font-size: 18pt; font-weight: bold; font-family: "Sans"; }\np.body  {font-size: 12pt; font-weight: regular; font-family: "Sans"; }\ndiv.box{width:630px; padding:10px; border:5px; margin:7px; background:' + colors[1] + '}\n</style>\n' +\
+        '<style type="text/css">\n<!--\n-->\nbody {background-color:' + \
+activity._colors[0] + ';}\np.head {font-size: 18pt; font-weight: bold; \
+font-family: "Sans"; }\np.body  {font-size: 12pt; font-weight: regular; \
+font-family: "Sans"; }\ndiv.box{width:630px; padding:10px; border:5px; \
+margin:7px; background:' + activity._colors[1] + '}\n</style>\n' +\
         HTML_GLUE['head'][1] + \
         HTML_GLUE['body'][0] + \
         htmlcode + \

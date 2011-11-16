@@ -42,12 +42,18 @@ def save_pdf(activity,  nick):
             cr.show_text(_('untitled'))
 
         try:
+            w = 600
+            h = 450
             pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-                dsobj.file_path, 800, 600)
+                dsobj.file_path, w, h)
         except(GError, IOError):
             try:
-                pixbuf = get_pixbuf_from_journal(dsobj, 300, 225)
+                w = 300
+                h = 225
+                pixbuf = get_pixbuf_from_journal(dsobj, w, h)
             except(GError, IOError):
+                w = 0
+                h = 0
                 pixbuf = None
 
         cr.move_to(10, 150)
@@ -55,12 +61,12 @@ def save_pdf(activity,  nick):
             cr.save()
             cr = gtk.gdk.CairoContext(cr)
             cr.set_source_pixbuf(pixbuf, 10, 150)
-            cr.rectangle(10, 150, 300, 225)
+            cr.rectangle(10, 150, w, h)
             cr.fill()
             cr.restore()
 
         cr.set_font_size(12)
-        cr.move_to(10, 400)
+        cr.move_to(10, h + 175)
         if 'description' in dsobj.metadata:
             cr.show_text(dsobj.metadata['description'])
         cr.show_page()

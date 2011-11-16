@@ -1,3 +1,12 @@
+18
+
+ENHANCEMENTS
+* Added audio notes to exported HTML document
+* Autosave first audio recording
+
+BUG FIXES
+* Individual audio recordings were not properly saved per slide
+
 17
 
 ENHANCEMENT

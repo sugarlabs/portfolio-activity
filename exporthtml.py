@@ -62,6 +62,13 @@ def save_html(activity,  nick):
     if len(activity.dsobjects) == 0:
         return None
 
+    htmlcode += HTML_GLUE['slide'][0]
+    htmlcode += HTML_GLUE['slide'][1] + \
+        HTML_GLUE['div'][0]
+    htmlcode += HTML_GLUE['h1'][0] + nick + HTML_GLUE['h1'][1]
+    htmlcode += HTML_GLUE['div'][1]
+    # TODO: Add date
+
     for i, dsobj in enumerate(activity.dsobjects):
         htmlcode += HTML_GLUE['slide'][0] + str(i)
         htmlcode += HTML_GLUE['slide'][1] + \

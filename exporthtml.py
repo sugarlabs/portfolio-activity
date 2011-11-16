@@ -59,10 +59,10 @@ def save_html(activity,  nick):
     descriptions '''
 
     htmlcode = ''
-    if len(activity._dsobjects) == 0:
+    if len(activity.dsobjects) == 0:
         return None
 
-    for i, dsobj in enumerate(activity._dsobjects):
+    for i, dsobj in enumerate(activity.dsobjects):
         htmlcode += HTML_GLUE['slide'][0] + str(i)
         htmlcode += HTML_GLUE['slide'][1] + \
             HTML_GLUE['div'][0]
@@ -88,7 +88,7 @@ def save_html(activity,  nick):
 
         if pixbuf is not None:
             tmp = HTML_GLUE[image_key][0]
-            tmp += image_to_base64(pixbuf, activity._tmp_path)
+            tmp += image_to_base64(pixbuf, activity.datapath)
             tmp += HTML_GLUE[image_key][1]
         else:  # No image
             tmp = ''
@@ -101,12 +101,11 @@ def save_html(activity,  nick):
         audio_obj = activity._search_for_audio_note(dsobj.object_id)
         if audio_obj is not None:
             tmp += HTML_GLUE['audio'][0]
-            tmp += file_to_base64(audio_obj.file_path, activity._tmp_path)
+            tmp += file_to_base64(audio_obj.file_path, activity.datapath)
             tmp += HTML_GLUE['audio'][1]
 
         htmlcode += tmp + \
             HTML_GLUE['div'][1]
-
 
     return HTML_GLUE['doctype'] + \
         HTML_GLUE['html'][0] + \
@@ -116,10 +115,10 @@ def save_html(activity,  nick):
         nick + ' ' + _('Portfolio') + \
         HTML_GLUE['title'][1] + \
         '<style type="text/css">\n<!--\n-->\nbody {background-color:' + \
-activity._colors[0] + ';}\np.head {font-size: 18pt; font-weight: bold; \
+activity.colors[0] + ';}\np.head {font-size: 18pt; font-weight: bold; \
 font-family: "Sans"; }\np.body  {font-size: 12pt; font-weight: regular; \
 font-family: "Sans"; }\ndiv.box{width:630px; padding:10px; border:5px; \
-margin:7px; background:' + activity._colors[1] + '}\n</style>\n' +\
+margin:7px; background:' + activity.colors[1] + '}\n</style>\n' +\
         HTML_GLUE['head'][1] + \
         HTML_GLUE['body'][0] + \
         htmlcode + \

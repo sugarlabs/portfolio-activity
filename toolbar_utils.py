@@ -140,7 +140,10 @@ def image_factory(image, toolbar, tooltip=None):
     img_tool.add(img)
     if tooltip is not None:
         img.set_tooltip_text(tooltip)
-    toolbar.insert(img_tool, -1)
+    if hasattr(toolbar, 'insert'):  # the main toolbar
+        toolbar.insert(img_tool, -1)
+    else:  # or a secondary toolbar
+        toolbar.props.page.insert(img_tool, -1)
     img_tool.show()
     return img
 
@@ -153,7 +156,9 @@ def spin_factory(default, min, max, callback, toolbar):
     spin.show()
     toolitem = gtk.ToolItem()
     toolitem.add(spin)
-    toolbar.insert(toolitem, -1)
+    if hasattr(toolbar, 'insert'):  # the main toolbar
+        toolbar.insert(toolitem, -1)
+    else:
+        toolbar.props.page.insert(toolitem, -1)
     toolitem.show()
     return spin
-

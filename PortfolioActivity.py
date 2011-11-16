@@ -98,7 +98,7 @@ class PortfolioActivity(activity.Activity):
         ''' Initialize the toolbars and the work surface '''
         super(PortfolioActivity, self).__init__(handle)
 
-        self._tmp_path = get_path(activity, 'instance')
+        self.datapath = get_path(activity, 'instance')
 
         self._hw = get_hardware()
 
@@ -111,7 +111,6 @@ class PortfolioActivity(activity.Activity):
 
         self._recording = False
         self._grecord = None
-        self.datapath = get_path(activity, 'instance')
 
     def _setup_canvas(self):
         ''' Create a canvas '''
@@ -134,13 +133,13 @@ class PortfolioActivity(activity.Activity):
 
     def _setup_workspace(self):
         ''' Prepare to render the datastore entries. '''
-        self._colors = profile.get_color().to_string().split(',')
+        self.colors = profile.get_color().to_string().split(',')
 
         # Use the lighter color for the text background
-        if lighter_color(self._colors) == 0:
-            tmp = self._colors[0]
-            self._colors[0] = self._colors[1]
-            self._colors[1] = tmp
+        if lighter_color(self.colors) == 0:
+            tmp = self.colors[0]
+            self.colors[0] = self.colors[1]
+            self.colors[1] = tmp
 
         self._width = gtk.gdk.screen_width()
         self._height = gtk.gdk.screen_height()
@@ -158,20 +157,20 @@ class PortfolioActivity(activity.Activity):
 
         self._title = Sprite(self._sprites, 0, 0, svg_str_to_pixbuf(
                 genblank(self._width, int(TITLEH * self._scale),
-                          self._colors)))
+                          self.colors)))
         self._title.set_label_attributes(int(titlef * self._scale),
                                          rescale=False)
         self._preview = Sprite(self._sprites,
             int((self._width - int(PREVIEWW * self._scale)) / 2),
             int(PREVIEWY * self._scale), svg_str_to_pixbuf(genblank(
                     int(PREVIEWW * self._scale), int(PREVIEWH * self._scale),
-                    self._colors)))
+                    self.colors)))
 
         self._full_screen = Sprite(self._sprites,
             int((self._width - int(FULLW * self._scale)) / 2),
             int(PREVIEWY * self._scale), svg_str_to_pixbuf(
                 genblank(int(FULLW * self._scale), int(FULLH * self._scale),
-                          self._colors)))
+                          self.colors)))
 
         self._description = Sprite(self._sprites,
                                    int(DESCRIPTIONX * self._scale),
@@ -179,7 +178,7 @@ class PortfolioActivity(activity.Activity):
                                    svg_str_to_pixbuf(
                 genblank(int(self._width - (2 * DESCRIPTIONX * self._scale)),
                           int(DESCRIPTIONH * self._scale),
-                          self._colors)))
+                          self.colors)))
         self._description.set_label_attributes(int(descriptionf * self._scale))
 
         self._description2 = Sprite(self._sprites,
@@ -188,14 +187,14 @@ class PortfolioActivity(activity.Activity):
                                    svg_str_to_pixbuf(
                 genblank(int(self._width - (2 * SHORTX * self._scale)),
                           int(SHORTH * self._scale),
-                          self._colors)))
+                          self.colors)))
         self._description2.set_label_attributes(
             int(descriptionf * self._scale))
 
         self._my_canvas = Sprite(
             self._sprites, 0, 0, svg_str_to_pixbuf(genblank(
-                    self._width, self._height, (self._colors[0],
-                                                self._colors[0]))))
+                    self._width, self._height, (self.colors[0],
+                                                self.colors[0]))))
         self._my_canvas.set_layer(BOTTOM)
 
         self._clear_screen()
@@ -342,7 +341,7 @@ class PortfolioActivity(activity.Activity):
 
     def _find_starred(self):
         ''' Find all the favorites in the Journal. '''
-        self._dsobjects, self._nobjects = datastore.find({'keep': '1'})
+        self.dsobjects, self._nobjects = datastore.find({'keep': '1'})
         _logger.debug('found %d starred items', self._nobjects)
         return
 
@@ -425,7 +424,7 @@ class PortfolioActivity(activity.Activity):
     def _save_as_html_cb(self, button=None):
         ''' Export an HTML version of the slideshow to the Journal. '''
         results = save_html(self, profile.get_nick_name())
-        html_file = os.path.join(self._tmp_path, 'tmp.html')
+        html_file = os.path.join(self.datapath, 'tmp.html')
         tmp_file = open(html_file, 'w')
         tmp_file.write(results)
         tmp_file.close()
@@ -486,11 +485,11 @@ class PortfolioActivity(activity.Activity):
         media_object = False
         try:
             pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-                self._dsobjects[self.i].file_path, int(PREVIEWW * self._scale),
+                self.dsobjects[self.i].file_path, int(PREVIEWW * self._scale),
                 int(PREVIEWH * self._scale))
             media_object = True
         except:
-            pixbuf = get_pixbuf_from_journal(self._dsobjects[self.i], 300, 225)
+            pixbuf = get_pixbuf_from_journal(self.dsobjects[self.i], 300, 225)
 
         if pixbuf is not None:
             if not media_object:
@@ -512,19 +511,19 @@ class PortfolioActivity(activity.Activity):
                 self._preview.hide()
                 self._full_screen.hide()
 
-        self._title.set_label(self._dsobjects[self.i].metadata['title'])
+        self._title.set_label(self.dsobjects[self.i].metadata['title'])
         self._title.set_layer(MIDDLE)
 
-        if 'description' in self._dsobjects[self.i].metadata:
+        if 'description' in self.dsobjects[self.i].metadata:
             if media_object:
                 self._description2.set_label(
-                    self._dsobjects[self.i].metadata['description'])
+                    self.dsobjects[self.i].metadata['description'])
                 self._description2.set_layer(MIDDLE)
                 self._description.set_label('')
                 self._description.hide()
             else:
                 self._description.set_label(
-                    self._dsobjects[self.i].metadata['description'])
+                    self.dsobjects[self.i].metadata['description'])
                 self._description.set_layer(MIDDLE)
                 self._description2.set_label('')
                 self._description2.hide()
@@ -535,7 +534,7 @@ class PortfolioActivity(activity.Activity):
             self._description2.hide()
 
         audio_obj = self._search_for_audio_note(
-            self._dsobjects[self.i].object_id)
+            self.dsobjects[self.i].object_id)
         if audio_obj is not None:
             gobject.idle_add(play_audio_from_file, audio_obj.file_path)
             self._playback_button.set_icon('media-playback-start')
@@ -593,9 +592,9 @@ class PortfolioActivity(activity.Activity):
             pixbuf = None
             try:
                 pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-                    self._dsobjects[self.i].file_path, int(w), int(h))
+                    self.dsobjects[self.i].file_path, int(w), int(h))
             except:
-                pixbuf = get_pixbuf_from_journal(self._dsobjects[self.i],
+                pixbuf = get_pixbuf_from_journal(self.dsobjects[self.i],
                                                  int(w), int(h))
 
             if pixbuf is not None:
@@ -603,7 +602,7 @@ class PortfolioActivity(activity.Activity):
                                                    gtk.gdk.INTERP_TILES)
             else:
                 pixbuf_thumb = svg_str_to_pixbuf(genblank(int(w), int(h),
-                                                          self._colors))
+                                                          self.colors))
             self._thumbs.append([Sprite(self._sprites, x, y, pixbuf_thumb),
                                      x, y, self.i])
             self._thumbs[-1][0].set_label(str(self.i + 1))
@@ -708,9 +707,9 @@ class PortfolioActivity(activity.Activity):
                     j = self._spr_to_thumb(self._release)
                     self._thumbs[i][0] = self._release
                     self._thumbs[j][0] = self._press
-                    tmp = self._dsobjects[i]
-                    self._dsobjects[i] = self._dsobjects[j]
-                    self._dsobjects[j] = tmp
+                    tmp = self.dsobjects[i]
+                    self.dsobjects[i] = self.dsobjects[j]
+                    self.dsobjects[j] = tmp
                     self._thumbs[j][0].move((self._thumbs[j][1],
                                              self._thumbs[j][2]))
             self._thumbs[i][0].move((self._thumbs[i][1], self._thumbs[i][2]))
@@ -747,7 +746,7 @@ class PortfolioActivity(activity.Activity):
             self._record_button.set_tooltip(_('Stop recording'))
             # Autosave if there was not already a recording
             if self._search_for_audio_note(
-                self._dsobjects[self.i].object_id) is None:
+                self.dsobjects[self.i].object_id) is None:
                 self._save_recording_cb()
 
     def _playback_recording_cb(self, button=None):
@@ -758,7 +757,7 @@ class PortfolioActivity(activity.Activity):
 
     def _save_recording_cb(self, button=None):
         if os.path.exists(os.path.join(self.datapath, 'output.ogg')):
-            obj_id = self._dsobjects[self.i].object_id
+            obj_id = self.dsobjects[self.i].object_id
             os.rename(os.path.join(self.datapath, 'output.ogg'),
                       os.path.join(self.datapath, obj_id + '.ogg'))
             dsobject = self._search_for_audio_note(obj_id)
@@ -767,7 +766,7 @@ class PortfolioActivity(activity.Activity):
 
             if dsobject is not None:
                 dsobject.metadata['title'] = _('audio note for %s') % \
-                    self._dsobjects[self.i].metadata['title']
+                    self.dsobjects[self.i].metadata['title']
                 dsobject.metadata['icon-color'] = \
                     profile.get_color().to_string()
                 dsobject.metadata['tags'] = obj_id
@@ -786,8 +785,5 @@ class PortfolioActivity(activity.Activity):
         for dsobject in dsobjects:
             if 'tags' in dsobject.metadata and \
                     obj_id in dsobject.metadata['tags']:
-                _logger.debug('obj_id: %s' % (str(obj_id)))
-                _logger.debug('>>>>>>>>>>>>>>>>> metadata tags: %s' % (str(dsobject.metadata['tags'])))
-                _logger.debug('found a previously recorded audio note')
                 return dsobject
         return None

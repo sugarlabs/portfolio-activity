@@ -34,6 +34,7 @@ from sugar.datastore import datastore
 
 from sprites import Sprites, Sprite
 from exporthtml import save_html
+from exportpdf import save_pdf
 from utils import get_path, lighter_color, svg_str_to_pixbuf, \
     play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware
 from toolbar_utils import radio_factory, \
@@ -317,15 +318,21 @@ class PortfolioActivity(activity.Activity):
         if HAVE_TOOLBOX:
             separator_factory(activity_button_toolbar)
 
-            self._save_button = button_factory(
+            self._save_html = button_factory(
                 'save-as-html', activity_button_toolbar,
                 self._save_as_html_cb, tooltip=_('Save as HTML'))
+            self._save_pdf = button_factory(
+                'save-as-pdf', activity_button_toolbar,
+                self._save_as_pdf_cb, tooltip=_('Save as PDF'))
         else:
             separator_factory(self.toolbar)
 
-            self._save_button = button_factory(
+            self._save_html = button_factory(
                 'save-as-html', self.toolbar,
                 self._save_as_html_cb, tooltip=_('Save as HTML'))
+            self._save_pdf = button_factory(
+                'save-as-pdf', self.toolbar,
+                self._save_as_pdf_cb, tooltip=_('Save as PDF'))
 
         if HAVE_TOOLBOX:
             separator_factory(toolbox.toolbar, True, False)
@@ -436,6 +443,21 @@ class PortfolioActivity(activity.Activity):
         dsobject.metadata['mime_type'] = 'text/html'
         dsobject.set_file_path(html_file)
         dsobject.metadata['activity'] = 'org.laptop.WebActivity'
+        datastore.write(dsobject)
+        dsobject.destroy()
+        return
+
+    def _save_as_pdf_cb(self, button=None):
+        ''' Export an PDF version of the slideshow to the Journal. '''
+        tmp_file = save_pdf(self, profile.get_nick_name())
+
+        dsobject = datastore.create()
+        dsobject.metadata['title'] = profile.get_nick_name() + ' ' + \
+                                     _('Portfolio')
+        dsobject.metadata['icon-color'] = profile.get_color().to_string()
+        dsobject.metadata['mime_type'] = 'application/pdf'
+        dsobject.set_file_path(tmp_file)
+        dsobject.metadata['activity'] = 'org.laptop.sugar.ReadActivity'
         datastore.write(dsobject)
         dsobject.destroy()
         return

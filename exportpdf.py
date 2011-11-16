@@ -33,6 +33,12 @@ def save_pdf(activity,  nick):
 
     cr = cairo.Context(pdf_surface)
     cr.set_source_rgb(0, 0, 0)
+
+    cr.set_font_size(40)
+    cr.move_to(10, 50)
+    cr.show_text(nick)
+    cr.show_page()
+
     for i, dsobj in enumerate(activity.dsobjects):
         cr.set_font_size(40)
         cr.move_to(10, 50)

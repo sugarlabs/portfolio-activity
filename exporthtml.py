@@ -14,6 +14,7 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+from glib import GError
 import os.path
 from cgi import escape
 from gettext import gettext as _
@@ -66,21 +67,28 @@ def save_html(dsobjects, nick, colors, tmp_path):
             htmlcode += HTML_GLUE['h1'][0] + \
                 dsobj.metadata['title'] + \
                 HTML_GLUE['h1'][1]
+        else:
+            htmlcode += HTML_GLUE['h1'][0] + \
+                _('untitled') + \
+                HTML_GLUE['h1'][1]
 
-        pixbuf = None
-        media_object = False
         try:
             pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                 dsobj.file_path, 800, 600)
-            key = 'img2'
-        except:
-            pixbuf = get_pixbuf_from_journal(dsobj, 300, 225)
-            key = 'img'
+            image_key = 'img2'
+        except(GError, IOError):
+            try:
+                pixbuf = get_pixbuf_from_journal(dsobj, 300, 225)
+                image_key = 'img'
+            except(GError, IOError):
+                pixbuf = None
 
         if pixbuf is not None:
-            tmp = HTML_GLUE[key][0]
+            tmp = HTML_GLUE[image_key][0]
             tmp += image_to_base64(pixbuf, tmp_path)
-            tmp += HTML_GLUE[key][1]
+            tmp += HTML_GLUE[image_key][1]
+        else:  # No image
+            tmp = ''
 
         if 'description' in dsobj.metadata:
             tmp += '<p class="body">' + dsobj.metadata['description'] + '</p>'

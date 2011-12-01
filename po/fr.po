@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-25 12:17-0400\n"
-"PO-Revision-Date: 2011-09-17 09:42+0200\n"
+"POT-Creation-Date: 2011-11-17 00:32-0500\n"
+"PO-Revision-Date: 2011-12-01 17:51+0200\n"
 "Last-Translator: samy boutayeb <s.boutayeb@free.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fr\n"
@@ -15,72 +15,118 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Pootle 2.0.1\n"
+"X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 exporthtml.py:96 PortfolioActivity.py:395
+#: activity/activity.info:2 PortfolioActivity.py:441 PortfolioActivity.py:456
+#: exporthtml.py:125
 msgid "Portfolio"
 msgstr "Portfolio"
 
-#: PortfolioActivity.py:73
+#: PortfolioActivity.py:76
 msgid "2 seconds"
 msgstr "2 secondes"
 
-#: PortfolioActivity.py:73
+#: PortfolioActivity.py:76
 msgid "10 seconds"
 msgstr "10 secondes"
 
-#: PortfolioActivity.py:73
+#: PortfolioActivity.py:76
 msgid "30 seconds"
 msgstr "30 secondes"
 
-#: PortfolioActivity.py:73
+#: PortfolioActivity.py:76
 msgid "1 minute"
 msgstr "1 minute"
 
-#: PortfolioActivity.py:225 PortfolioActivity.py:237
+#: PortfolioActivity.py:230 PortfolioActivity.py:250
 msgid "Adjust"
 msgstr "Régler"
 
-#: PortfolioActivity.py:235
+#: PortfolioActivity.py:238 PortfolioActivity.py:303
+msgid "Record a sound"
+msgstr "Enregistrer un son"
+
+#: PortfolioActivity.py:248
 msgid "Page"
 msgstr "Page"
 
-#: PortfolioActivity.py:243
+#: PortfolioActivity.py:252
+msgid "Record"
+msgstr "Enregistrer"
+
+#: PortfolioActivity.py:259
 msgid "Prev slide"
 msgstr "Diapo précédente"
 
-#: PortfolioActivity.py:247
+#: PortfolioActivity.py:263
 msgid "Next slide"
 msgstr "Diapo suivante"
 
-#: PortfolioActivity.py:253
+#: PortfolioActivity.py:267
 msgid "Autoplay"
 msgstr "Visualisation automatique"
 
-#: PortfolioActivity.py:259 PortfolioActivity.py:263
+#: PortfolioActivity.py:273 PortfolioActivity.py:281
 msgid "Adjust playback speed"
 msgstr "Régler la vitesse de lecture"
 
-#: PortfolioActivity.py:270
+#: PortfolioActivity.py:287
 msgid "Refresh"
 msgstr "Rafraîchir"
 
-#: PortfolioActivity.py:274 PortfolioActivity.py:654
+#: PortfolioActivity.py:293
+msgid "Slide view"
+msgstr "Mode diapos"
+
+#: PortfolioActivity.py:296
 msgid "Thumbnail view"
 msgstr "Mode miniatures"
 
-#: PortfolioActivity.py:277
+#: PortfolioActivity.py:300
 msgid "Fullscreen"
 msgstr "Plein écran"
 
-#: PortfolioActivity.py:284
-msgid "Save as HTML"
-msgstr "Enregistrer en HTML"
+#: PortfolioActivity.py:306 PortfolioActivity.py:759
+msgid "Start recording"
+msgstr "Démarrer l'enregistrement"
 
-#: PortfolioActivity.py:437
+#: PortfolioActivity.py:312 PortfolioActivity.py:566
+msgid "Nothing to play"
+msgstr "Rien à jouer"
+
+#: PortfolioActivity.py:316
+msgid "Nothing to save"
+msgstr "Rien à sauvegarder"
+
+#: PortfolioActivity.py:323 PortfolioActivity.py:332
+msgid "Save as HTML"
+msgstr "Sauvegarder en HTML"
+
+#: PortfolioActivity.py:326 PortfolioActivity.py:335
+msgid "Save as PDF"
+msgstr "Sauvegarder en PDF"
+
+#: PortfolioActivity.py:493
 msgid "Do you have any items in your Journal starred?"
 msgstr "Y a-t-il des éléments du Journal qui sont marqués d'un astérisque ?"
 
-#: PortfolioActivity.py:518
-msgid "Slide view"
-msgstr "Mode diapos"
+#: PortfolioActivity.py:563 PortfolioActivity.py:761
+msgid "Play recording"
+msgstr "Jouer l'enregistrement"
+
+#: PortfolioActivity.py:763
+msgid "Save recording"
+msgstr "Sauvegarder l'enregistrement"
+
+#: PortfolioActivity.py:768
+msgid "Stop recording"
+msgstr "Arrêter l'enregistrement"
+
+#: PortfolioActivity.py:790
+#, python-format
+msgid "audio note for %s"
+msgstr "note audio pour %s"
+
+#: exporthtml.py:85 exportpdf.py:59
+msgid "untitled"
+msgstr "sans titre"

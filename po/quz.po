@@ -1,0 +1,100 @@
+# escuelab <amalia.tur1@hotmail.com>, 2011.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-08-25 12:17-0400\n"
+"PO-Revision-Date: 2011-11-21 05:42+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
+"Language-Team: Voluntarios quechuas Sugar Camp Lima\n"
+"Language: quz\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : 1;\n"
+"X-Generator: Pootle 2.0.5\n"
+
+#  "Obras"
+#: activity/activity.info:2 exporthtml.py:96 PortfolioActivity.py:395
+msgid "Portfolio"
+msgstr "Llamk'aykuna"
+
+#  "2 segundos"
+#: PortfolioActivity.py:73
+msgid "2 seconds"
+msgstr "2 segundukuna"
+
+#  "10 segundos"
+#: PortfolioActivity.py:73
+msgid "10 seconds"
+msgstr "10 segundukuna"
+
+#  "30 segundos"
+#: PortfolioActivity.py:73
+msgid "30 seconds"
+msgstr "30 segundukuna"
+
+#  "1 minuto"
+#: PortfolioActivity.py:73
+msgid "1 minute"
+msgstr "1 chinini"
+
+#  "Ajustar"
+#: PortfolioActivity.py:225 PortfolioActivity.py:237
+msgid "Adjust"
+msgstr "mat´iy"
+
+#  "Página"
+#: PortfolioActivity.py:235
+msgid "Page"
+msgstr "Raphi"
+
+#  "Diapositiva anterior"
+#: PortfolioActivity.py:243
+msgid "Prev slide"
+msgstr "Ñawpa diapositiwa"
+
+#  "Diapositiva siguiente"
+#: PortfolioActivity.py:247
+msgid "Next slide"
+msgstr "Hamuq diapositiwa"
+
+#  "Reproducción automática"
+#: PortfolioActivity.py:253
+msgid "Autoplay"
+msgstr "Sapan puriq"
+
+#  "Ajustar velocidad de reproducción"
+#: PortfolioActivity.py:259 PortfolioActivity.py:263
+msgid "Adjust playback speed"
+msgstr "Puriqpa phawayninta mat'iy"
+
+#  "Actualizar"
+#: PortfolioActivity.py:270
+msgid "Refresh"
+msgstr "Kunanyachiy"
+
+#  "Vistas en miniatura"
+#: PortfolioActivity.py:274 PortfolioActivity.py:654
+msgid "Thumbnail view"
+msgstr "Huch´uy qhawanakuna"
+
+#  "Pantalla completa"
+#: PortfolioActivity.py:277
+msgid "Fullscreen"
+msgstr "Hunt'asqa pantalla"
+
+#  "Guardar como HTML"
+#: PortfolioActivity.py:284
+msgid "Save as HTML"
+msgstr "HTML nisqa hinata waqaychay"
+
+#  "Tienes entradas en tu diario marcadas como favoritas?"
+#: PortfolioActivity.py:437
+msgid "Do you have any items in your Journal starred?"
+msgstr "Kachkanchu p'anqaykipi ancha munasqa ch'ikusqakuna?"
+
+#  "Ver diapositivas"
+#: PortfolioActivity.py:518
+msgid "Slide view"
+msgstr "Diapositiwakunata qhaway"

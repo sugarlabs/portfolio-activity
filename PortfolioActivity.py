@@ -76,7 +76,8 @@ XO175 = 'xo1.75'
 UNKNOWN = 'unknown'
 
 # sprite layers
-DRAG = 5
+DRAG = 6
+STAR = 5
 TOP = 4
 UNDRAG = 3
 MIDDLE = 2
@@ -145,8 +146,19 @@ class PortfolioActivity(activity.Activity):
             titlef = 36
             descriptionf = 24
 
+        self._find_starred()
+
         # Generate the sprites we'll need...
         self._sprites = Sprites(self._canvas)
+
+        star_size = int(150. / int(ceil(sqrt(self._nobjects))))
+        self._fav_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+            os.path.join(activity.get_bundle_path(),
+                         'favorite-on.svg'), star_size, star_size)
+        self._unfav_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+            os.path.join(activity.get_bundle_path(),
+                         'favorite-off.svg'), star_size, star_size)
+        self._make_stars()
 
         self._title = Sprite(self._sprites, 0, 0, svg_str_to_pixbuf(
                 genblank(self._width, int(TITLEH * self._scale),
@@ -176,7 +188,6 @@ class PortfolioActivity(activity.Activity):
 
         self._clear_screen()
 
-        self._find_starred()
         self.i = 0
         self._show_slide()
 
@@ -366,6 +377,15 @@ class PortfolioActivity(activity.Activity):
         ''' Clean up on the way out. '''
         gtk.main_quit()
 
+    def _make_stars(self):
+        ''' Make stars to include with thumbnails '''
+        self._favorites = []
+        for i in range(self._nobjects):
+            self._favorites.append(Sprite(self._sprites, 0, 0,
+                                          self._fav_pixbuf))
+            self._favorites[-1].type = 'star'
+            self._favorites[-1].set_layer(STAR)
+
     def _find_starred(self):
         ''' Find all the favorites in the Journal. '''
         self.dsobjects, self._nobjects = datastore.find({'keep': '1'})
@@ -376,7 +396,7 @@ class PortfolioActivity(activity.Activity):
         ''' The previous button has been clicked; goto previous slide. '''
         if self.i > 0:
             self.i -= 1
-            self._show_slide()
+            self._show_slide(direction=-1)
 
     def _next_cb(self, button=None):
         ''' The next button has been clicked; goto next slide. '''
@@ -387,6 +407,7 @@ class PortfolioActivity(activity.Activity):
     def _rescan_cb(self, button=None):
         ''' Rescan the Journal for changes in starred items. '''
         self._find_starred()
+        self._make_stars()
         self.i = 0
         # Reset thumbnails
         self._thumbs = []
@@ -494,6 +515,8 @@ class PortfolioActivity(activity.Activity):
         if hasattr(self, '_thumbs'):
             for thumbnail in self._thumbs:
                 thumbnail[0].hide()
+        for stars in self._favorites:
+            stars.hide()
         self.invalt(0, 0, self._width, self._height)
 
         # Reset drag settings
@@ -503,7 +526,7 @@ class PortfolioActivity(activity.Activity):
         self._total_drag = [0, 0]
         self.last_spr_moved = None
 
-    def _show_slide(self):
+    def _show_slide(self, direction=1):
         ''' Display a title, preview image, and decription for slide
         i. Play an audio note if there is one recorded for this
         object. '''
@@ -516,6 +539,21 @@ class PortfolioActivity(activity.Activity):
                 _('Do you have any items in your Journal starred?'))
             self._description.set_layer(MIDDLE)
             return
+
+        # Skip slide if unstarred
+        # To do: make this check loop (but not forever)
+        if self._favorites[self.i].type == 'unstar':
+            counter = 0
+            while self._favorites[self.i].type == 'unstar':
+                self.i += direction
+                if self.i < 0:
+                    self.i = self._nobjects - 1
+                elif self.i > self._nobjects - 1:
+                    self.i = 0
+                counter += 1
+                if counter == self._nobjects:
+                    # No favorites
+                    return
 
         if self.i == 0:
             self._prev_button.set_icon('go-previous-inactive')
@@ -605,6 +643,8 @@ class PortfolioActivity(activity.Activity):
             for i in range(self._nobjects):
                 self.i = i
                 self._show_thumb(x, y, w, h)
+                self._favorites[i].set_layer(STAR)
+                self._favorites[i].move((x, y))
                 x += w
                 if x + w > self._width:
                     x = x_off
@@ -690,6 +730,14 @@ class PortfolioActivity(activity.Activity):
         self._press = None
         self._release = None
 
+        # Are we clicking on a star?
+        if spr.type == 'star':
+            spr.set_shape(self._unfav_pixbuf)
+            spr.type = 'unstar'
+        elif spr.type == 'unstar':
+            spr.set_shape(self._fav_pixbuf)
+            spr.type = 'star'
+
         # Are we clicking on a thumbnail?
         if not self._spr_is_thumbnail(spr):
             return False
@@ -697,6 +745,7 @@ class PortfolioActivity(activity.Activity):
         self.last_spr_moved = spr
         self._press = spr
         self._press.set_layer(DRAG)
+        self._favorites[self._spr_to_thumb(self._press)].set_layer(DRAG+1)
         return False
 
     def _mouse_move_cb(self, win, event):
@@ -710,6 +759,8 @@ class PortfolioActivity(activity.Activity):
         dx = x - self._dragpos[0]
         dy = y - self._dragpos[1]
         spr.move_relative([dx, dy])
+        # Also move the star
+        self._favorites[self._spr_to_thumb(spr)].move_relative([dx, dy])
         self._dragpos = [x, y]
         self._total_drag[0] += dx
         self._total_drag[1] += dy
@@ -722,9 +773,12 @@ class PortfolioActivity(activity.Activity):
         x, y = map(int, event.get_coords())
 
         if self._thumbnail_mode:
+            if self._press is None:
+                return
             # Drop the dragged thumbnail below the other thumbnails so
             # that you can find the thumbnail beneath it.
             self._press.set_layer(UNDRAG)
+            self._favorites[self._spr_to_thumb(self._press)].set_layer(STAR)
             i = self._spr_to_thumb(self._press)
             spr = self._sprites.find_sprite((x, y))
             if self._spr_is_thumbnail(spr):
@@ -738,9 +792,15 @@ class PortfolioActivity(activity.Activity):
                     tmp = self.dsobjects[i]
                     self.dsobjects[i] = self.dsobjects[j]
                     self.dsobjects[j] = tmp
+                    tmp = self._favorites[i]
+                    self._favorites[i] = self._favorites[j]
+                    self._favorites[j] = tmp
                     self._thumbs[j][0].move((self._thumbs[j][1],
                                              self._thumbs[j][2]))
+                    self._favorites[j].move((self._thumbs[j][1],
+                                             self._thumbs[j][2]))
             self._thumbs[i][0].move((self._thumbs[i][1], self._thumbs[i][2]))
+            self._favorites[i].move((self._thumbs[i][1], self._thumbs[i][2]))
             self._press.set_layer(TOP)
             self._press = None
             self._release = None

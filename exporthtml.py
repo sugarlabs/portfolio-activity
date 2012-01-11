@@ -73,6 +73,8 @@ def save_html(activity,  nick):
     htmlcode += HTML_GLUE['div'][1]
 
     for i, dsobj in enumerate(activity.dsobjects):
+        if activity.favorites[i].type == 'unstar':  # Skip this entry
+            continue
         htmlcode += HTML_GLUE['slide'][0] + str(i)
         htmlcode += HTML_GLUE['slide'][1] + \
             HTML_GLUE['div'][0]

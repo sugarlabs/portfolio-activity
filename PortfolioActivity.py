@@ -53,21 +53,13 @@ except ImportError:
     GRID_CELL_SIZE = 0
 
 # Size and position of title, preview image, and description
-PREVIEWW = 450
-PREVIEWH = 338
+PREVIEWW = 600
+PREVIEWH = 450
 PREVIEWY = 80
 TITLEH = 60
-DESCRIPTIONH = 350
+DESCRIPTIONH = 250
 DESCRIPTIONX = 50
-DESCRIPTIONY = 450
-# If the entry is an image, it is used instead of the preview
-# and shown at a larger size...
-FULLW = 800
-FULLH = 600
-# ...leaving less room for a description.
-SHORTH = 100
-SHORTX = 50
-SHORTY = 700
+DESCRIPTIONY = 550
 
 TWO = 0
 TEN = 1
@@ -116,10 +108,10 @@ class PortfolioActivity(activity.Activity):
     def _setup_canvas(self):
         ''' Create a canvas '''
         self._canvas = gtk.DrawingArea()
-        self._canvas.set_size_request(gtk.gdk.screen_width(),
-                                      gtk.gdk.screen_height())
-        self.set_canvas(self._canvas)
+        self._canvas.set_size_request(int(gtk.gdk.screen_width()),
+                                      int(gtk.gdk.screen_height()))
         self._canvas.show()
+        self.set_canvas(self._canvas)
         self.show_all()
 
         self._canvas.set_flags(gtk.CAN_FOCUS)
@@ -167,12 +159,6 @@ class PortfolioActivity(activity.Activity):
                     int(PREVIEWW * self._scale), int(PREVIEWH * self._scale),
                     self.colors)))
 
-        self._full_screen = Sprite(self._sprites,
-            int((self._width - int(FULLW * self._scale)) / 2),
-            int(PREVIEWY * self._scale), svg_str_to_pixbuf(
-                genblank(int(FULLW * self._scale), int(FULLH * self._scale),
-                          self.colors)))
-
         self._description = Sprite(self._sprites,
                                    int(DESCRIPTIONX * self._scale),
                                    int(DESCRIPTIONY * self._scale),
@@ -181,16 +167,6 @@ class PortfolioActivity(activity.Activity):
                           int(DESCRIPTIONH * self._scale),
                           self.colors)))
         self._description.set_label_attributes(int(descriptionf * self._scale))
-
-        self._description2 = Sprite(self._sprites,
-                                   int(SHORTX * self._scale),
-                                   int(SHORTY * self._scale),
-                                   svg_str_to_pixbuf(
-                genblank(int(self._width - (2 * SHORTX * self._scale)),
-                          int(SHORTH * self._scale),
-                          self.colors)))
-        self._description2.set_label_attributes(
-            int(descriptionf * self._scale))
 
         self._my_canvas = Sprite(
             self._sprites, 0, 0, svg_str_to_pixbuf(genblank(
@@ -300,6 +276,30 @@ class PortfolioActivity(activity.Activity):
                        self.do_fullscreen_cb, tooltip=_('Fullscreen'),
                        accelerator='<Alt>Return')
 
+        separator_factory(self.toolbar)
+
+        journal_button = button_factory(
+            'write-journal', self.toolbar, self._do_journal_cb,
+            tooltip=_('Update description'))
+        self._palette = journal_button.get_palette()
+        msg_box = gtk.HBox()
+
+        sw = gtk.ScrolledWindow()
+        sw.set_size_request(int(gtk.gdk.screen_width() / 2),
+                            2 * style.GRID_CELL_SIZE)
+        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self._text_view = gtk.TextView()
+        self._text_view.set_left_margin(style.DEFAULT_PADDING)
+        self._text_view.set_right_margin(style.DEFAULT_PADDING)
+        self._text_view.connect('focus-out-event',
+                               self._text_view_focus_out_event_cb)
+        sw.add(self._text_view)
+        sw.show()
+        msg_box.pack_start(sw, expand=False)
+        msg_box.show_all()
+
+        self._palette.set_content(msg_box)
+
         label_factory(record_toolbar, _('Record a sound') + ':')
         self._record_button = button_factory(
             'media-record', record_toolbar,
@@ -341,6 +341,26 @@ class PortfolioActivity(activity.Activity):
             stop_button.props.accelerator = '<Ctrl>q'
             toolbox.toolbar.insert(stop_button, -1)
             stop_button.show()
+
+    def _do_journal_cb(self, button):
+        if self._palette:
+            if not self._palette.is_up():
+                self._palette.popup(immediate=True,
+                                    state=self._palette.SECONDARY)
+            else:
+                self._palette.popdown(immediate=True)
+            return 
+
+    def _text_view_focus_out_event_cb(self, widget, event):
+        buffer = self._text_view.get_buffer()
+        start_iter = buffer.get_start_iter()
+        end_iter = buffer.get_end_iter()
+        try:
+            self.dsobjects[self.i].metadata['description'] = \
+                buffer.get_text(start_iter, end_iter)
+        except:
+            _logger.debug('Rainbow error? trying to write to dsobject')
+        self._show_slide()
 
     def _destroy_cb(self, win, event):
         ''' Clean up on the way out. '''
@@ -430,12 +450,14 @@ class PortfolioActivity(activity.Activity):
 
     def _save_as_html_cb(self, button=None):
         ''' Export an HTML version of the slideshow to the Journal. '''
+        _logger.debug('saving to HTML...')
         results = save_html(self, profile.get_nick_name())
         html_file = os.path.join(self.datapath, 'tmp.html')
         tmp_file = open(html_file, 'w')
         tmp_file.write(results)
         tmp_file.close()
 
+        _logger.debug('copying HTML file to Journal...')
         dsobject = datastore.create()
         dsobject.metadata['title'] = profile.get_nick_name() + ' ' + \
                                      _('Portfolio')
@@ -449,8 +471,10 @@ class PortfolioActivity(activity.Activity):
 
     def _save_as_pdf_cb(self, button=None):
         ''' Export an PDF version of the slideshow to the Journal. '''
+        _logger.debug('saving to PDF...')
         tmp_file = save_pdf(self, profile.get_nick_name())
 
+        _logger.debug('copying PDF file to Journal...')
         dsobject = datastore.create()
         dsobject.metadata['title'] = profile.get_nick_name() + ' ' + \
                                      _('Portfolio')
@@ -465,7 +489,6 @@ class PortfolioActivity(activity.Activity):
     def _clear_screen(self):
         ''' Clear the screen to the darker of the two XO colors. '''
         self._title.hide()
-        self._full_screen.hide()
         self._preview.hide()
         self._description.hide()
         if hasattr(self, '_thumbs'):
@@ -503,6 +526,7 @@ class PortfolioActivity(activity.Activity):
         else:
             self._next_button.set_icon('go-next')
 
+        _logger.debug('Showing slide %d', self.i)
         pixbuf = None
         media_object = False
         try:
@@ -514,46 +538,28 @@ class PortfolioActivity(activity.Activity):
             pixbuf = get_pixbuf_from_journal(self.dsobjects[self.i], 300, 225)
 
         if pixbuf is not None:
-            if not media_object:
-                self._preview.set_shape(pixbuf.scale_simple(
+            self._preview.set_shape(pixbuf.scale_simple(
                     int(PREVIEWW * self._scale),
                     int(PREVIEWH * self._scale),
-                    gtk.gdk.INTERP_TILES))
-                self._full_screen.hide()
-                self._preview.set_layer(MIDDLE)
-            else:
-                self._full_screen.set_shape(pixbuf.scale_simple(
-                    int(FULLW * self._scale),
-                    int(FULLH * self._scale),
-                    gtk.gdk.INTERP_TILES))
-                self._full_screen.set_layer(MIDDLE)
-                self._preview.hide()
+                    gtk.gdk.INTERP_NEAREST))
+            self._preview.set_layer(MIDDLE)
         else:
             if self._preview is not None:
                 self._preview.hide()
-                self._full_screen.hide()
 
         self._title.set_label(self.dsobjects[self.i].metadata['title'])
         self._title.set_layer(MIDDLE)
 
         if 'description' in self.dsobjects[self.i].metadata:
-            if media_object:
-                self._description2.set_label(
-                    self.dsobjects[self.i].metadata['description'])
-                self._description2.set_layer(MIDDLE)
-                self._description.set_label('')
-                self._description.hide()
-            else:
-                self._description.set_label(
-                    self.dsobjects[self.i].metadata['description'])
-                self._description.set_layer(MIDDLE)
-                self._description2.set_label('')
-                self._description2.hide()
+            self._description.set_label(
+                self.dsobjects[self.i].metadata['description'])
+            self._description.set_layer(MIDDLE)
+            text_buffer = gtk.TextBuffer()
+            text_buffer.set_text(self.dsobjects[self.i].metadata['description'])
+            self._text_view.set_buffer(text_buffer)
         else:
             self._description.set_label('')
             self._description.hide()
-            self._description2.set_label('')
-            self._description2.hide()
 
         audio_obj = self._search_for_audio_note(
             self.dsobjects[self.i].object_id)
@@ -750,9 +756,11 @@ class PortfolioActivity(activity.Activity):
                 self._rate = UNIT_DICTIONARY[active][1]
 
     def _record_cb(self, button=None):
+        ''' Start/stop audio recording '''
         if self._grecord is None:
             self._grecord = Grecord(self)
-        if self._recording:
+        if self._recording:  # Was recording, so stop (and save?)
+            _logger.debug('recording...True')
             self._grecord.stop_recording_audio()
             self._recording = False
             self._record_button.set_icon('media-record')
@@ -761,24 +769,27 @@ class PortfolioActivity(activity.Activity):
             self._playback_button.set_tooltip(_('Play recording'))
             self._save_recording_button.set_icon('sound-save')
             self._save_recording_button.set_tooltip(_('Save recording'))
-        else:
-            self._grecord.record_audio()
-            self._recording = True
-            self._record_button.set_icon('media-recording')
-            self._record_button.set_tooltip(_('Stop recording'))
             # Autosave if there was not already a recording
             if self._search_for_audio_note(
                 self.dsobjects[self.i].object_id) is None:
                 self._save_recording_cb()
+        else:  # Wasn't recording, so start
+            _logger.debug('recording...False')
+            self._grecord.record_audio()
+            self._recording = True
+            self._record_button.set_icon('media-recording')
+            self._record_button.set_tooltip(_('Stop recording'))
 
     def _playback_recording_cb(self, button=None):
         ''' Play back current recording '''
+        _logger.debug('playback...')
         play_audio_from_file(os.path.join(self.datapath,
                                           'output.ogg'))
         return
 
     def _save_recording_cb(self, button=None):
         if os.path.exists(os.path.join(self.datapath, 'output.ogg')):
+            _logger.debug('saving recording...')
             obj_id = self.dsobjects[self.i].object_id
             os.rename(os.path.join(self.datapath, 'output.ogg'),
                       os.path.join(self.datapath, obj_id + '.ogg'))
@@ -787,8 +798,9 @@ class PortfolioActivity(activity.Activity):
                 dsobject = datastore.create()
 
             if dsobject is not None:
+                _logger.debug(self.dsobjects[self.i].metadata['title'])
                 dsobject.metadata['title'] = _('audio note for %s') % \
-                    self.dsobjects[self.i].metadata['title']
+                    (self.dsobjects[self.i].metadata['title'])
                 dsobject.metadata['icon-color'] = \
                     profile.get_color().to_string()
                 dsobject.metadata['tags'] = obj_id
@@ -797,6 +809,8 @@ class PortfolioActivity(activity.Activity):
                                                     obj_id + '.ogg'))
                 datastore.write(dsobject)
                 dsobject.destroy()
+        else:
+            _logger.debug('nothing to save...')
         return
 
     def _search_for_audio_note(self, obj_id):

@@ -163,6 +163,15 @@ class PortfolioActivity(activity.Activity):
                          'favorite-off.svg'), star_size, star_size)
         self._make_stars()
 
+        self._help = Sprite(
+            self._sprites,
+            int((self._width - int(PREVIEWW * self._scale)) / 2),
+            int(PREVIEWY * self._scale),
+            gtk.gdk.pixbuf_new_from_file_at_size(
+                os.path.join(activity.get_bundle_path(), 'help.png'),
+                int(PREVIEWW * self._scale), int(PREVIEWH * self._scale)))
+        self._help.hide()
+
         self._title = Sprite(self._sprites, 0, 0, svg_str_to_pixbuf(
                 genblank(self._width, int(TITLEH * self._scale),
                           self.colors)))
@@ -369,11 +378,8 @@ class PortfolioActivity(activity.Activity):
         buffer = self._text_view.get_buffer()
         start_iter = buffer.get_start_iter()
         end_iter = buffer.get_end_iter()
-        try:
-            self.dsobjects[self.i].metadata['description'] = \
-                buffer.get_text(start_iter, end_iter)
-        except:
-            _logger.debug('Error trying to write to dsobject: Rainbow?')
+        self.dsobjects[self.i].metadata['description'] = \
+            buffer.get_text(start_iter, end_iter)
         self._show_slide()
 
     def _destroy_cb(self, win, event):
@@ -413,6 +419,7 @@ class PortfolioActivity(activity.Activity):
 
     def _rescan_cb(self, button=None):
         ''' Rescan the Journal for changes in starred items. '''
+        self._help.hide()
         self._find_starred()
         self._make_stars()
         self.i = 0
@@ -544,6 +551,7 @@ class PortfolioActivity(activity.Activity):
             self._next_button.set_icon('go-next-inactive')
             self._description.set_label(
                 _('Do you have any items in your Journal starred?'))
+            self._help.set_layer(TOP)
             self._description.set_layer(MIDDLE)
             return
 

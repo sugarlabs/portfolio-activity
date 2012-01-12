@@ -52,7 +52,7 @@ def save_pdf(activity,  nick):
     cr.show_page()
 
     for i, dsobj in enumerate(activity.dsobjects):
-        if activity.favorites[i].type == 'unstar':  # Skip this entry
+        if dsobj.metadata['keep'] == '0':
             continue
         if 'title' in dsobj.metadata:
             show_text(cr, fd, dsobj.metadata['title'], HEAD, LEFT_MARGIN,

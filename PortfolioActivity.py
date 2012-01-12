@@ -370,7 +370,7 @@ class PortfolioActivity(activity.Activity):
             self.dsobjects[self.i].metadata['description'] = \
                 buffer.get_text(start_iter, end_iter)
         except:
-            _logger.debug('Rainbow error? trying to write to dsobject')
+            _logger.debug('Error trying to write to dsobject: Rainbow?')
         self._show_slide()
 
     def _destroy_cb(self, win, event):
@@ -381,16 +381,20 @@ class PortfolioActivity(activity.Activity):
         ''' Make stars to include with thumbnails '''
         self._favorites = []
         for i in range(self._nobjects):
-            self._favorites.append(Sprite(self._sprites, 0, 0,
-                                          self._fav_pixbuf))
-            self._favorites[-1].type = 'star'
+            if self.dsobjects[i].metadata['keep'] == '1':
+                self._favorites.append(Sprite(self._sprites, 0, 0,
+                                             self._fav_pixbuf))
+                self._favorites[-1].type = 'star'
+            else:
+                self._favorites.append(Sprite(self._sprites, 0, 0,
+                                             self._unfav_pixbuf))
+                self._favorites[-1].type = 'unstar'
             self._favorites[-1].set_layer(STAR)
 
     def _find_starred(self):
-        ''' Find all the favorites in the Journal. '''
+        ''' Find all the _favorites in the Journal. '''
         self.dsobjects, self._nobjects = datastore.find({'keep': '1'})
         _logger.debug('found %d starred items', self._nobjects)
-        return
 
     def _prev_cb(self, button=None):
         ''' The previous button has been clicked; goto previous slide. '''
@@ -542,9 +546,11 @@ class PortfolioActivity(activity.Activity):
 
         # Skip slide if unstarred
         # To do: make this check loop (but not forever)
-        if self._favorites[self.i].type == 'unstar':
+        # if self._favorites[self.i].type == 'unstar':
+        if self.dsobjects[self.i].metadata['keep'] == '0':
             counter = 0
-            while self._favorites[self.i].type == 'unstar':
+            while self.dsobjects[self.i].metadata['keep'] == '0':
+            # while self._favorites[self.i].type == 'unstar':
                 self.i += direction
                 if self.i < 0:
                     self.i = self._nobjects - 1
@@ -552,7 +558,8 @@ class PortfolioActivity(activity.Activity):
                     self.i = 0
                 counter += 1
                 if counter == self._nobjects:
-                    # No favorites
+                    _logger.debug('No _favorites: nothing to show')
+                    # No _favorites
                     return
 
         if self.i == 0:
@@ -564,7 +571,7 @@ class PortfolioActivity(activity.Activity):
         else:
             self._next_button.set_icon('go-next')
 
-        _logger.debug('Showing slide %d', self.i)
+        # _logger.debug('Showing slide %d', self.i)
         pixbuf = None
         media_object = False
         try:
@@ -734,9 +741,13 @@ class PortfolioActivity(activity.Activity):
         if spr.type == 'star':
             spr.set_shape(self._unfav_pixbuf)
             spr.type = 'unstar'
+            i = self._favorites.index(spr)
+            self.dsobjects[i].metadata['keep'] = '0'
         elif spr.type == 'unstar':
             spr.set_shape(self._fav_pixbuf)
             spr.type = 'star'
+            i = self._favorites.index(spr)
+            self.dsobjects[i].metadata['keep'] = '1'
 
         # Are we clicking on a thumbnail?
         if not self._spr_is_thumbnail(spr):

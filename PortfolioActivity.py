@@ -151,7 +151,10 @@ class PortfolioActivity(activity.Activity):
         # Generate the sprites we'll need...
         self._sprites = Sprites(self._canvas)
 
-        star_size = int(150. / int(ceil(sqrt(self._nobjects))))
+        if self._nobjects == 0:
+            star_size = 55
+        else:
+            star_size = int(150. / int(ceil(sqrt(self._nobjects))))
         self._fav_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
             os.path.join(activity.get_bundle_path(),
                          'favorite-on.svg'), star_size, star_size)

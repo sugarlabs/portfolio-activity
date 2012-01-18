@@ -139,7 +139,7 @@ class PortfolioActivity(activity.Activity):
         self._height = gtk.gdk.screen_height()
         self._scale = gtk.gdk.screen_height() / 900.
 
-        if self._hw[0:2] == 'xo':
+        if not HAVE_TOOLBOX and self._hw[0:2] == 'xo':
             titlef = 18
             descriptionf = 12
         else:
@@ -347,6 +347,12 @@ class PortfolioActivity(activity.Activity):
             self._save_pdf = button_factory(
                 'save-as-pdf', activity_button_toolbar,
                 self._save_as_pdf_cb, tooltip=_('Save as PDF'))
+
+            separator_factory(activity_button_toolbar)
+
+            self._save_to_journal = button_factory(
+                'save-descriptions', activity_button_toolbar,
+                self._save_descriptions_cb, tooltip=_('Save descriptions'))
         else:
             separator_factory(self.toolbar)
 
@@ -356,6 +362,12 @@ class PortfolioActivity(activity.Activity):
             self._save_pdf = button_factory(
                 'save-as-pdf', self.toolbar,
                 self._save_as_pdf_cb, tooltip=_('Save as PDF'))
+
+            separator_factory(self.toolbar)
+
+            self._save_to_journal = button_factory(
+                'save-descriptions', self.toolbar,
+                self._save_descriptions_cb, tooltip=_('Save descriptions'))
 
         if HAVE_TOOLBOX:
             separator_factory(toolbox.toolbar, True, False)
@@ -905,3 +917,20 @@ class PortfolioActivity(activity.Activity):
                     obj_id in dsobject.metadata['tags']:
                 return dsobject
         return None
+
+    def _save_descriptions_cb(self, button):
+        ''' Find the object in the datastore and write out the changes
+        to the decriptions. '''
+        for i in self.dsobjects:
+            jobject = datastore.get(i.object_id)
+            jobject.metadata['description'] = i.metadata['description']
+            jobject.metadata['keep'] = i.metadata['keep']
+            datastore.write(jobject, update_mtime=False,
+                            reply_handler=self.datastore_write_cb,
+                            error_handler=self.datastore_write_error_cb)
+
+    def datastore_write_cb(self):
+        pass
+
+    def datastore_write_error_cb(self, error):
+        _logger.error('datastore_write_error_cb: %r' % error)

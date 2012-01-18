@@ -1,3 +1,18 @@
+20
+
+ENHANCEMENTS:
+* New translations
+* Update descriptions from within Portfolio (changes not permanent)
+* Mark/unmark favorites from within Portfolio (changes not permanent)
+* Save updates to descriptions and favorites in Journal (changes permanent)
+* Standardize scaling of images
+* Improved built-in help
+
+BUG FIXES
+* Verbose output to logger
+* Autosave audio for first recording
+* Fix font-scaling issues on XO running newer versions of Sugar
+
 19
 
 ENHANCEMENTS:

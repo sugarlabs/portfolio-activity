@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-17 00:32-0500\n"
-"PO-Revision-Date: 2011-12-23 04:59+0200\n"
-"Last-Translator: Jasmine <udea_jasmine@yahoo.com>\n"
+"POT-Creation-Date: 2012-01-19 00:32-0500\n"
+"PO-Revision-Date: 2012-01-24 15:12+0200\n"
+"Last-Translator: anush.mkrtchyan <anush.mkrtchyan@ca1492.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: hy\n"
 "MIME-Version: 1.0\n"
@@ -17,118 +17,127 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:441 PortfolioActivity.py:456
-#: exporthtml.py:125
+#: activity/activity.info:2 PortfolioActivity.py:510 PortfolioActivity.py:527
+#: exporthtml.py:127
 msgid "Portfolio"
 msgstr "Թղթապանակ"
 
-#: PortfolioActivity.py:76
+#: PortfolioActivity.py:68
 msgid "2 seconds"
 msgstr "2 վայրկյան"
 
-#: PortfolioActivity.py:76
+#: PortfolioActivity.py:68
 msgid "10 seconds"
 msgstr "10 վայրկյան"
 
-#: PortfolioActivity.py:76
+#: PortfolioActivity.py:68
 msgid "30 seconds"
 msgstr "30 վայրկյան"
 
-#: PortfolioActivity.py:76
+#: PortfolioActivity.py:68
 msgid "1 minute"
 msgstr "1 րոպե"
 
 # համապատասխանեցնել
-#: PortfolioActivity.py:230 PortfolioActivity.py:250
+#: PortfolioActivity.py:229 PortfolioActivity.py:249
 msgid "Adjust"
 msgstr "Կարգավորել"
 
-#: PortfolioActivity.py:238 PortfolioActivity.py:303
+#: PortfolioActivity.py:237 PortfolioActivity.py:326
 msgid "Record a sound"
 msgstr "Ձայնագրել հնչյուն"
 
-#: PortfolioActivity.py:248
+#: PortfolioActivity.py:247
 msgid "Page"
 msgstr "Էջ"
 
-# լուսա/ձայնա/տեսա/ գրություն 
-#: PortfolioActivity.py:252
+# լուսա/ձայնա/տեսա/ գրություն
+#: PortfolioActivity.py:251
 msgid "Record"
 msgstr "Գրանցել"
 
-#: PortfolioActivity.py:259
+#: PortfolioActivity.py:258
 msgid "Prev slide"
 msgstr "Նախորդ սլայդը"
 
-#: PortfolioActivity.py:263
+#: PortfolioActivity.py:262
 msgid "Next slide"
 msgstr "Հաջորդ սլայդը"
 
-#: PortfolioActivity.py:267
+#: PortfolioActivity.py:266
 msgid "Autoplay"
 msgstr "Ավտոմատ վերարտադրիչ"
 
-#: PortfolioActivity.py:273 PortfolioActivity.py:281
+#: PortfolioActivity.py:272 PortfolioActivity.py:280
 msgid "Adjust playback speed"
 msgstr "Կարգավորել վերարտադրման արագությունը"
 
-#: PortfolioActivity.py:287
+#: PortfolioActivity.py:286
 msgid "Refresh"
 msgstr "Արդիականացնել"
 
-#: PortfolioActivity.py:293
+#: PortfolioActivity.py:292
 msgid "Slide view"
 msgstr "Սլայդ ցուցադրում"
 
-#: PortfolioActivity.py:296
+#: PortfolioActivity.py:295
 msgid "Thumbnail view"
 msgstr "Մանրապատկերի տեսքով"
 
-#: PortfolioActivity.py:300
+#: PortfolioActivity.py:299
 msgid "Fullscreen"
 msgstr "Էկրանի չափով"
 
-#: PortfolioActivity.py:306 PortfolioActivity.py:759
+#: PortfolioActivity.py:306
+msgid "Update description"
+msgstr "Արդիականացնել նկարագրությունը"
+
+#: PortfolioActivity.py:329 PortfolioActivity.py:861
 msgid "Start recording"
 msgstr "Սկսել գրանցումը"
 
-#: PortfolioActivity.py:312 PortfolioActivity.py:566
+#: PortfolioActivity.py:335 PortfolioActivity.py:640
 msgid "Nothing to play"
 msgstr "Վերարտադրելու ոչինչ չկա"
 
-#: PortfolioActivity.py:316
+#: PortfolioActivity.py:339
 msgid "Nothing to save"
 msgstr "Պահելու ոչինչ չկա"
 
-#: PortfolioActivity.py:323 PortfolioActivity.py:332
+#: PortfolioActivity.py:346 PortfolioActivity.py:361
 msgid "Save as HTML"
 msgstr "Պահպանել որպես HTML"
 
-#: PortfolioActivity.py:326 PortfolioActivity.py:335
+#: PortfolioActivity.py:349 PortfolioActivity.py:364
 msgid "Save as PDF"
 msgstr "Պահել PDF ձևաչափով"
 
-#: PortfolioActivity.py:493
+#: PortfolioActivity.py:355 PortfolioActivity.py:370
+msgid "Save descriptions"
+msgstr "Պահպանել նկարագրությունները"
+
+#: PortfolioActivity.py:565
 msgid "Do you have any items in your Journal starred?"
 msgstr "Ունե՞ք աստղանշված տարրեր Ձեր Մատյանում"
 
-#: PortfolioActivity.py:563 PortfolioActivity.py:761
+#: PortfolioActivity.py:637 PortfolioActivity.py:863
 msgid "Play recording"
 msgstr "Նվագարկել ձայնագրությունը"
 
-#: PortfolioActivity.py:763
+#: PortfolioActivity.py:865
 msgid "Save recording"
 msgstr "Պահել ձայնագրությունը"
 
-#: PortfolioActivity.py:768
+#: PortfolioActivity.py:875
 msgid "Stop recording"
 msgstr "կանգնեցնել ձայնագրությունը"
 
-#: PortfolioActivity.py:790
-#, python-format, 
+#: PortfolioActivity.py:896
+#, python-format
+#, python-format,
 msgid "audio note for %s"
 msgstr "աուդիո նոտա %s"
 
-#: exporthtml.py:85 exportpdf.py:59
+#: exporthtml.py:87 exportpdf.py:61
 msgid "untitled"
 msgstr "անվերնագիր"

@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-02-15 00:32-0500\n"
-"PO-Revision-Date: 2012-02-28 19:38+0200\n"
-"Last-Translator: sit_mheaw <m_marineblues@msn.com>\n"
+"PO-Revision-Date: 2012-03-09 11:13+0200\n"
+"Last-Translator: Meechai <malaku38@hotmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 #: activity/activity.info:2 PortfolioActivity.py:510 PortfolioActivity.py:527
 #: exporthtml.py:127
 msgid "Portfolio"
-msgstr "ผลงาน"
+msgstr "Portfolio"
 
 #: PortfolioActivity.py:68
 msgid "2 seconds"
@@ -40,7 +40,7 @@ msgstr "1 นาที"
 
 #: PortfolioActivity.py:229 PortfolioActivity.py:249
 msgid "Adjust"
-msgstr "ปรับแต่ง,ปรับปรุงแก้ไข"
+msgstr "ปรับแต่ง"
 
 #: PortfolioActivity.py:237 PortfolioActivity.py:326
 msgid "Record a sound"
@@ -72,7 +72,7 @@ msgstr "ปรับความเร็วในการเล่น"
 
 #: PortfolioActivity.py:286
 msgid "Refresh"
-msgstr "ฟื้นฟู,เรียกใหม่"
+msgstr "เรียกใหม่"
 
 #: PortfolioActivity.py:292
 msgid "Slide view"
@@ -80,7 +80,7 @@ msgstr "มุมมองการนำเสนอภาพนิ่ง"
 
 #: PortfolioActivity.py:295
 msgid "Thumbnail view"
-msgstr "มุมมองภาพ"
+msgstr "มุมมองภาพขนาดเล็ก"
 
 #: PortfolioActivity.py:299
 msgid "Fullscreen"
@@ -88,7 +88,7 @@ msgstr "เต็มจอ"
 
 #: PortfolioActivity.py:306
 msgid "Update description"
-msgstr "เพิ่มรายละเอียด"
+msgstr "อัพเดทคำอธิบาย"
 
 #: PortfolioActivity.py:329 PortfolioActivity.py:861
 msgid "Start recording"
@@ -116,7 +116,7 @@ msgstr "บันทึกคำอธิบาย"
 
 #: PortfolioActivity.py:565
 msgid "Do you have any items in your Journal starred?"
-msgstr ""
+msgstr "คุณมีรายการต่างๆอยู่ในบันทึกประจำวันหรือไม่?"
 
 #: PortfolioActivity.py:637 PortfolioActivity.py:863
 msgid "Play recording"
@@ -124,7 +124,7 @@ msgstr "เล่นเสียงที่บันทึก"
 
 #: PortfolioActivity.py:865
 msgid "Save recording"
-msgstr "บันทึกเสียง"
+msgstr "บันทึกเสียงที่อัด"
 
 #: PortfolioActivity.py:875
 msgid "Stop recording"
@@ -133,7 +133,7 @@ msgstr "หยุดบันทึก"
 #: PortfolioActivity.py:896
 #, python-format
 msgid "audio note for %s"
-msgstr ""
+msgstr "ข้อความเสียงสำหรับ %s"
 
 #: exporthtml.py:87 exportpdf.py:61
 msgid "untitled"

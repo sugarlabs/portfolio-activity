@@ -33,7 +33,7 @@ if HAVE_TOOLBOX:
 from sugar.datastore import datastore
 
 from sprites import Sprites, Sprite
-from exporthtml import save_html
+# from exporthtml import save_html
 from exportpdf import save_pdf
 from utils import get_path, lighter_color, svg_str_to_pixbuf, \
     play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware
@@ -341,9 +341,11 @@ class PortfolioActivity(activity.Activity):
         if HAVE_TOOLBOX:
             separator_factory(activity_button_toolbar)
 
+            '''
             self._save_html = button_factory(
                 'save-as-html', activity_button_toolbar,
                 self._save_as_html_cb, tooltip=_('Save as HTML'))
+            '''
             self._save_pdf = button_factory(
                 'save-as-pdf', activity_button_toolbar,
                 self._save_as_pdf_cb, tooltip=_('Save as PDF'))
@@ -356,9 +358,11 @@ class PortfolioActivity(activity.Activity):
         else:
             separator_factory(self.toolbar)
 
+            '''
             self._save_html = button_factory(
                 'save-as-html', self.toolbar,
                 self._save_as_html_cb, tooltip=_('Save as HTML'))
+            '''
             self._save_pdf = button_factory(
                 'save-as-pdf', self.toolbar,
                 self._save_as_pdf_cb, tooltip=_('Save as PDF'))
@@ -495,6 +499,7 @@ class PortfolioActivity(activity.Activity):
         else:
             self._bump_id = gobject.timeout_add(int(100), self._bump_test)
 
+    """
     def _save_as_html_cb(self, button=None):
         ''' Export an HTML version of the slideshow to the Journal. '''
         _logger.debug('saving to HTML...')
@@ -515,6 +520,7 @@ class PortfolioActivity(activity.Activity):
         datastore.write(dsobject)
         dsobject.destroy()
         return
+    """
 
     def _save_as_pdf_cb(self, button=None):
         ''' Export an PDF version of the slideshow to the Journal. '''
@@ -903,6 +909,10 @@ class PortfolioActivity(activity.Activity):
                                                     obj_id + '.ogg'))
                 datastore.write(dsobject)
                 dsobject.destroy()
+
+            # Clean up afterwards
+            os.remove(os.path.join(self.datapath, 'output.ogg'),
+                      os.path.join(self.datapath, obj_id + '.ogg'))
         else:
             _logger.debug('nothing to save...')
         return

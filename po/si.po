@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-25 12:17-0400\n"
+"POT-Creation-Date: 2012-04-05 00:32-0400\n"
 "PO-Revision-Date: 2011-08-11 15:02+0200\n"
 "Last-Translator: Danishka Navin <danishka@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,70 +17,122 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.1\n"
 
-#: activity/activity.info:2 exporthtml.py:96 PortfolioActivity.py:395
+#: activity/activity.info:2 PortfolioActivity.py:533 exporthtml.py:127
 msgid "Portfolio"
 msgstr "ආයෝජන කළඹ"
 
-#: PortfolioActivity.py:73
+#: PortfolioActivity.py:68
 msgid "2 seconds"
 msgstr "තත්පර 2"
 
-#: PortfolioActivity.py:73
+#: PortfolioActivity.py:68
 msgid "10 seconds"
 msgstr "තත්පර 10"
 
-#: PortfolioActivity.py:73
+#: PortfolioActivity.py:68
 msgid "30 seconds"
 msgstr "තත්පර 30"
 
-#: PortfolioActivity.py:73
+#: PortfolioActivity.py:68
 msgid "1 minute"
 msgstr "මිනිත්තු 1"
 
-#: PortfolioActivity.py:225 PortfolioActivity.py:237
+#: PortfolioActivity.py:229 PortfolioActivity.py:249
 msgid "Adjust"
 msgstr "සීරුමාරු කරන්න"
 
-#: PortfolioActivity.py:235
+#: PortfolioActivity.py:237 PortfolioActivity.py:326
+msgid "Record a sound"
+msgstr ""
+
+#: PortfolioActivity.py:247
 msgid "Page"
 msgstr "පිටුව"
 
-#: PortfolioActivity.py:243
+#: PortfolioActivity.py:251
+msgid "Record"
+msgstr ""
+
+#: PortfolioActivity.py:258
 msgid "Prev slide"
 msgstr "පෙර ස්ලයිඩය"
 
-#: PortfolioActivity.py:247
+#: PortfolioActivity.py:262
 msgid "Next slide"
 msgstr "ඊළඟ ස්ලයිඩය"
 
-#: PortfolioActivity.py:253
+#: PortfolioActivity.py:266
 msgid "Autoplay"
 msgstr "ස්වයංව ධාවනය කරන්න"
 
-#: PortfolioActivity.py:259 PortfolioActivity.py:263
+#: PortfolioActivity.py:272 PortfolioActivity.py:280
 msgid "Adjust playback speed"
 msgstr "පසුවාදන වේගය සකසන්න"
 
-#: PortfolioActivity.py:270
+#: PortfolioActivity.py:286
 msgid "Refresh"
 msgstr "නැවත ප්‍රාණවත් කරන්න"
 
-#: PortfolioActivity.py:274 PortfolioActivity.py:654
+#: PortfolioActivity.py:292
+msgid "Slide view"
+msgstr "ස්ලයිඩ දැක්ම"
+
+#: PortfolioActivity.py:295
 msgid "Thumbnail view"
 msgstr "සිඟිති රූ දසුන"
 
-#: PortfolioActivity.py:277
+#: PortfolioActivity.py:299
 msgid "Fullscreen"
 msgstr "මුළු තිරයම"
 
-#: PortfolioActivity.py:284
-msgid "Save as HTML"
-msgstr "HTML ලෙස සුරකින්න"
+#: PortfolioActivity.py:306
+msgid "Update description"
+msgstr ""
 
-#: PortfolioActivity.py:437
+#: PortfolioActivity.py:329 PortfolioActivity.py:867
+msgid "Start recording"
+msgstr ""
+
+#: PortfolioActivity.py:335 PortfolioActivity.py:646
+msgid "Nothing to play"
+msgstr ""
+
+#: PortfolioActivity.py:339
+msgid "Nothing to save"
+msgstr ""
+
+#: PortfolioActivity.py:351 PortfolioActivity.py:368
+msgid "Save as PDF"
+msgstr ""
+
+#: PortfolioActivity.py:357 PortfolioActivity.py:374
+msgid "Save descriptions"
+msgstr ""
+
+#: PortfolioActivity.py:571
 msgid "Do you have any items in your Journal starred?"
 msgstr "ඔබගේ ජර්නලයේ තරු ලකුණු යෙදූ අයිතම තිබේද?"
 
-#: PortfolioActivity.py:518
-msgid "Slide view"
-msgstr "ස්ලයිඩ දැක්ම"
+#: PortfolioActivity.py:643 PortfolioActivity.py:869
+msgid "Play recording"
+msgstr ""
+
+#: PortfolioActivity.py:871
+msgid "Save recording"
+msgstr ""
+
+#: PortfolioActivity.py:881
+msgid "Stop recording"
+msgstr ""
+
+#: PortfolioActivity.py:902
+#, python-format
+msgid "audio note for %s"
+msgstr ""
+
+#: exporthtml.py:87 exportpdf.py:61
+msgid "untitled"
+msgstr ""
+
+#~ msgid "Save as HTML"
+#~ msgstr "HTML ලෙස සුරකින්න"

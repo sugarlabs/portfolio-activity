@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-17 00:32-0500\n"
+"POT-Creation-Date: 2012-04-05 00:32-0400\n"
 "PO-Revision-Date: 2011-12-01 17:51+0200\n"
 "Last-Translator: samy boutayeb <s.boutayeb@free.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,116 +17,122 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:441 PortfolioActivity.py:456
-#: exporthtml.py:125
+#: activity/activity.info:2 PortfolioActivity.py:533 exporthtml.py:127
 msgid "Portfolio"
 msgstr "Portfolio"
 
-#: PortfolioActivity.py:76
+#: PortfolioActivity.py:68
 msgid "2 seconds"
 msgstr "2 secondes"
 
-#: PortfolioActivity.py:76
+#: PortfolioActivity.py:68
 msgid "10 seconds"
 msgstr "10 secondes"
 
-#: PortfolioActivity.py:76
+#: PortfolioActivity.py:68
 msgid "30 seconds"
 msgstr "30 secondes"
 
-#: PortfolioActivity.py:76
+#: PortfolioActivity.py:68
 msgid "1 minute"
 msgstr "1 minute"
 
-#: PortfolioActivity.py:230 PortfolioActivity.py:250
+#: PortfolioActivity.py:229 PortfolioActivity.py:249
 msgid "Adjust"
 msgstr "Régler"
 
-#: PortfolioActivity.py:238 PortfolioActivity.py:303
+#: PortfolioActivity.py:237 PortfolioActivity.py:326
 msgid "Record a sound"
 msgstr "Enregistrer un son"
 
-#: PortfolioActivity.py:248
+#: PortfolioActivity.py:247
 msgid "Page"
 msgstr "Page"
 
-#: PortfolioActivity.py:252
+#: PortfolioActivity.py:251
 msgid "Record"
 msgstr "Enregistrer"
 
-#: PortfolioActivity.py:259
+#: PortfolioActivity.py:258
 msgid "Prev slide"
 msgstr "Diapo précédente"
 
-#: PortfolioActivity.py:263
+#: PortfolioActivity.py:262
 msgid "Next slide"
 msgstr "Diapo suivante"
 
-#: PortfolioActivity.py:267
+#: PortfolioActivity.py:266
 msgid "Autoplay"
 msgstr "Visualisation automatique"
 
-#: PortfolioActivity.py:273 PortfolioActivity.py:281
+#: PortfolioActivity.py:272 PortfolioActivity.py:280
 msgid "Adjust playback speed"
 msgstr "Régler la vitesse de lecture"
 
-#: PortfolioActivity.py:287
+#: PortfolioActivity.py:286
 msgid "Refresh"
 msgstr "Rafraîchir"
 
-#: PortfolioActivity.py:293
+#: PortfolioActivity.py:292
 msgid "Slide view"
 msgstr "Mode diapos"
 
-#: PortfolioActivity.py:296
+#: PortfolioActivity.py:295
 msgid "Thumbnail view"
 msgstr "Mode miniatures"
 
-#: PortfolioActivity.py:300
+#: PortfolioActivity.py:299
 msgid "Fullscreen"
 msgstr "Plein écran"
 
-#: PortfolioActivity.py:306 PortfolioActivity.py:759
+#: PortfolioActivity.py:306
+msgid "Update description"
+msgstr ""
+
+#: PortfolioActivity.py:329 PortfolioActivity.py:867
 msgid "Start recording"
 msgstr "Démarrer l'enregistrement"
 
-#: PortfolioActivity.py:312 PortfolioActivity.py:566
+#: PortfolioActivity.py:335 PortfolioActivity.py:646
 msgid "Nothing to play"
 msgstr "Rien à jouer"
 
-#: PortfolioActivity.py:316
+#: PortfolioActivity.py:339
 msgid "Nothing to save"
 msgstr "Rien à sauvegarder"
 
-#: PortfolioActivity.py:323 PortfolioActivity.py:332
-msgid "Save as HTML"
-msgstr "Sauvegarder en HTML"
-
-#: PortfolioActivity.py:326 PortfolioActivity.py:335
+#: PortfolioActivity.py:351 PortfolioActivity.py:368
 msgid "Save as PDF"
 msgstr "Sauvegarder en PDF"
 
-#: PortfolioActivity.py:493
+#: PortfolioActivity.py:357 PortfolioActivity.py:374
+msgid "Save descriptions"
+msgstr ""
+
+#: PortfolioActivity.py:571
 msgid "Do you have any items in your Journal starred?"
 msgstr "Y a-t-il des éléments du Journal qui sont marqués d'un astérisque ?"
 
-#: PortfolioActivity.py:563 PortfolioActivity.py:761
+#: PortfolioActivity.py:643 PortfolioActivity.py:869
 msgid "Play recording"
 msgstr "Jouer l'enregistrement"
 
-#: PortfolioActivity.py:763
+#: PortfolioActivity.py:871
 msgid "Save recording"
 msgstr "Sauvegarder l'enregistrement"
 
-#: PortfolioActivity.py:768
+#: PortfolioActivity.py:881
 msgid "Stop recording"
 msgstr "Arrêter l'enregistrement"
 
-#: PortfolioActivity.py:790
+#: PortfolioActivity.py:902
 #, python-format
 msgid "audio note for %s"
 msgstr "note audio pour %s"
 
-#: exporthtml.py:85 exportpdf.py:59
+#: exporthtml.py:87 exportpdf.py:61
 msgid "untitled"
 msgstr "sans titre"
+
+#~ msgid "Save as HTML"
+#~ msgstr "Sauvegarder en HTML"

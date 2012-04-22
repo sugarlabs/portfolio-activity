@@ -6,18 +6,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-11 12:02-0400\n"
-"PO-Revision-Date: 2011-08-16 22:12+0200\n"
-"Last-Translator:  <usuariotenek03@gmail.com>\n"
+"POT-Creation-Date: 2012-04-05 00:32-0400\n"
+"PO-Revision-Date: 2012-03-01 21:41+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: hus\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 2.0.1\n"
+"X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 exporthtml.py:96 PortfolioActivity.py:306
+#: activity/activity.info:2 PortfolioActivity.py:533 exporthtml.py:127
 msgid "Portfolio"
 msgstr "Dhayáb-uw"
 
@@ -37,32 +37,111 @@ msgstr "30 adhik k'ijchik"
 msgid "1 minute"
 msgstr "1 tsakam k'ij"
 
-#: PortfolioActivity.py:206
+#: PortfolioActivity.py:229 PortfolioActivity.py:249
+msgid "Adjust"
+msgstr "Xut'ut'uy"
+
+#: PortfolioActivity.py:237 PortfolioActivity.py:326
+msgid "Record a sound"
+msgstr ""
+
+#: PortfolioActivity.py:247
 msgid "Page"
 msgstr "Walxeklek"
 
-#: PortfolioActivity.py:212
+#: PortfolioActivity.py:251
+#, fuzzy
+msgid "Record"
+msgstr "Ts'at'a'"
+
+#: PortfolioActivity.py:258
 msgid "Prev slide"
 msgstr "Wat'elom lamk'otbixtaláb"
 
-#: PortfolioActivity.py:216
+#: PortfolioActivity.py:262
 msgid "Next slide"
 msgstr "Ok'ox lamk'ot'bixtaláb"
 
-#: PortfolioActivity.py:222
+#: PortfolioActivity.py:266
 msgid "Autoplay"
 msgstr "Kwetém tejwa´mél"
 
-#: PortfolioActivity.py:225 PortfolioActivity.py:229
+#: PortfolioActivity.py:272 PortfolioActivity.py:280
 msgid "Adjust playback speed"
 msgstr "T'ojojonchidh in adhík ti tejwa'mél"
 
-#: PortfolioActivity.py:236
-msgid "Save as HTML"
-msgstr "Dhaya' jant'odha' HTML"
+#: PortfolioActivity.py:286
+msgid "Refresh"
+msgstr "Itmédha'"
 
-#: PortfolioActivity.py:334
+#: PortfolioActivity.py:292
+msgid "Slide view"
+msgstr "Ka beldha' a tsu'uxtal"
+
+#: PortfolioActivity.py:295
+msgid "Thumbnail view"
+msgstr "Thumbnail view"
+
+#: PortfolioActivity.py:299
+msgid "Fullscreen"
+msgstr "Putat walek"
+
+#: PortfolioActivity.py:306
+msgid "Update description"
+msgstr ""
+
+#: PortfolioActivity.py:329 PortfolioActivity.py:867
+#, fuzzy
+msgid "Start recording"
+msgstr "Kubla' an ts'át'altaláb"
+
+#: PortfolioActivity.py:335 PortfolioActivity.py:646
+msgid "Nothing to play"
+msgstr ""
+
+#: PortfolioActivity.py:339
+msgid "Nothing to save"
+msgstr ""
+
+#: PortfolioActivity.py:351 PortfolioActivity.py:368
+#, fuzzy
+msgid "Save as PDF"
+msgstr "Dhaya' jant'odha' PDF"
+
+#: PortfolioActivity.py:357 PortfolioActivity.py:374
+msgid "Save descriptions"
+msgstr ""
+
+#: PortfolioActivity.py:571
 msgid "Do you have any items in your Journal starred?"
 msgstr ""
 "¿A kwa'al i otsentalábchik ta chudhél dhuchlábil axi k'wajat kits'odh abal a "
 "lej kulbetnál?"
+
+#: PortfolioActivity.py:643 PortfolioActivity.py:869
+#, fuzzy
+msgid "Play recording"
+msgstr "T'eney xi ts'at'badhits"
+
+#: PortfolioActivity.py:871
+#, fuzzy
+msgid "Save recording"
+msgstr "Kubla' an ts'át'altaláb"
+
+#: PortfolioActivity.py:881
+#, fuzzy
+msgid "Stop recording"
+msgstr "Kubla' an ts'át'altaláb"
+
+#: PortfolioActivity.py:902
+#, python-format
+msgid "audio note for %s"
+msgstr ""
+
+#: exporthtml.py:87 exportpdf.py:61
+#, fuzzy
+msgid "untitled"
+msgstr "yab bijidh"
+
+#~ msgid "Save as HTML"
+#~ msgstr "Dhaya' jant'odha' HTML"

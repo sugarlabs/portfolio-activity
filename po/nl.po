@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-15 00:32-0500\n"
+"POT-Creation-Date: 2012-04-05 00:32-0400\n"
 "PO-Revision-Date: 2012-01-28 00:58+0200\n"
 "Last-Translator: whe <heppew@yahoo.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,8 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:510 PortfolioActivity.py:527
-#: exporthtml.py:127
+#: activity/activity.info:2 PortfolioActivity.py:533 exporthtml.py:127
 msgid "Portfolio"
 msgstr "Portfolio"
 
@@ -90,11 +89,11 @@ msgstr "Volledig scherm"
 msgid "Update description"
 msgstr "Bijwerken beschrijving"
 
-#: PortfolioActivity.py:329 PortfolioActivity.py:861
+#: PortfolioActivity.py:329 PortfolioActivity.py:867
 msgid "Start recording"
 msgstr "Start opnemen"
 
-#: PortfolioActivity.py:335 PortfolioActivity.py:640
+#: PortfolioActivity.py:335 PortfolioActivity.py:646
 msgid "Nothing to play"
 msgstr "Niets om af te spelen"
 
@@ -102,35 +101,31 @@ msgstr "Niets om af te spelen"
 msgid "Nothing to save"
 msgstr "Niets om te bewaren"
 
-#: PortfolioActivity.py:346 PortfolioActivity.py:361
-msgid "Save as HTML"
-msgstr "Bewaar als HTML"
-
-#: PortfolioActivity.py:349 PortfolioActivity.py:364
+#: PortfolioActivity.py:351 PortfolioActivity.py:368
 msgid "Save as PDF"
 msgstr "Bewaar als PDF"
 
-#: PortfolioActivity.py:355 PortfolioActivity.py:370
+#: PortfolioActivity.py:357 PortfolioActivity.py:374
 msgid "Save descriptions"
 msgstr "Bewaar beschrijvingen"
 
-#: PortfolioActivity.py:565
+#: PortfolioActivity.py:571
 msgid "Do you have any items in your Journal starred?"
 msgstr "Heb je ingangen in je logboek gemarkeerd?"
 
-#: PortfolioActivity.py:637 PortfolioActivity.py:863
+#: PortfolioActivity.py:643 PortfolioActivity.py:869
 msgid "Play recording"
 msgstr "Speel opname af"
 
-#: PortfolioActivity.py:865
+#: PortfolioActivity.py:871
 msgid "Save recording"
 msgstr "Bewaar opname"
 
-#: PortfolioActivity.py:875
+#: PortfolioActivity.py:881
 msgid "Stop recording"
 msgstr "Stop opnemen"
 
-#: PortfolioActivity.py:896
+#: PortfolioActivity.py:902
 #, python-format
 msgid "audio note for %s"
 msgstr "audio notitie voor %s"
@@ -138,3 +133,6 @@ msgstr "audio notitie voor %s"
 #: exporthtml.py:87 exportpdf.py:61
 msgid "untitled"
 msgstr "zonder titel"
+
+#~ msgid "Save as HTML"
+#~ msgstr "Bewaar als HTML"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-15 00:32-0500\n"
+"POT-Creation-Date: 2012-04-05 00:32-0400\n"
 "PO-Revision-Date: 2012-03-15 03:28+0200\n"
 "Last-Translator: lite <litekok@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,8 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:510 PortfolioActivity.py:527
-#: exporthtml.py:127
+#: activity/activity.info:2 PortfolioActivity.py:533 exporthtml.py:127
 msgid "Portfolio"
 msgstr "编辑演示稿"
 
@@ -90,11 +89,11 @@ msgstr "全屏显示"
 msgid "Update description"
 msgstr "更新描述"
 
-#: PortfolioActivity.py:329 PortfolioActivity.py:861
+#: PortfolioActivity.py:329 PortfolioActivity.py:867
 msgid "Start recording"
 msgstr "开始录音"
 
-#: PortfolioActivity.py:335 PortfolioActivity.py:640
+#: PortfolioActivity.py:335 PortfolioActivity.py:646
 msgid "Nothing to play"
 msgstr "没有东西可以播放"
 
@@ -102,35 +101,31 @@ msgstr "没有东西可以播放"
 msgid "Nothing to save"
 msgstr "没有东西可以保存"
 
-#: PortfolioActivity.py:346 PortfolioActivity.py:361
-msgid "Save as HTML"
-msgstr "另存为HTML"
-
-#: PortfolioActivity.py:349 PortfolioActivity.py:364
+#: PortfolioActivity.py:351 PortfolioActivity.py:368
 msgid "Save as PDF"
 msgstr "另存为PDF"
 
-#: PortfolioActivity.py:355 PortfolioActivity.py:370
+#: PortfolioActivity.py:357 PortfolioActivity.py:374
 msgid "Save descriptions"
 msgstr "保存描述"
 
-#: PortfolioActivity.py:565
+#: PortfolioActivity.py:571
 msgid "Do you have any items in your Journal starred?"
 msgstr "你的日志有没有东西打了星？"
 
-#: PortfolioActivity.py:637 PortfolioActivity.py:863
+#: PortfolioActivity.py:643 PortfolioActivity.py:869
 msgid "Play recording"
 msgstr "播放录音"
 
-#: PortfolioActivity.py:865
+#: PortfolioActivity.py:871
 msgid "Save recording"
 msgstr "保存录音"
 
-#: PortfolioActivity.py:875
+#: PortfolioActivity.py:881
 msgid "Stop recording"
 msgstr "停止录音"
 
-#: PortfolioActivity.py:896
+#: PortfolioActivity.py:902
 #, python-format
 msgid "audio note for %s"
 msgstr "%s音频笔记"
@@ -138,3 +133,6 @@ msgstr "%s音频笔记"
 #: exporthtml.py:87 exportpdf.py:61
 msgid "untitled"
 msgstr "无标题"
+
+#~ msgid "Save as HTML"
+#~ msgstr "另存为HTML"

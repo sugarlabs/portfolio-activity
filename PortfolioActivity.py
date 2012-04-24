@@ -106,6 +106,8 @@ class PortfolioActivity(activity.Activity):
         self._recording = False
         self._grecord = None
 
+        self._dirty = False
+
     def _setup_canvas(self):
         ''' Create a canvas '''
         self._canvas = gtk.DrawingArea()
@@ -340,38 +342,28 @@ class PortfolioActivity(activity.Activity):
 
         if HAVE_TOOLBOX:
             separator_factory(activity_button_toolbar)
-
-            '''
-            self._save_html = button_factory(
-                'save-as-html', activity_button_toolbar,
-                self._save_as_html_cb, tooltip=_('Save as HTML'))
-            '''
             self._save_pdf = button_factory(
                 'save-as-pdf', activity_button_toolbar,
                 self._save_as_pdf_cb, tooltip=_('Save as PDF'))
 
+            '''
             separator_factory(activity_button_toolbar)
-
             self._save_to_journal = button_factory(
                 'save-descriptions', activity_button_toolbar,
                 self._save_descriptions_cb, tooltip=_('Save descriptions'))
+            '''
         else:
             separator_factory(self.toolbar)
-
-            '''
-            self._save_html = button_factory(
-                'save-as-html', self.toolbar,
-                self._save_as_html_cb, tooltip=_('Save as HTML'))
-            '''
             self._save_pdf = button_factory(
                 'save-as-pdf', self.toolbar,
                 self._save_as_pdf_cb, tooltip=_('Save as PDF'))
 
+            '''
             separator_factory(self.toolbar)
-
             self._save_to_journal = button_factory(
                 'save-descriptions', self.toolbar,
                 self._save_descriptions_cb, tooltip=_('Save descriptions'))
+            '''
 
         if HAVE_TOOLBOX:
             separator_factory(toolbox.toolbar, True, False)
@@ -382,6 +374,7 @@ class PortfolioActivity(activity.Activity):
             stop_button.show()
 
     def _do_journal_cb(self, button):
+        self._dirty = True
         if self._palette:
             if not self._palette.is_up():
                 self._palette.popup(immediate=True,
@@ -499,29 +492,6 @@ class PortfolioActivity(activity.Activity):
         else:
             self._bump_id = gobject.timeout_add(int(100), self._bump_test)
 
-    """
-    def _save_as_html_cb(self, button=None):
-        ''' Export an HTML version of the slideshow to the Journal. '''
-        _logger.debug('saving to HTML...')
-        results = save_html(self, profile.get_nick_name())
-        html_file = os.path.join(self.datapath, 'tmp.html')
-        tmp_file = open(html_file, 'w')
-        tmp_file.write(results)
-        tmp_file.close()
-
-        _logger.debug('copying HTML file to Journal...')
-        dsobject = datastore.create()
-        dsobject.metadata['title'] = profile.get_nick_name() + ' ' + \
-                                     _('Portfolio')
-        dsobject.metadata['icon-color'] = profile.get_color().to_string()
-        dsobject.metadata['mime_type'] = 'text/html'
-        dsobject.set_file_path(html_file)
-        dsobject.metadata['activity'] = 'org.laptop.WebActivity'
-        datastore.write(dsobject)
-        dsobject.destroy()
-        return
-    """
-
     def _save_as_pdf_cb(self, button=None):
         ''' Export an PDF version of the slideshow to the Journal. '''
         _logger.debug('saving to PDF...')
@@ -638,6 +608,7 @@ class PortfolioActivity(activity.Activity):
         audio_obj = self._search_for_audio_note(
             self.dsobjects[self.i].object_id)
         if audio_obj is not None:
+            _logger.debug('Playing audio note')
             gobject.idle_add(play_audio_from_file, audio_obj.file_path)
             self._playback_button.set_icon('media-playback-start')
             self._playback_button.set_tooltip(_('Play recording'))
@@ -730,6 +701,14 @@ class PortfolioActivity(activity.Activity):
 
         # Refresh sprite list
         self._sprites.redraw_sprites(cr=cr)
+
+    def write_file(self, file_path):
+        ''' Clean up '''
+        if self._dirty:
+            self._save_descriptions_cb()
+            self._dirty = False
+        if os.path.exists(os.path.join(self.datapath, 'output.ogg')):
+            os.remove(os.path.join(self.datapath, 'output.ogg'))
 
     def do_fullscreen_cb(self, button):
         ''' Hide the Sugar toolbars. '''
@@ -858,9 +837,10 @@ class PortfolioActivity(activity.Activity):
     def _record_cb(self, button=None):
         ''' Start/stop audio recording '''
         if self._grecord is None:
+            _logger.debug('setting up grecord')
             self._grecord = Grecord(self)
         if self._recording:  # Was recording, so stop (and save?)
-            _logger.debug('recording...True')
+            _logger.debug('recording...True. Preparing to save.')
             self._grecord.stop_recording_audio()
             self._recording = False
             self._record_button.set_icon('media-record')
@@ -872,9 +852,12 @@ class PortfolioActivity(activity.Activity):
             # Autosave if there was not already a recording
             if self._search_for_audio_note(
                 self.dsobjects[self.i].object_id) is None:
+                _logger.debug('Autosaving recording')
                 self._save_recording_cb()
+            else:
+                _logger.debug('Waiting for manual save.')
         else:  # Wasn't recording, so start
-            _logger.debug('recording...False')
+            _logger.debug('recording...False. Start recording.')
             self._grecord.record_audio()
             self._recording = True
             self._record_button.set_icon('media-recording')
@@ -882,17 +865,15 @@ class PortfolioActivity(activity.Activity):
 
     def _playback_recording_cb(self, button=None):
         ''' Play back current recording '''
-        _logger.debug('playback...')
+        _logger.debug('Playback current recording from output.ogg...')
         play_audio_from_file(os.path.join(self.datapath,
                                           'output.ogg'))
         return
 
     def _save_recording_cb(self, button=None):
         if os.path.exists(os.path.join(self.datapath, 'output.ogg')):
-            _logger.debug('saving recording...')
+            _logger.debug('Saving recording to Journal...')
             obj_id = self.dsobjects[self.i].object_id
-            os.rename(os.path.join(self.datapath, 'output.ogg'),
-                      os.path.join(self.datapath, obj_id + '.ogg'))
             dsobject = self._search_for_audio_note(obj_id)
             if dsobject is None:
                 dsobject = datastore.create()
@@ -905,16 +886,12 @@ class PortfolioActivity(activity.Activity):
                     profile.get_color().to_string()
                 dsobject.metadata['tags'] = obj_id
                 dsobject.metadata['mime_type'] = 'audio/ogg'
-                dsobject.set_file_path(os.path.join(self.datapath,
-                                                    obj_id + '.ogg'))
+                dsobject.set_file_path(
+                    os.path.join(self.datapath, 'output.ogg'))
                 datastore.write(dsobject)
                 dsobject.destroy()
-
-            # Clean up afterwards
-            os.remove(os.path.join(self.datapath, 'output.ogg'),
-                      os.path.join(self.datapath, obj_id + '.ogg'))
         else:
-            _logger.debug('nothing to save...')
+            _logger.debug('Nothing to save...')
         return
 
     def _search_for_audio_note(self, obj_id):
@@ -924,11 +901,12 @@ class PortfolioActivity(activity.Activity):
         # Look for tag that matches the target object id
         for dsobject in dsobjects:
             if 'tags' in dsobject.metadata and \
-                    obj_id in dsobject.metadata['tags']:
+               obj_id in dsobject.metadata['tags']:
+                _logger.debug('Found audio note')
                 return dsobject
         return None
 
-    def _save_descriptions_cb(self, button):
+    def _save_descriptions_cb(self, button=None):
         ''' Find the object in the datastore and write out the changes
         to the decriptions. '''
         for i in self.dsobjects:

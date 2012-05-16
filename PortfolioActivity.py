@@ -13,7 +13,9 @@
 
 import gtk
 import gobject
+import subprocess
 import os
+from shutil import copyfile
 
 from math import sqrt, ceil
 
@@ -31,9 +33,9 @@ if HAVE_TOOLBOX:
     from sugar.graphics.toolbarbox import ToolbarButton
 
 from sugar.datastore import datastore
+from sugar.graphics.alert import NotifyAlert
 
 from sprites import Sprites, Sprite
-# from exporthtml import save_html
 from exportpdf import save_pdf
 from utils import get_path, lighter_color, svg_str_to_pixbuf, \
     play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware
@@ -316,6 +318,7 @@ class PortfolioActivity(activity.Activity):
         self._text_view = gtk.TextView()
         self._text_view.set_left_margin(style.DEFAULT_PADDING)
         self._text_view.set_right_margin(style.DEFAULT_PADDING)
+        self._text_view.set_wrap_mode(gtk.WRAP_WORD_CHAR)
         self._text_view.connect('focus-out-event',
                                self._text_view_focus_out_event_cb)
         sw.add(self._text_view)
@@ -345,25 +348,11 @@ class PortfolioActivity(activity.Activity):
             self._save_pdf = button_factory(
                 'save-as-pdf', activity_button_toolbar,
                 self._save_as_pdf_cb, tooltip=_('Save as PDF'))
-
-            '''
-            separator_factory(activity_button_toolbar)
-            self._save_to_journal = button_factory(
-                'save-descriptions', activity_button_toolbar,
-                self._save_descriptions_cb, tooltip=_('Save descriptions'))
-            '''
         else:
             separator_factory(self.toolbar)
             self._save_pdf = button_factory(
                 'save-as-pdf', self.toolbar,
                 self._save_as_pdf_cb, tooltip=_('Save as PDF'))
-
-            '''
-            separator_factory(self.toolbar)
-            self._save_to_journal = button_factory(
-                'save-descriptions', self.toolbar,
-                self._save_descriptions_cb, tooltip=_('Save descriptions'))
-            '''
 
         if HAVE_TOOLBOX:
             separator_factory(toolbox.toolbar, True, False)
@@ -853,7 +842,14 @@ class PortfolioActivity(activity.Activity):
             if self._search_for_audio_note(
                 self.dsobjects[self.i].object_id) is None:
                 _logger.debug('Autosaving recording')
-                self._save_recording_cb()
+                self._notify_successful_save(title=_('Save recording'))
+                # FIXME: Pause for conversion to ogg to complete
+                # file size should be not be 0
+                gobject.timeout_add(
+                    3000, subprocess.call,
+                    ['ls', '-l', os.path.join(activity.get_activity_root(),
+                                              'instance')])
+                gobject.timeout_add(5000, self._save_recording_cb)
             else:
                 _logger.debug('Waiting for manual save.')
         else:  # Wasn't recording, so start
@@ -874,10 +870,11 @@ class PortfolioActivity(activity.Activity):
         if os.path.exists(os.path.join(self.datapath, 'output.ogg')):
             _logger.debug('Saving recording to Journal...')
             obj_id = self.dsobjects[self.i].object_id
+            copyfile(os.path.join(self.datapath, 'output.ogg'),
+                     os.path.join(self.datapath, '%s.ogg' % (obj_id)))
             dsobject = self._search_for_audio_note(obj_id)
             if dsobject is None:
                 dsobject = datastore.create()
-
             if dsobject is not None:
                 _logger.debug(self.dsobjects[self.i].metadata['title'])
                 dsobject.metadata['title'] = _('audio note for %s') % \
@@ -887,9 +884,12 @@ class PortfolioActivity(activity.Activity):
                 dsobject.metadata['tags'] = obj_id
                 dsobject.metadata['mime_type'] = 'audio/ogg'
                 dsobject.set_file_path(
-                    os.path.join(self.datapath, 'output.ogg'))
+                    os.path.join(self.datapath, '%s.ogg' % (obj_id)))
+                    # os.path.join(self.datapath, 'output.ogg'))
                 datastore.write(dsobject)
                 dsobject.destroy()
+                if button is not None:
+                    self._notify_successful_save(title=_('Save recording'))
         else:
             _logger.debug('Nothing to save...')
         return
@@ -922,3 +922,16 @@ class PortfolioActivity(activity.Activity):
 
     def datastore_write_error_cb(self, error):
         _logger.error('datastore_write_error_cb: %r' % error)
+
+    def _notify_successful_save(self, title='', msg=''):
+        ''' Notify user when saves are completed '''
+
+        def _notification_alert_response_cb(alert, response_id, self):
+            self.remove_alert(alert)
+
+        alert = NotifyAlert()
+        alert.props.title = title
+        alert.connect('response', _notification_alert_response_cb, self)
+        alert.props.msg = msg
+        self.add_alert(alert)
+        alert.show()

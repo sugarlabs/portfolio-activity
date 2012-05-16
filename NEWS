@@ -1,3 +1,22 @@
+23
+
+ENHANCEMENTS:
+* New translations
+* Always auto-save inline annotaions
+
+BUG FIX:
+* Fixed some problems with saving audio recordings
+* Add word wrap to description text view (as per #3686)
+
+22
+
+ENHANCEMENTS:
+* New translations
+* Removed save as HTML option since PDF works so much better
+
+BUG FIX:
+* Clean up audio recordings so as to not leave file clutter around
+
 21
 
 ENHANCEMENTS:

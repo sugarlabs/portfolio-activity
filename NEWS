@@ -2,11 +2,11 @@
 
 ENHANCEMENTS:
 * New translations
-* Always auto-save inline annotaions
 
 BUG FIX:
-* Fixed some problems with saving audio recordings
+* Fixed problems with saving audio recordings
 * Add word wrap to description text view (as per #3686)
+* Always save inline annotaions
 
 22
 

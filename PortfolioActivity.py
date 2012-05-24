@@ -911,8 +911,10 @@ class PortfolioActivity(activity.Activity):
         to the decriptions. '''
         for i in self.dsobjects:
             jobject = datastore.get(i.object_id)
-            jobject.metadata['description'] = i.metadata['description']
-            jobject.metadata['keep'] = i.metadata['keep']
+            if 'description' in i.metadata:
+                jobject.metadata['description'] = i.metadata['description']
+            if 'keep' in i.metadata:
+                jobject.metadata['keep'] = i.metadata['keep']
             datastore.write(jobject, update_mtime=False,
                             reply_handler=self.datastore_write_cb,
                             error_handler=self.datastore_write_error_cb)

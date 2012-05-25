@@ -25,6 +25,9 @@ import time
 import gtk
 import gst
 
+import logging
+_logger = logging.getLogger("portfolio-activity")
+
 import gobject
 gobject.threads_init()
 
@@ -125,25 +128,40 @@ class Grecord:
         audio_path = os.path.join(self._activity.datapath, 'output.wav')
         if not os.path.exists(audio_path) or os.path.getsize(audio_path) <= 0:
             # FIXME: inform model of failure?
+            _logger.error('output.wav does not exist or is empty')
             return
 
         line = 'filesrc location=' + audio_path + ' name=audioFilesrc ! wavparse name=audioWavparse ! audioconvert name=audioAudioconvert ! vorbisenc name=audioVorbisenc ! oggmux name=audioOggmux ! filesink name=audioFilesink'
-        audioline = gst.parse_launch(line)
+        self.audioline = gst.parse_launch(line)
 
-        vorbis_enc = audioline.get_by_name('audioVorbisenc')
+        vorbis_enc = self.audioline.get_by_name('audioVorbisenc')
 
-        audioFilesink = audioline.get_by_name('audioFilesink')
+        audioFilesink = self.audioline.get_by_name('audioFilesink')
         audioOggFilepath = os.path.join(self._activity.datapath,
                                         'output.ogg')
         audioFilesink.set_property("location", audioOggFilepath)
 
-        audioBus = audioline.get_bus()
+        audioBus = self.audioline.get_bus()
         audioBus.add_signal_watch()
         self._audio_transcode_handler = audioBus.connect(
-            'message', self._onMuxedAudioMessageCb, audioline)
+            'message', self._onMuxedAudioMessageCb, self.audioline)
         self._transcode_id = gobject.timeout_add(200, self._transcodeUpdateCb,
-                                                 audioline)
-        audioline.set_state(gst.STATE_PLAYING)
+                                                 self.audioline)
+        self.audiopos = 0
+        self.audioline.set_state(gst.STATE_PLAYING)
+
+    def transcoding_complete(self):
+        if self.audioline.get_state()[1] == gst.STATE_NULL:
+            _logger.debug('STATE NULL.... transcoding finished')
+            return True
+        else:
+            position = self._query_position(self.audioline)[0]
+            if position == self.audiopos:
+                _logger.debug('No progess, so assume we are done')
+                return True
+            self.audiopos = position
+            _logger.debug(self.audioline.get_state()[1])
+            return False
 
     def blockedCb(self, x, y, z):
         pass

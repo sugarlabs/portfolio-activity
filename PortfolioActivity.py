@@ -15,6 +15,7 @@ import gtk
 import gobject
 import subprocess
 import os
+import time
 from shutil import copyfile
 
 from math import sqrt, ceil
@@ -33,7 +34,7 @@ if HAVE_TOOLBOX:
     from sugar.graphics.toolbarbox import ToolbarButton
 
 from sugar.datastore import datastore
-from sugar.graphics.alert import NotifyAlert
+from sugar.graphics.alert import Alert
 
 from sprites import Sprites, Sprite
 from exportpdf import save_pdf
@@ -107,6 +108,7 @@ class PortfolioActivity(activity.Activity):
 
         self._recording = False
         self._grecord = None
+        self._alert = None
 
         self._dirty = False
 
@@ -341,7 +343,7 @@ class PortfolioActivity(activity.Activity):
 
         self._save_recording_button = button_factory(
             'sound-save-insensitive', record_toolbar,
-            self._save_recording_cb, tooltip=_('Nothing to save'))
+            self._wait_for_transcoding_to_finish, tooltip=_('Nothing to save'))
 
         if HAVE_TOOLBOX:
             separator_factory(activity_button_toolbar)
@@ -843,13 +845,7 @@ class PortfolioActivity(activity.Activity):
                 self.dsobjects[self.i].object_id) is None:
                 _logger.debug('Autosaving recording')
                 self._notify_successful_save(title=_('Save recording'))
-                # FIXME: Pause for conversion to ogg to complete
-                # file size should be not be 0
-                gobject.timeout_add(
-                    3000, subprocess.call,
-                    ['ls', '-l', os.path.join(activity.get_activity_root(),
-                                              'instance')])
-                gobject.timeout_add(5000, self._save_recording_cb)
+                gobject.timeout_add(100, self._wait_for_transcoding_to_finish)
             else:
                 _logger.debug('Waiting for manual save.')
         else:  # Wasn't recording, so start
@@ -859,14 +855,21 @@ class PortfolioActivity(activity.Activity):
             self._record_button.set_icon('media-recording')
             self._record_button.set_tooltip(_('Stop recording'))
 
+    def _wait_for_transcoding_to_finish(self, button=None):
+        while not self._grecord.transcoding_complete():
+            time.sleep(1)
+        if self._alert is not None:
+            self.remove_alert(self._alert)
+            self._alert = None
+        self._save_recording()
+
     def _playback_recording_cb(self, button=None):
         ''' Play back current recording '''
         _logger.debug('Playback current recording from output.ogg...')
-        play_audio_from_file(os.path.join(self.datapath,
-                                          'output.ogg'))
+        play_audio_from_file(os.path.join(self.datapath, 'output.ogg'))
         return
 
-    def _save_recording_cb(self, button=None):
+    def _save_recording(self):
         if os.path.exists(os.path.join(self.datapath, 'output.ogg')):
             _logger.debug('Saving recording to Journal...')
             obj_id = self.dsobjects[self.i].object_id
@@ -888,8 +891,6 @@ class PortfolioActivity(activity.Activity):
                     # os.path.join(self.datapath, 'output.ogg'))
                 datastore.write(dsobject)
                 dsobject.destroy()
-                if button is not None:
-                    self._notify_successful_save(title=_('Save recording'))
         else:
             _logger.debug('Nothing to save...')
         return
@@ -927,13 +928,8 @@ class PortfolioActivity(activity.Activity):
 
     def _notify_successful_save(self, title='', msg=''):
         ''' Notify user when saves are completed '''
-
-        def _notification_alert_response_cb(alert, response_id, self):
-            self.remove_alert(alert)
-
-        alert = NotifyAlert()
-        alert.props.title = title
-        alert.connect('response', _notification_alert_response_cb, self)
-        alert.props.msg = msg
-        self.add_alert(alert)
-        alert.show()
+        self._alert = Alert()
+        self._alert.props.title = title
+        self._alert.props.msg = msg
+        self.add_alert(self._alert)
+        self._alert.show()

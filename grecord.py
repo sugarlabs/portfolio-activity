@@ -65,16 +65,16 @@ class Grecord:
 
         srccaps = gst.Caps("audio/x-raw-int,rate=16000,channels=1,depth=16")
 
-        # guarantee perfect stream, important for A/V sync
+        # Guarantee perfect stream, important for A/V sync
         rate = gst.element_factory_make("audiorate")
 
-        # without a buffer here, gstreamer struggles at the start of the
+        # Without a buffer here, gstreamer struggles at the start of the
         # recording and then the A/V sync is bad for the whole video
         # (possibly a gstreamer/ALSA bug -- even if it gets caught up, it
-        # should be able to resync without problem)
+        # should be able to resync without problem).
         queue = gst.element_factory_make("queue", "audioqueue")
-        queue.set_property("leaky", True) # prefer fresh data
-        queue.set_property("max-size-time", 5000000000) # 5 seconds
+        queue.set_property("leaky", True)  # prefer fresh data
+        queue.set_property("max-size-time", 5000000000)  # 5 seconds
         queue.set_property("max-size-buffers", 500)
         queue.connect("overrun", self._log_queue_overrun)
 
@@ -94,7 +94,7 @@ class Grecord:
         cbuffers = queue.get_property("current-level-buffers")
         cbytes = queue.get_property("current-level-bytes")
         ctime = queue.get_property("current-level-time")
- 
+
     def play(self):
         if self._get_state() == gst.STATE_PLAYING:
             return
@@ -131,7 +131,10 @@ class Grecord:
             _logger.error('output.wav does not exist or is empty')
             return
 
-        line = 'filesrc location=' + audio_path + ' name=audioFilesrc ! wavparse name=audioWavparse ! audioconvert name=audioAudioconvert ! vorbisenc name=audioVorbisenc ! oggmux name=audioOggmux ! filesink name=audioFilesink'
+        line = 'filesrc location=' + audio_path + ' name=audioFilesrc ! \
+wavparse name=audioWavparse ! audioconvert name=audioAudioconvert ! \
+vorbisenc name=audioVorbisenc ! oggmux name=audioOggmux ! \
+filesink name=audioFilesink'
         self._audioline = gst.parse_launch(line)
 
         vorbis_enc = self._audioline.get_by_name('audioVorbisenc')
@@ -169,7 +172,7 @@ class Grecord:
         pass
 
     def record_audio(self):
-        # we should be able to add the audiobin on the fly, but unfortunately
+        # We should be able to add the audiobin on the fly, but unfortunately
         # this results in several seconds of silence being added at the start
         # of the recording. So we stop the whole pipeline while adjusting it.
         # SL#2040
@@ -181,7 +184,7 @@ class Grecord:
         position, duration = self._query_position(pipe)
         if position != gst.CLOCK_TIME_NONE:
             value = position * 100.0 / duration
-            value = value/100.0
+            value = value / 100.0
         return True
 
     def _query_position(self, pipe):
@@ -229,4 +232,3 @@ class Grecord:
             # left on the resource.gstfilesink.c" err, debug =
             # message.parse_error()
             pass
-

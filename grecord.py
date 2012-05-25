@@ -151,13 +151,16 @@ class Grecord:
         self.audioline.set_state(gst.STATE_PLAYING)
 
     def transcoding_complete(self):
-        if self.audioline.get_state()[1] == gst.STATE_NULL:
-            _logger.debug('STATE NULL.... transcoding finished')
+        # The EOS message is sometimes either not sent or not received.
+        # So if the position in the stream is not advancing, assume EOS.
+        if self._transcode_id is None:
+            _logger.debug('EOS.... transcoding finished')
             return True
         else:
             position = self._query_position(self.audioline)[0]
             if position == self.audiopos:
                 _logger.debug('No progess, so assume we are done')
+                self._clean_up_transcoding_pipeline(self.audioline)
                 return True
             self.audiopos = position
             _logger.debug(self.audioline.get_state()[1])
@@ -198,7 +201,10 @@ class Grecord:
     def _onMuxedAudioMessageCb(self, bus, message, pipe):
         if message.type != gst.MESSAGE_EOS:
             return True
+        self._clean_up_transcoding_pipeline(pipe)
+        return False
 
+    def _cleanup_transcoding_pipeline(self, pipe):
         gobject.source_remove(self._audio_transcode_handler)
         self._audio_transcode_handler = None
         gobject.source_remove(self._transcode_id)
@@ -208,9 +214,8 @@ class Grecord:
         pipe.get_bus().disable_sync_message_emission()
 
         wavFilepath = os.path.join(self._activity.datapath, 'output.wav')
-        oggFilepath = os.path.join(self._activity.datapath, 'output.ogg')
-        os.remove( wavFilepath )
-        return False
+        os.remove(wavFilepath)
+        return
 
     def _bus_message_handler(self, bus, message):
         t = message.type

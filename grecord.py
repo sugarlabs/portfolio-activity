@@ -1,5 +1,5 @@
 #Copyright (c) 2008, Media Modifications Ltd.
-#Copyright (c) 2011, Walter Bender
+#Copyright (c) 2011-12, Walter Bender
 
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -132,23 +132,22 @@ class Grecord:
             return
 
         line = 'filesrc location=' + audio_path + ' name=audioFilesrc ! wavparse name=audioWavparse ! audioconvert name=audioAudioconvert ! vorbisenc name=audioVorbisenc ! oggmux name=audioOggmux ! filesink name=audioFilesink'
-        self.audioline = gst.parse_launch(line)
+        self._audioline = gst.parse_launch(line)
 
-        vorbis_enc = self.audioline.get_by_name('audioVorbisenc')
+        vorbis_enc = self._audioline.get_by_name('audioVorbisenc')
 
-        audioFilesink = self.audioline.get_by_name('audioFilesink')
-        audioOggFilepath = os.path.join(self._activity.datapath,
-                                        'output.ogg')
+        audioFilesink = self._audioline.get_by_name('audioFilesink')
+        audioOggFilepath = os.path.join(self._activity.datapath, 'output.ogg')
         audioFilesink.set_property("location", audioOggFilepath)
 
-        audioBus = self.audioline.get_bus()
+        audioBus = self._audioline.get_bus()
         audioBus.add_signal_watch()
         self._audio_transcode_handler = audioBus.connect(
-            'message', self._onMuxedAudioMessageCb, self.audioline)
+            'message', self._onMuxedAudioMessageCb, self._audioline)
         self._transcode_id = gobject.timeout_add(200, self._transcodeUpdateCb,
-                                                 self.audioline)
-        self.audiopos = 0
-        self.audioline.set_state(gst.STATE_PLAYING)
+                                                 self._audioline)
+        self._audiopos = 0
+        self._audioline.set_state(gst.STATE_PLAYING)
 
     def transcoding_complete(self):
         # The EOS message is sometimes either not sent or not received.
@@ -157,13 +156,13 @@ class Grecord:
             _logger.debug('EOS.... transcoding finished')
             return True
         else:
-            position = self._query_position(self.audioline)[0]
-            if position == self.audiopos:
+            position = self._query_position(self._audioline)[0]
+            if position == self._audiopos:
                 _logger.debug('No progess, so assume we are done')
-                self._clean_up_transcoding_pipeline(self.audioline)
+                self._clean_up_transcoding_pipeline(self._audioline)
                 return True
-            self.audiopos = position
-            _logger.debug(self.audioline.get_state()[1])
+            self._audiopos = position
+            _logger.debug(self._audioline.get_state()[1])
             return False
 
     def blockedCb(self, x, y, z):

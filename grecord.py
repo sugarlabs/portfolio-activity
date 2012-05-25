@@ -206,7 +206,7 @@ filesink name=audioFilesink'
         self._clean_up_transcoding_pipeline(pipe)
         return False
 
-    def _cleanup_transcoding_pipeline(self, pipe):
+    def _clean_up_transcoding_pipeline(self, pipe):
         gobject.source_remove(self._audio_transcode_handler)
         self._audio_transcode_handler = None
         gobject.source_remove(self._transcode_id)

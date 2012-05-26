@@ -1,3 +1,10 @@
+25
+
+BUG FIX:
+* More robust checking for EOS when transcoding audio recordings
+* Replace timed notify alert with simple alert message that is
+  displayed when saving recording
+
 24
 
 ENHANCEMENTS:

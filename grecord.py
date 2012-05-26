@@ -165,7 +165,7 @@ filesink name=audioFilesink'
                 self._clean_up_transcoding_pipeline(self._audioline)
                 return True
             self._audiopos = position
-            _logger.debug(self._audioline.get_state()[1])
+            # _logger.debug(self._audioline.get_state()[1])
             return False
 
     def blockedCb(self, x, y, z):
@@ -202,6 +202,7 @@ filesink name=audioFilesink'
 
     def _onMuxedAudioMessageCb(self, bus, message, pipe):
         if message.type != gst.MESSAGE_EOS:
+            # _logger.debug(message.type)
             return True
         self._clean_up_transcoding_pipeline(pipe)
         return False

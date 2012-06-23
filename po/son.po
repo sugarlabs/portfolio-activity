@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-05 00:32-0400\n"
+"POT-Creation-Date: 2012-04-25 00:33-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Translate Toolkit 1.7.0\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:533 exporthtml.py:127
+#: activity/activity.info:2 PortfolioActivity.py:503
 msgid "Portfolio"
 msgstr ""
 
@@ -37,99 +37,95 @@ msgstr ""
 msgid "1 minute"
 msgstr ""
 
-#: PortfolioActivity.py:229 PortfolioActivity.py:249
+#: PortfolioActivity.py:231 PortfolioActivity.py:251
 msgid "Adjust"
 msgstr ""
 
-#: PortfolioActivity.py:237 PortfolioActivity.py:326
+#: PortfolioActivity.py:239 PortfolioActivity.py:328
 msgid "Record a sound"
 msgstr ""
 
-#: PortfolioActivity.py:247
+#: PortfolioActivity.py:249
 msgid "Page"
 msgstr ""
 
-#: PortfolioActivity.py:251
+#: PortfolioActivity.py:253
 msgid "Record"
 msgstr ""
 
-#: PortfolioActivity.py:258
+#: PortfolioActivity.py:260
 msgid "Prev slide"
 msgstr ""
 
-#: PortfolioActivity.py:262
+#: PortfolioActivity.py:264
 msgid "Next slide"
 msgstr ""
 
-#: PortfolioActivity.py:266
+#: PortfolioActivity.py:268
 msgid "Autoplay"
 msgstr ""
 
-#: PortfolioActivity.py:272 PortfolioActivity.py:280
+#: PortfolioActivity.py:274 PortfolioActivity.py:282
 msgid "Adjust playback speed"
 msgstr ""
 
-#: PortfolioActivity.py:286
+#: PortfolioActivity.py:288
 msgid "Refresh"
 msgstr ""
 
-#: PortfolioActivity.py:292
+#: PortfolioActivity.py:294
 msgid "Slide view"
 msgstr ""
 
-#: PortfolioActivity.py:295
+#: PortfolioActivity.py:297
 msgid "Thumbnail view"
 msgstr ""
 
-#: PortfolioActivity.py:299
+#: PortfolioActivity.py:301
 msgid "Fullscreen"
 msgstr ""
 
-#: PortfolioActivity.py:306
+#: PortfolioActivity.py:308
 msgid "Update description"
 msgstr ""
 
-#: PortfolioActivity.py:329 PortfolioActivity.py:867
+#: PortfolioActivity.py:331 PortfolioActivity.py:847
 msgid "Start recording"
 msgstr ""
 
-#: PortfolioActivity.py:335 PortfolioActivity.py:646
+#: PortfolioActivity.py:337 PortfolioActivity.py:617
 msgid "Nothing to play"
 msgstr ""
 
-#: PortfolioActivity.py:339
+#: PortfolioActivity.py:341
 msgid "Nothing to save"
 msgstr ""
 
-#: PortfolioActivity.py:351 PortfolioActivity.py:368
+#: PortfolioActivity.py:347 PortfolioActivity.py:359
 msgid "Save as PDF"
 msgstr ""
 
-#: PortfolioActivity.py:357 PortfolioActivity.py:374
-msgid "Save descriptions"
-msgstr ""
-
-#: PortfolioActivity.py:571
+#: PortfolioActivity.py:541
 msgid "Do you have any items in your Journal starred?"
 msgstr ""
 
-#: PortfolioActivity.py:643 PortfolioActivity.py:869
+#: PortfolioActivity.py:614 PortfolioActivity.py:849
 msgid "Play recording"
 msgstr ""
 
-#: PortfolioActivity.py:871
+#: PortfolioActivity.py:851
 msgid "Save recording"
 msgstr ""
 
-#: PortfolioActivity.py:881
+#: PortfolioActivity.py:864
 msgid "Stop recording"
 msgstr ""
 
-#: PortfolioActivity.py:902
+#: PortfolioActivity.py:883
 #, python-format
 msgid "audio note for %s"
 msgstr ""
 
-#: exporthtml.py:87 exportpdf.py:61
+#: exportpdf.py:61
 msgid "untitled"
 msgstr ""

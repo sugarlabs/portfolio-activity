@@ -95,6 +95,33 @@ def svg_str_to_pixbuf(svg_string):
     return pixbuf
 
 
+def svg_rectangle(width, height, colors):
+    ''' Generate a rectangle frame in two colors '''
+    return \
+'<?xml version="1.0" encoding="UTF-8" standalone="no"?>\
+<svg\
+   version="1.1"\
+   width="%f"\
+   height="%f">\
+    <g>\
+      <rect\
+         width="%f"\
+         height="%f"\
+         x="2.5"\
+         y="2.5"\
+         style="fill:none;stroke:%s;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />\
+      <rect\
+         width="%f"\
+         height="%f"\
+         x="7.5"\
+         y="7.5"\
+         style="fill:none;stroke:%s;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />\
+    </g>\
+</svg>' % (width, height,
+           width - 5, height - 5, colors[1],
+           width - 15, height - 15, colors[0])
+
+
 def load_svg_from_file(file_path, width, height):
     '''Create a pixbuf from SVG in a file. '''
     return gtk.gdk.pixbuf_new_from_file_at_size(file_path, width, height)

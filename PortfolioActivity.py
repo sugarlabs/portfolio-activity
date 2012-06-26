@@ -39,7 +39,8 @@ from sugar.graphics.alert import Alert
 from sprites import Sprites, Sprite
 from exportpdf import save_pdf
 from utils import get_path, lighter_color, svg_str_to_pixbuf, \
-    play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware
+    play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware, \
+    svg_rectangle
 from toolbar_utils import radio_factory, \
     button_factory, separator_factory, combo_factory, label_factory
 from grecord import Grecord
@@ -674,6 +675,8 @@ class PortfolioActivity(activity.Activity):
                                                           self.colors))
             self._thumbs.append([Sprite(self._sprites, x, y, pixbuf_thumb),
                                      x, y, self.i])
+            self._thumbs[-1][0].set_image(svg_str_to_pixbuf(
+                    svg_rectangle(int(w), int(h), self.colors)), i=1)
             self._thumbs[-1][0].set_label(str(self.i + 1))
         self._thumbs[self.i][0].set_layer(TOP)
 

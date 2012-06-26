@@ -566,8 +566,8 @@ class PortfolioActivity(activity.Activity):
         pixbuf = None
         media_object = False
         mimetype = None
-        if 'mime_type' in self.metadata:
-            mimetype = self.metadata['mime_type']
+        if 'mime_type' in self.dsobjects[self.i].metadata:
+            mimetype = self.dsobjects[self.i].metadata['mime_type']
         if mimetype[0:5] == 'image':
             pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                 self.dsobjects[self.i].file_path, int(PREVIEWW * self._scale),

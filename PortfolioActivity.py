@@ -564,12 +564,15 @@ class PortfolioActivity(activity.Activity):
         # _logger.debug('Showing slide %d', self.i)
         pixbuf = None
         media_object = False
-        try:
+        mimetype = None
+        if 'mime_type' in self.metadata:
+            mimetype = self.metadata['mime_type']
+        if mimetype[0:5] == 'image':
             pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                 self.dsobjects[self.i].file_path, int(PREVIEWW * self._scale),
                 int(PREVIEWH * self._scale))
             media_object = True
-        except:
+        else:
             pixbuf = get_pixbuf_from_journal(self.dsobjects[self.i], 300, 225)
 
         if pixbuf is not None:

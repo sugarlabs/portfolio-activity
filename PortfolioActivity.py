@@ -39,7 +39,8 @@ from sugar.graphics.alert import Alert
 from sprites import Sprites, Sprite
 from exportpdf import save_pdf
 from utils import get_path, lighter_color, svg_str_to_pixbuf, \
-    play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware
+    play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware, \
+    svg_rectangle
 from toolbar_utils import radio_factory, \
     button_factory, separator_factory, combo_factory, label_factory
 from grecord import Grecord
@@ -564,12 +565,15 @@ class PortfolioActivity(activity.Activity):
         # _logger.debug('Showing slide %d', self.i)
         pixbuf = None
         media_object = False
-        try:
+        mimetype = None
+        if 'mime_type' in self.dsobjects[self.i].metadata:
+            mimetype = self.dsobjects[self.i].metadata['mime_type']
+        if mimetype[0:5] == 'image':
             pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                 self.dsobjects[self.i].file_path, int(PREVIEWW * self._scale),
                 int(PREVIEWH * self._scale))
             media_object = True
-        except:
+        else:
             pixbuf = get_pixbuf_from_journal(self.dsobjects[self.i], 300, 225)
 
         if pixbuf is not None:
@@ -671,6 +675,8 @@ class PortfolioActivity(activity.Activity):
                                                           self.colors))
             self._thumbs.append([Sprite(self._sprites, x, y, pixbuf_thumb),
                                      x, y, self.i])
+            self._thumbs[-1][0].set_image(svg_str_to_pixbuf(
+                    svg_rectangle(int(w), int(h), self.colors)), i=1)
             self._thumbs[-1][0].set_label(str(self.i + 1))
         self._thumbs[self.i][0].set_layer(TOP)
 

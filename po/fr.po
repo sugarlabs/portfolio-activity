@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-25 00:33-0400\n"
-"PO-Revision-Date: 2011-12-01 17:51+0200\n"
+"PO-Revision-Date: 2012-07-14 00:44+0200\n"
 "Last-Translator: samy boutayeb <s.boutayeb@free.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fr\n"
@@ -87,7 +87,7 @@ msgstr "Plein écran"
 
 #: PortfolioActivity.py:308
 msgid "Update description"
-msgstr ""
+msgstr "Actualiser la description"
 
 #: PortfolioActivity.py:331 PortfolioActivity.py:847
 msgid "Start recording"

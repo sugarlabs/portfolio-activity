@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#Copyright (c) 2011 Walter Bender
+#Copyright (c) 2011, 2012 Walter Bender
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -391,14 +391,9 @@ class PortfolioActivity(activity.Activity):
         ''' Make stars to include with thumbnails '''
         self._favorites = []
         for i in range(self._nobjects):
-            if self.dsobjects[i].metadata['keep'] == '1':
-                self._favorites.append(Sprite(self._sprites, 0, 0,
-                                             self._fav_pixbuf))
-                self._favorites[-1].type = 'star'
-            else:
-                self._favorites.append(Sprite(self._sprites, 0, 0,
-                                             self._unfav_pixbuf))
-                self._favorites[-1].type = 'unstar'
+            self._favorites.append(Sprite(self._sprites, 0, 0,
+                                          self._fav_pixbuf))
+            self._favorites[-1].type = 'star'
             self._favorites[-1].set_layer(STAR)
 
     def _find_starred(self):
@@ -460,34 +455,14 @@ class PortfolioActivity(activity.Activity):
         self._timeout_id = gobject.timeout_add(int(self._rate * 1000),
                                                self._loop)
 
-    def _bump_test(self):
-        ''' Test for accelerometer event (XO 1.75 only). '''
-        if self._thumbnail_mode:
-            return
-
-        self._bump_id = None
-
-        fh = open('/sys/devices/platform/lis3lv02d/position')
-        string = fh.read()
-        fh.close()
-        xyz = string[1:-2].split(',')
-        dx = int(xyz[0])
-
-        if dx > 250:
-            if self.i < self._nobjects - 2:
-                self.i += 1
-                self._show_slide()
-        elif dx < -250:
-            if self.i > 0:
-                self.i -= 1
-                self._show_slide()
-        else:
-            self._bump_id = gobject.timeout_add(int(100), self._bump_test)
-
     def _save_as_pdf_cb(self, button=None):
         ''' Export an PDF version of the slideshow to the Journal. '''
         _logger.debug('saving to PDF...')
-        tmp_file = save_pdf(self, profile.get_nick_name())
+        if 'description' in self.metadata:
+            tmp_file = save_pdf(self, profile.get_nick_name(),
+                                description=self.metadata['description'])
+        else:
+            tmp_file = save_pdf(self, profile.get_nick_name())
 
         _logger.debug('copying PDF file to Journal...')
         dsobject = datastore.create()
@@ -610,11 +585,6 @@ class PortfolioActivity(activity.Activity):
         else:
             self._playback_button.set_icon('media-playback-start-insensitive')
             self._playback_button.set_tooltip(_('Nothing to play'))
-
-        if self._hw == XO175:
-            if hasattr(self, '_bump_id') and self._bump_id is not None:
-                gobject.source_remove(self._bump_id)
-            self._bump_id = gobject.timeout_add(1000, self._bump_test)
 
     def _slides_cb(self, button=None):
         if self._thumbnail_mode:
@@ -747,12 +717,10 @@ class PortfolioActivity(activity.Activity):
             spr.set_shape(self._unfav_pixbuf)
             spr.type = 'unstar'
             i = self._favorites.index(spr)
-            self.dsobjects[i].metadata['keep'] = '0'
         elif spr.type == 'unstar':
             spr.set_shape(self._fav_pixbuf)
             spr.type = 'star'
             i = self._favorites.index(spr)
-            self.dsobjects[i].metadata['keep'] = '1'
 
         # Are we clicking on a thumbnail?
         if not self._spr_is_thumbnail(spr):

@@ -33,7 +33,7 @@ LEFT_MARGIN = 10
 TOP_MARGIN = 20
 
 
-def save_pdf(activity,  nick):
+def save_pdf(activity,  nick, description=None):
     ''' Output a PDF document from the title, pictures, and descriptions '''
 
     if len(activity.dsobjects) == 0:
@@ -49,6 +49,9 @@ def save_pdf(activity,  nick):
     show_text(cr, fd, nick, HEAD, LEFT_MARGIN, TOP_MARGIN)
     show_text(cr, fd, time.strftime('%x', time.localtime()),
               BODY, LEFT_MARGIN, TOP_MARGIN + 3 * HEAD)
+    if description is not None:
+        show_text(cr, fd, description,
+                  BODY, LEFT_MARGIN, TOP_MARGIN + 4 * HEAD)
     cr.show_page()
 
     for i, dsobj in enumerate(activity.dsobjects):

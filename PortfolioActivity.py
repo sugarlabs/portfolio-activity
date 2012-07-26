@@ -469,7 +469,6 @@ class PortfolioActivity(activity.Activity):
         else:
             tmp_file = save_pdf(self, profile.get_nick_name())
 
-        _logger.debug('copying PDF file to Journal...')
         dsobject = datastore.create()
         dsobject.metadata['title'] = profile.get_nick_name() + ' ' + \
                                      _('Portfolio')
@@ -538,7 +537,6 @@ class PortfolioActivity(activity.Activity):
         else:
             self._next.set_image(self.next_pixbuf)
 
-        # _logger.debug('Showing slide %d', self.i)
         pixbuf = None
         media_object = False
         mimetype = None
@@ -715,18 +713,14 @@ class PortfolioActivity(activity.Activity):
 
         # Are we clicking on a title or description?
         if spr.type == 'title' or spr.type == 'description':
-            _logger.debug(spr.type)
             if spr == self._selected_spr:
-                _logger.debug('already selected')
                 return True
             elif self._selected_spr is not None:
-                _logger.debug('unselecting')
                 self._unselect()
             self._selected_spr = spr
             label = '%s%s' % (self._selected_spr.labels[0], CURSOR)
             self._selected_spr.set_label(label)
         else:
-            _logger.debug('None')
             self._unselect()
 
         # Are we clicking on a button?
@@ -933,7 +927,6 @@ class PortfolioActivity(activity.Activity):
 
     def _keypress_cb(self, area, event):
         ''' Keyboard '''
-        _logger.debug('keypress event')
         keyname = gtk.gdk.keyval_name(event.keyval)
         keyunicode = gtk.gdk.keyval_to_unicode(event.keyval)
         if event.get_state() & gtk.gdk.MOD1_MASK:

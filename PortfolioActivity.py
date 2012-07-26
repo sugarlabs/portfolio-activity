@@ -722,12 +722,10 @@ class PortfolioActivity(activity.Activity):
             spr.set_shape(self._unfav_pixbuf)
             spr.type = 'unstar'
             i = self._favorites.index(spr)
-            self.dsobjects[i].metadata['keep'] = '0'
         elif spr.type == 'unstar':
             spr.set_shape(self._fav_pixbuf)
             spr.type = 'star'
             i = self._favorites.index(spr)
-            self.dsobjects[i].metadata['keep'] = '1'
 
         # Are we clicking on a thumbnail?
         if not self._spr_is_thumbnail(spr):

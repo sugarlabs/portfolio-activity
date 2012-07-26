@@ -111,7 +111,7 @@ WHITE_SPACE = ['space', 'Tab']
 
 CURSOR = '█'
 RETURN = '⏎'
-
+NEWLINE = '\n'
 
 class PortfolioActivity(activity.Activity):
     ''' Make a slideshow from starred Journal entries. '''
@@ -140,6 +140,7 @@ class PortfolioActivity(activity.Activity):
         self._keypress = None
         self._selected_spr = None
         self._dead_key = ''
+        self._saved_string = ''
 
     def _setup_canvas(self):
         ''' Create a canvas '''
@@ -160,6 +161,8 @@ class PortfolioActivity(activity.Activity):
         self._canvas.connect("button-release-event", self._button_release_cb)
         self._canvas.connect("motion-notify-event", self._mouse_move_cb)
         self._canvas.connect("key-press-event", self._keypress_cb)
+
+        self._canvas.grab_focus()
 
     def _setup_workspace(self):
         ''' Prepare to render the datastore entries. '''
@@ -406,6 +409,10 @@ class PortfolioActivity(activity.Activity):
         self.dsobjects, self._nobjects = datastore.find({'keep': '1'})
         _logger.debug('found %d starred items', self._nobjects)
 
+    def _first_cb(self, button=None):
+        self.i = 0
+        self._show_slide(direction=-1)
+
     def _prev_cb(self, button=None):
         ''' The previous button has been clicked; goto previous slide. '''
         if self.i > 0:
@@ -417,6 +424,10 @@ class PortfolioActivity(activity.Activity):
         if self.i < self._nobjects - 1:
             self.i += 1
             self._show_slide()
+
+    def _last_cb(self, button=None):
+        self.i = self._nobjects - 1
+        self._show_slide()
 
     def _rescan_cb(self, button=None):
         ''' Rescan the Journal for changes in starred items. '''
@@ -701,7 +712,6 @@ class PortfolioActivity(activity.Activity):
 
     def _button_press_cb(self, win, event):
         ''' The mouse button was pressed. Is it on a thumbnail sprite? '''
-        win.grab_focus()
         x, y = map(int, event.get_coords())
 
         self._dragpos = [x, y]
@@ -718,6 +728,7 @@ class PortfolioActivity(activity.Activity):
             elif self._selected_spr is not None:
                 self._unselect()
             self._selected_spr = spr
+            self._saved_string = spr.labels[0]
             label = '%s%s' % (self._selected_spr.labels[0], CURSOR)
             self._selected_spr.set_label(label)
         else:
@@ -947,6 +958,15 @@ class PortfolioActivity(activity.Activity):
                 exit()
         elif self._selected_spr is not None:
             self.process_alphanumeric_input(keyname, keyunicode)
+        elif not self._thumbnail_mode:
+            if keyname == 'Home':
+                self._first_cb()
+            elif keyname == 'Left':
+                self._prev_cb()
+            elif keyname == 'Right' or keyname == 'space':
+                self._next_cb()
+            elif keyname == 'End':
+                self._last_cb()
         return True
 
     def process_alphanumeric_input(self, keyname, keyunicode):
@@ -1005,12 +1025,19 @@ class PortfolioActivity(activity.Activity):
             newleft = oldleft + oldright
             oldright = ''
         elif keyname == 'Return':
-            newleft = oldleft + '\n'  # RETURN
+            newleft = oldleft + NEWLINE
         elif keyname == 'Down':
-            self._unselect()
-            return
-        elif keyname == 'Up' or keyname == 'Escape':  # Restore previous state
-            self._selected_spr.set_label(self.saved_string)
+            if NEWLINE in oldright:
+                parts = oldright.split(NEWLINE)
+                newleft = oldleft + string.join(parts[0:2], NEWLINE)
+                oldright = NEWLINE + string.join(parts[2:], NEWLINE)
+        elif keyname == 'Up':
+            if NEWLINE in oldleft:
+                parts = oldleft.split(NEWLINE)
+                newleft = string.join(parts[0:-1], NEWLINE)
+                oldright = NEWLINE + parts[-1] + oldright
+        elif keyname == 'Escape':  # Restore previous state
+            self._selected_spr.set_label(self._saved_string)
             self._unselect()
             return
         else:
@@ -1024,8 +1051,8 @@ class PortfolioActivity(activity.Activity):
                 else:
                     newleft = oldleft
             elif keyunicode == -1:  # clipboard text
-                if keyname == '\n':
-                    newleft = oldleft + RETURN
+                if keyname == NEWLINE:
+                    newleft = oldleft + NEWLINE
                 else:
                     newleft = oldleft + keyname
         self._selected_spr.set_label("%s%s%s" % (newleft, CURSOR, oldright))
@@ -1039,3 +1066,4 @@ class PortfolioActivity(activity.Activity):
                     self._selected_spr.labels[0]
                 self._dirty = True
             self._selected_spr = None
+            self._saved_string = ''

@@ -391,14 +391,9 @@ class PortfolioActivity(activity.Activity):
         ''' Make stars to include with thumbnails '''
         self._favorites = []
         for i in range(self._nobjects):
-            if self.dsobjects[i].metadata['keep'] == '1':
-                self._favorites.append(Sprite(self._sprites, 0, 0,
-                                             self._fav_pixbuf))
-                self._favorites[-1].type = 'star'
-            else:
-                self._favorites.append(Sprite(self._sprites, 0, 0,
-                                             self._unfav_pixbuf))
-                self._favorites[-1].type = 'unstar'
+            self._favorites.append(Sprite(self._sprites, 0, 0,
+                                          self._fav_pixbuf))
+            self._favorites[-1].type = 'star'
             self._favorites[-1].set_layer(STAR)
 
     def _find_starred(self):

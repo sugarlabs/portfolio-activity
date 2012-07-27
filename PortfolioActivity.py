@@ -16,6 +16,7 @@ import gobject
 import subprocess
 import os
 import time
+import string
 from shutil import copyfile
 
 from math import sqrt, ceil
@@ -88,6 +89,29 @@ MIDDLE = 2
 BOTTOM = 1
 HIDE = 0
 
+DEAD_KEYS = ['grave', 'acute', 'circumflex', 'tilde', 'diaeresis', 'abovering']
+DEAD_DICTS = [{'A': 192, 'E': 200, 'I': 204, 'O': 210, 'U': 217, 'a': 224,
+               'e': 232, 'i': 236, 'o': 242, 'u': 249},
+              {'A': 193, 'E': 201, 'I': 205, 'O': 211, 'U': 218, 'a': 225,
+               'e': 233, 'i': 237, 'o': 243, 'u': 250},
+              {'A': 194, 'E': 202, 'I': 206, 'O': 212, 'U': 219, 'a': 226,
+               'e': 234, 'i': 238, 'o': 244, 'u': 251},
+              {'A': 195, 'O': 211, 'N': 209, 'U': 360, 'a': 227, 'o': 245,
+               'n': 241, 'u': 361},
+              {'A': 196, 'E': 203, 'I': 207, 'O': 211, 'U': 218, 'a': 228,
+               'e': 235, 'i': 239, 'o': 245, 'u': 252},
+              {'A': 197, 'a': 229}]
+NOISE_KEYS = ['Shift_L', 'Shift_R', 'Control_L', 'Caps_Lock', 'Pause',
+              'Alt_L', 'Alt_R', 'KP_Enter', 'ISO_Level3_Shift', 'KP_Divide',
+              'Escape', 'Return', 'KP_Page_Up', 'Up', 'Down', 'Menu',
+              'Left', 'Right', 'KP_Home', 'KP_End', 'KP_Up', 'Super_L',
+              'KP_Down', 'KP_Left', 'KP_Right', 'KP_Page_Down', 'Scroll_Lock',
+              'Page_Down', 'Page_Up']
+WHITE_SPACE = ['space', 'Tab']
+
+CURSOR = '█'
+RETURN = '⏎'
+NEWLINE = '\n'
 
 class PortfolioActivity(activity.Activity):
     ''' Make a slideshow from starred Journal entries. '''
@@ -113,6 +137,11 @@ class PortfolioActivity(activity.Activity):
 
         self._dirty = False
 
+        self._keypress = None
+        self._selected_spr = None
+        self._dead_key = ''
+        self._saved_string = ''
+
     def _setup_canvas(self):
         ''' Create a canvas '''
         self._canvas = gtk.DrawingArea()
@@ -131,6 +160,9 @@ class PortfolioActivity(activity.Activity):
         self._canvas.connect("button-press-event", self._button_press_cb)
         self._canvas.connect("button-release-event", self._button_release_cb)
         self._canvas.connect("motion-notify-event", self._mouse_move_cb)
+        self._canvas.connect("key-press-event", self._keypress_cb)
+
+        self._canvas.grab_focus()
 
     def _setup_workspace(self):
         ''' Prepare to render the datastore entries. '''
@@ -163,12 +195,35 @@ class PortfolioActivity(activity.Activity):
         else:
             star_size = int(150. / int(ceil(sqrt(self._nobjects))))
         self._fav_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-            os.path.join(activity.get_bundle_path(),
+            os.path.join(activity.get_bundle_path(), 'icons',
                          'favorite-on.svg'), star_size, star_size)
         self._unfav_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-            os.path.join(activity.get_bundle_path(),
+            os.path.join(activity.get_bundle_path(), 'icons',
                          'favorite-off.svg'), star_size, star_size)
         self._make_stars()
+
+        self.prev_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+            os.path.join(activity.get_bundle_path(), 'icons',
+                         'go-previous.svg'), 55, 55)
+        self.next_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+            os.path.join(activity.get_bundle_path(), 'icons',
+                         'go-next.svg'), 55, 55)
+        self.prev_off_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+            os.path.join(activity.get_bundle_path(), 'icons',
+                         'go-previous-inactive.svg'), 55, 55)
+        self.next_off_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+            os.path.join(activity.get_bundle_path(), 'icons',
+                         'go-next-inactive.svg'), 55, 55)
+
+        self._prev = Sprite(
+            self._sprites, 0, int((self._height - 55)/ 2), self.prev_off_pixbuf)
+        self._prev.set_layer(DRAG)
+        self._prev.type = 'prev'
+        self._next = Sprite(
+            self._sprites, self._width - 55,
+            int((self._height - 55)/ 2), self.next_pixbuf)
+        self._next.set_layer(DRAG)
+        self._next.type = 'next'
 
         self._help = Sprite(
             self._sprites,
@@ -184,6 +239,7 @@ class PortfolioActivity(activity.Activity):
                           self.colors)))
         self._title.set_label_attributes(int(titlef * self._scale),
                                          rescale=False)
+        self._title.type = 'title'
         self._preview = Sprite(self._sprites,
             int((self._width - int(PREVIEWW * self._scale)) / 2),
             int(PREVIEWY * self._scale), svg_str_to_pixbuf(genblank(
@@ -198,6 +254,7 @@ class PortfolioActivity(activity.Activity):
                           int(DESCRIPTIONH * self._scale),
                           self.colors)))
         self._description.set_label_attributes(int(descriptionf * self._scale))
+        self._description.type = 'description'
 
         self._my_canvas = Sprite(
             self._sprites, 0, 0, svg_str_to_pixbuf(genblank(
@@ -260,21 +317,17 @@ class PortfolioActivity(activity.Activity):
             toolbox.set_current_toolbar(1)
             self.toolbar = primary_toolbar
 
-        self._prev_button = button_factory(
-            'go-previous-inactive', self.toolbar, self._prev_cb,
-            tooltip=_('Prev slide'), accelerator='<Ctrl>P')
+        if HAVE_TOOLBOX:
+            toolbox.toolbar.insert(record_toolbar_button, -1)
+            toolbox.toolbar.insert(adjust_toolbar_button, -1)
 
-        self._next_button = button_factory(
-            'go-next', self.toolbar, self._next_cb,
-            tooltip=_('Next slide'), accelerator='<Ctrl>N')
+        button_factory('view-fullscreen', self.toolbar,
+                       self.do_fullscreen_cb, tooltip=_('Fullscreen'),
+                       accelerator='<Alt>Return')
 
         self._auto_button = button_factory(
             'media-playback-start', self.toolbar,
             self._autoplay_cb, tooltip=_('Autoplay'))
-
-        if HAVE_TOOLBOX:
-            toolbox.toolbar.insert(adjust_toolbar_button, -1)
-            toolbox.toolbar.insert(record_toolbar_button, -1)
 
         label = label_factory(adjust_toolbar, _('Adjust playback speed'))
         label.show()
@@ -302,34 +355,7 @@ class PortfolioActivity(activity.Activity):
                       tooltip=_('Thumbnail view'),
                       group=slide_button)
 
-        button_factory('view-fullscreen', self.toolbar,
-                       self.do_fullscreen_cb, tooltip=_('Fullscreen'),
-                       accelerator='<Alt>Return')
-
         separator_factory(self.toolbar)
-
-        journal_button = button_factory(
-            'write-journal', self.toolbar, self._do_journal_cb,
-            tooltip=_('Update description'))
-        self._palette = journal_button.get_palette()
-        msg_box = gtk.HBox()
-
-        sw = gtk.ScrolledWindow()
-        sw.set_size_request(int(gtk.gdk.screen_width() / 2),
-                            2 * style.GRID_CELL_SIZE)
-        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self._text_view = gtk.TextView()
-        self._text_view.set_left_margin(style.DEFAULT_PADDING)
-        self._text_view.set_right_margin(style.DEFAULT_PADDING)
-        self._text_view.set_wrap_mode(gtk.WRAP_WORD_CHAR)
-        self._text_view.connect('focus-out-event',
-                               self._text_view_focus_out_event_cb)
-        sw.add(self._text_view)
-        sw.show()
-        msg_box.pack_start(sw, expand=False)
-        msg_box.show_all()
-
-        self._palette.set_content(msg_box)
 
         label_factory(record_toolbar, _('Record a sound') + ':')
         self._record_button = button_factory(
@@ -365,24 +391,6 @@ class PortfolioActivity(activity.Activity):
             toolbox.toolbar.insert(stop_button, -1)
             stop_button.show()
 
-    def _do_journal_cb(self, button):
-        self._dirty = True
-        if self._palette:
-            if not self._palette.is_up():
-                self._palette.popup(immediate=True,
-                                    state=self._palette.SECONDARY)
-            else:
-                self._palette.popdown(immediate=True)
-            return 
-
-    def _text_view_focus_out_event_cb(self, widget, event):
-        buffer = self._text_view.get_buffer()
-        start_iter = buffer.get_start_iter()
-        end_iter = buffer.get_end_iter()
-        self.dsobjects[self.i].metadata['description'] = \
-            buffer.get_text(start_iter, end_iter)
-        self._show_slide()
-
     def _destroy_cb(self, win, event):
         ''' Clean up on the way out. '''
         gtk.main_quit()
@@ -401,6 +409,10 @@ class PortfolioActivity(activity.Activity):
         self.dsobjects, self._nobjects = datastore.find({'keep': '1'})
         _logger.debug('found %d starred items', self._nobjects)
 
+    def _first_cb(self, button=None):
+        self.i = 0
+        self._show_slide(direction=-1)
+
     def _prev_cb(self, button=None):
         ''' The previous button has been clicked; goto previous slide. '''
         if self.i > 0:
@@ -412,6 +424,10 @@ class PortfolioActivity(activity.Activity):
         if self.i < self._nobjects - 1:
             self.i += 1
             self._show_slide()
+
+    def _last_cb(self, button=None):
+        self.i = self._nobjects - 1
+        self._show_slide()
 
     def _rescan_cb(self, button=None):
         ''' Rescan the Journal for changes in starred items. '''
@@ -464,7 +480,6 @@ class PortfolioActivity(activity.Activity):
         else:
             tmp_file = save_pdf(self, profile.get_nick_name())
 
-        _logger.debug('copying PDF file to Journal...')
         dsobject = datastore.create()
         dsobject.metadata['title'] = profile.get_nick_name() + ' ' + \
                                      _('Portfolio')
@@ -502,8 +517,8 @@ class PortfolioActivity(activity.Activity):
         self._clear_screen()
 
         if self._nobjects == 0:
-            self._prev_button.set_icon('go-previous-inactive')
-            self._next_button.set_icon('go-next-inactive')
+            self._prev.set_image(self.prev_off_pixbuf)
+            self._next.set_image(self.next_off_pixbuf)
             self._description.set_label(
                 _('Do you have any items in your Journal starred?'))
             self._help.set_layer(TOP)
@@ -511,12 +526,9 @@ class PortfolioActivity(activity.Activity):
             return
 
         # Skip slide if unstarred
-        # To do: make this check loop (but not forever)
-        # if self._favorites[self.i].type == 'unstar':
-        if self.dsobjects[self.i].metadata['keep'] == '0':
+        if self._favorites[self.i].type == 'unstar':
             counter = 0
-            while self.dsobjects[self.i].metadata['keep'] == '0':
-            # while self._favorites[self.i].type == 'unstar':
+            while self._favorites[self.i].type == 'unstar':
                 self.i += direction
                 if self.i < 0:
                     self.i = self._nobjects - 1
@@ -525,19 +537,17 @@ class PortfolioActivity(activity.Activity):
                 counter += 1
                 if counter == self._nobjects:
                     _logger.debug('No _favorites: nothing to show')
-                    # No _favorites
                     return
 
-        if self.i == 0:
-            self._prev_button.set_icon('go-previous-inactive')
+        if self.i == 0:            
+            self._prev.set_image(self.prev_off_pixbuf)
         else:
-            self._prev_button.set_icon('go-previous')
+            self._prev.set_image(self.prev_pixbuf)
         if self.i == self._nobjects - 1:
-            self._next_button.set_icon('go-next-inactive')
+            self._next.set_image(self.next_off_pixbuf)
         else:
-            self._next_button.set_icon('go-next')
+            self._next.set_image(self.next_pixbuf)
 
-        # _logger.debug('Showing slide %d', self.i)
         pixbuf = None
         media_object = False
         mimetype = None
@@ -568,9 +578,6 @@ class PortfolioActivity(activity.Activity):
             self._description.set_label(
                 self.dsobjects[self.i].metadata['description'])
             self._description.set_layer(MIDDLE)
-            text_buffer = gtk.TextBuffer()
-            text_buffer.set_text(self.dsobjects[self.i].metadata['description'])
-            self._text_view.set_buffer(text_buffer)
         else:
             self._description.set_label('')
             self._description.hide()
@@ -600,8 +607,8 @@ class PortfolioActivity(activity.Activity):
             self._thumbnail_mode = True
             self._clear_screen()
 
-            self._prev_button.set_icon('go-previous-inactive')
-            self._next_button.set_icon('go-next-inactive')
+            self._prev.hide()
+            self._next.hide()
 
             n = int(ceil(sqrt(self._nobjects)))
             if n > 0:
@@ -622,6 +629,9 @@ class PortfolioActivity(activity.Activity):
                     x = x_off
                     y += h
             self.i = 0  # Reset position in slideshow to the beginning
+        else:
+            self._prev.set_layer(DRAG)
+            self._next.set_layer(DRAG)
         return False
 
     def _show_thumb(self, x, y, w, h):
@@ -702,7 +712,6 @@ class PortfolioActivity(activity.Activity):
 
     def _button_press_cb(self, win, event):
         ''' The mouse button was pressed. Is it on a thumbnail sprite? '''
-        win.grab_focus()
         x, y = map(int, event.get_coords())
 
         self._dragpos = [x, y]
@@ -711,6 +720,27 @@ class PortfolioActivity(activity.Activity):
         spr = self._sprites.find_sprite((x, y))
         self._press = None
         self._release = None
+
+        # Are we clicking on a title or description?
+        if spr.type == 'title' or spr.type == 'description':
+            if spr == self._selected_spr:
+                return True
+            elif self._selected_spr is not None:
+                self._unselect()
+            self._selected_spr = spr
+            self._saved_string = spr.labels[0]
+            label = '%s%s' % (self._selected_spr.labels[0], CURSOR)
+            self._selected_spr.set_label(label)
+        else:
+            self._unselect()
+
+        # Are we clicking on a button?
+        if spr.type == 'next':
+            self._next_cb()
+            return True
+        elif spr.type == 'prev':
+            self._prev_cb()
+            return True
 
         # Are we clicking on a star?
         if spr.type == 'star':
@@ -788,8 +818,6 @@ class PortfolioActivity(activity.Activity):
             self._press.set_layer(TOP)
             self._press = None
             self._release = None
-        else:
-            self._next_cb()
         return False
 
     def _unit_combo_cb(self, arg=None):
@@ -888,8 +916,8 @@ class PortfolioActivity(activity.Activity):
             jobject = datastore.get(i.object_id)
             if 'description' in i.metadata:
                 jobject.metadata['description'] = i.metadata['description']
-            if 'keep' in i.metadata:
-                jobject.metadata['keep'] = i.metadata['keep']
+            if 'title' in i.metadata:
+                jobject.metadata['title'] = i.metadata['title']
             datastore.write(jobject, update_mtime=False,
                             reply_handler=self.datastore_write_cb,
                             error_handler=self.datastore_write_error_cb)
@@ -907,3 +935,135 @@ class PortfolioActivity(activity.Activity):
         self._alert.props.msg = msg
         self.add_alert(self._alert)
         self._alert.show()
+
+    def _keypress_cb(self, area, event):
+        ''' Keyboard '''
+        keyname = gtk.gdk.keyval_name(event.keyval)
+        keyunicode = gtk.gdk.keyval_to_unicode(event.keyval)
+        if event.get_state() & gtk.gdk.MOD1_MASK:
+            alt_mask = True
+            alt_flag = 'T'
+        else:
+            alt_mask = False
+            alt_flag = 'F'
+        self._key_press(alt_mask, keyname, keyunicode)
+        return keyname
+
+    def _key_press(self, alt_mask, keyname, keyunicode):
+        if keyname is None:
+            return False
+        self._keypress = keyname
+        if alt_mask:
+            if keyname == 'q':
+                exit()
+        elif self._selected_spr is not None:
+            self.process_alphanumeric_input(keyname, keyunicode)
+        elif not self._thumbnail_mode:
+            if keyname == 'Home':
+                self._first_cb()
+            elif keyname == 'Left':
+                self._prev_cb()
+            elif keyname == 'Right' or keyname == 'space':
+                self._next_cb()
+            elif keyname == 'End':
+                self._last_cb()
+        return True
+
+    def process_alphanumeric_input(self, keyname, keyunicode):
+        ''' Make sure alphanumeric input is properly parsed. '''
+        if len(self._selected_spr.labels[0]) > 0:
+            c = self._selected_spr.labels[0].count(CURSOR)
+            if c == 0:
+                oldleft = self._selected_spr.labels[0]
+                oldright = ''
+            elif len(self._selected_spr.labels[0]) == 1:
+                oldleft = ''
+                oldright = ''
+            elif CURSOR in self._selected_spr.labels[0]:
+                oldleft, oldright = \
+                    self._selected_spr.labels[0].split(CURSOR)
+            else:  # Where did our cursor go?
+                oldleft = self._selected_spr.labels[0]
+                oldright = ''
+        else:
+            oldleft = ''
+            oldright = ''
+        newleft = oldleft
+        if keyname in ['Shift_L', 'Shift_R', 'Control_L', 'Caps_Lock', \
+                       'Alt_L', 'Alt_R', 'KP_Enter', 'ISO_Level3_Shift']:
+            keyname = ''
+            keyunicode = 0
+        # Hack until I sort out input and unicode and dead keys,
+        if keyname[0:5] == 'dead_':
+            self._dead_key = keyname
+            keyname = ''
+            keyunicode = 0
+        if keyname == 'space':
+            keyunicode = 32
+        elif keyname == 'Tab':
+            keyunicode = 9
+        if keyname == 'BackSpace':
+            if len(oldleft) > 1:
+                newleft = oldleft[:len(oldleft) - 1]
+            else:
+                newleft = ''
+        if keyname == 'Delete':
+            if len(oldright) > 0:
+                oldright = oldright[1:]
+        elif keyname == 'Home':
+            oldright = oldleft + oldright
+            newleft = ''
+        elif keyname == 'Left':
+            if len(oldleft) > 0:
+                oldright = oldleft[len(oldleft) - 1:] + oldright
+                newleft = oldleft[:len(oldleft) - 1]
+        elif keyname == 'Right':
+            if len(oldright) > 0:
+                newleft = oldleft + oldright[0]
+                oldright = oldright[1:]
+        elif keyname == 'End':
+            newleft = oldleft + oldright
+            oldright = ''
+        elif keyname == 'Return':
+            newleft = oldleft + NEWLINE
+        elif keyname == 'Down':
+            if NEWLINE in oldright:
+                parts = oldright.split(NEWLINE)
+                newleft = oldleft + string.join(parts[0:2], NEWLINE)
+                oldright = NEWLINE + string.join(parts[2:], NEWLINE)
+        elif keyname == 'Up':
+            if NEWLINE in oldleft:
+                parts = oldleft.split(NEWLINE)
+                newleft = string.join(parts[0:-1], NEWLINE)
+                oldright = NEWLINE + parts[-1] + oldright
+        elif keyname == 'Escape':  # Restore previous state
+            self._selected_spr.set_label(self._saved_string)
+            self._unselect()
+            return
+        else:
+            if self._dead_key is not '':
+                keyunicode = \
+                    DEAD_DICTS[DEAD_KEYS.index(self._dead_key[5:])][keyname]
+                self._dead_key = ''
+            if keyunicode > 0:
+                if unichr(keyunicode) != '\x00':
+                    newleft = oldleft + unichr(keyunicode)
+                else:
+                    newleft = oldleft
+            elif keyunicode == -1:  # clipboard text
+                if keyname == NEWLINE:
+                    newleft = oldleft + NEWLINE
+                else:
+                    newleft = oldleft + keyname
+        self._selected_spr.set_label("%s%s%s" % (newleft, CURSOR, oldright))
+
+    def _unselect(self):
+        if self._selected_spr is not None:
+            if CURSOR in self._selected_spr.labels[0]:
+                parts = self._selected_spr.labels[0].split(CURSOR)
+                self._selected_spr.set_label(string.join(parts))
+                self.dsobjects[self.i].metadata[self._selected_spr.type] = \
+                    self._selected_spr.labels[0]
+                self._dirty = True
+            self._selected_spr = None
+            self._saved_string = ''

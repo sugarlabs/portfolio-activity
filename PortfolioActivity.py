@@ -1361,24 +1361,20 @@ class PortfolioActivity(activity.Activity):
     def event_received_cb(self, text):
         ''' Data is passed as tuples: cmd:text '''
         _logger.debug('<<< %s' % (text[0]))
+        data = text[2:]
         if text[0] == 's':  # shared journal objects
-            e, data = text.split(':')
             self._restore_cursor()
             self._load(data)
         elif text[0] == 'c': # colors
-            e, data = text.split(':')
             self._update_colors(data)
         elif text[0] == 'd':  # description has changed
-            e, data = text.split(':')
             self._update_description(data)
         elif text[0] == 't':  # title has changed
-            e, data = text.split(':')
             self._update_title(data)
         elif text[0] == 'j':  # someone new has joined
-            e, buddy = text.split(':')
-            _logger.debug('%s has joined' % (buddy))
-            if buddy not in self._buddies:
-                self._buddies.append(buddy)
+            _logger.debug('%s has joined' % (data))
+            if data not in self._buddies:
+                self._buddies.append(data)
             if self.initiating:
                 self._share_colors()
                 self._share_slides()

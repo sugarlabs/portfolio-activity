@@ -127,22 +127,47 @@ def load_svg_from_file(file_path, width, height):
     return gtk.gdk.pixbuf_new_from_file_at_size(file_path, width, height)
 
 
-def image_to_base64(pixbuf, path_name):
-    """ Convert an image to base64-encoded data """
-    file_name = os.path.join(path_name, 'imagetmp.png')
-    if pixbuf != None:
-        pixbuf.save(file_name, "png")
-    return file_to_base64(file_name, path_name)
-
-
-def file_to_base64(file_name, path_name):
-    base64 = os.path.join(path_name, 'base64tmp')
-    cmd = "base64 <" + file_name + " >" + base64
+def file_to_base64(activity, path):
+    ''' Given a file, convert its contents to base64 '''
+    base64 = os.path.join(get_path(activity, 'instance'), 'base64tmp')
+    cmd = 'base64 <' + path + ' >' + base64
     subprocess.check_call(cmd, shell=True)
     file_handle = open(base64, 'r')
     data = file_handle.read()
     file_handle.close()
+    os.remove(base64)
     return data
+
+
+def pixbuf_to_base64(activity, pixbuf, width=100, height=75):
+    ''' Convert pixbuf to base64-encoded data '''
+    png_file = os.path.join(get_path(activity, 'instance'), 'imagetmp.png')
+    if pixbuf != None:
+        pixbuf = pixbuf.scale_simple(width, height, gtk.gdk.INTERP_NEAREST)
+        pixbuf.save(png_file, "png")
+    data = file_to_base64(activity, png_file)
+    os.remove(png_file)
+    return data
+
+
+def base64_to_file(activity, data, path):
+    ''' Given a file, convert its contents from base64 '''
+    base64 = os.path.join(get_path(activity, 'instance'), 'base64tmp')
+    file_handle = open(base64, 'w')
+    file_handle.write(data)
+    file_handle.close()
+    cmd = 'base64 -d <' + base64 + '>' + path
+    subprocess.check_call(cmd, shell=True)
+    os.remove(base64)
+
+
+def base64_to_pixbuf(activity, data, width=300, height=225):
+    ''' Convert base64-encoded data to a pixbuf '''
+    png_file = os.path.join(get_path(activity, 'instance'), 'imagetmp.png')
+    base64_to_file(activity, data, png_file)
+    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(png_file, width, height)
+    os.remove(png_file)
+    return pixbuf
 
 
 def get_pixbuf_from_journal(dsobject, w, h):
@@ -157,6 +182,11 @@ def get_pixbuf_from_journal(dsobject, w, h):
         pixbuf = None
     pixbufloader.close()
     return pixbuf
+
+
+def get_pixbuf_from_file(file_path, w, h):
+    """ Load a pixbuf from a file. """
+    return gtk.gdk.pixbuf_new_from_file_at_size(file_path, w, h)
 
 
 def genblank(w, h, colors, stroke_width=1.0):

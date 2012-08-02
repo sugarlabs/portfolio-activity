@@ -1,3 +1,13 @@
+27
+
+ENHANCEMENTS:
+* New translations
+* Cleaned up thumbnail graphics
+* Added preliminary support for sharing comments
+
+BUG FIX:
+* Check mime type for images
+
 26
 
 ENHANCEMENTS:

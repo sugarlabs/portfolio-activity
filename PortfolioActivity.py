@@ -39,11 +39,12 @@ from sugar.graphics.alert import Alert
 
 from sprites import Sprites, Sprite
 from exportpdf import save_pdf
-from utils import get_path, lighter_color, svg_str_to_pixbuf, \
+from utils import get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle, \
     play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware, \
-    svg_rectangle
-from toolbar_utils import radio_factory, \
-    button_factory, separator_factory, combo_factory, label_factory
+    pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file
+    
+from toolbar_utils import radio_factory, button_factory, separator_factory, \
+    combo_factory, label_factory
 from grecord import Grecord
 
 from gettext import gettext as _
@@ -56,6 +57,31 @@ try:
     GRID_CELL_SIZE = style.GRID_CELL_SIZE
 except ImportError:
     GRID_CELL_SIZE = 0
+
+try:
+    _OLD_SUGAR_SYSTEM = False
+    import json
+    from json import load as jload
+    from json import dump as jdump
+except(ImportError, AttributeError):
+    try:
+        import simplejson as json
+        from simplejson import load as jload
+        from simplejson import dump as jdump
+    except ImportError:
+        _OLD_SUGAR_SYSTEM = True
+from StringIO import StringIO
+
+import telepathy
+from dbus.service import signal
+from dbus.gobject_service import ExportedGObject
+from sugar.presence import presenceservice
+from sugar.presence.tubeconn import TubeConnection
+
+
+SERVICE = 'org.sugarlabs.PortfolioActivity'
+IFACE = SERVICE
+PATH = '/org/sugarlabs/PortfolioActivity'
 
 # Size and position of title, preview image, and description
 PREVIEWW = 600
@@ -110,7 +136,6 @@ NOISE_KEYS = ['Shift_L', 'Shift_R', 'Control_L', 'Caps_Lock', 'Pause',
 WHITE_SPACE = ['space', 'Tab']
 
 CURSOR = '█'
-RETURN = '⏎'
 NEWLINE = '\n'
 
 class PortfolioActivity(activity.Activity):
@@ -121,26 +146,45 @@ class PortfolioActivity(activity.Activity):
         super(PortfolioActivity, self).__init__(handle)
 
         self.datapath = get_path(activity, 'instance')
+        self._buddies = [profile.get_nick_name()]
+        self._colors = profile.get_color().to_string().split(',')
+        self.initiating = None  # sharing (True) or joining (False)
+
+        self._width = gtk.gdk.screen_width()
+        self._height = gtk.gdk.screen_height()
+        self._scale = gtk.gdk.screen_height() / 900.
+
+        if hasattr(self, 'get_window') and \
+           hasattr(self.get_window(), 'get_cursor'):
+            self.old_cursor = self.get_window().get_cursor()
+        else:
+            self.old_cursor = None
 
         self._hw = get_hardware()
 
         self._setup_toolbars()
         self._setup_canvas()
-        self._setup_workspace()
 
+        self._uids = []
+        self._dirty = []
+        self._titles = []
+        self._previews = []
+        self._descriptions = []
         self._thumbs = []
         self._thumbnail_mode = False
+        self._find_starred()
+        self._setup_workspace()
 
         self._recording = False
         self._grecord = None
         self._alert = None
 
-        self._dirty = False
-
         self._keypress = None
         self._selected_spr = None
         self._dead_key = ''
         self._saved_string = ''
+
+        self._setup_presence_service()
 
     def _setup_canvas(self):
         ''' Create a canvas '''
@@ -166,17 +210,12 @@ class PortfolioActivity(activity.Activity):
 
     def _setup_workspace(self):
         ''' Prepare to render the datastore entries. '''
-        self.colors = profile.get_color().to_string().split(',')
 
         # Use the lighter color for the text background
-        if lighter_color(self.colors) == 0:
-            tmp = self.colors[0]
-            self.colors[0] = self.colors[1]
-            self.colors[1] = tmp
-
-        self._width = gtk.gdk.screen_width()
-        self._height = gtk.gdk.screen_height()
-        self._scale = gtk.gdk.screen_height() / 900.
+        if lighter_color(self._colors) == 0:
+            tmp = self._colors[0]
+            self._colors[0] = self._colors[1]
+            self._colors[1] = tmp
 
         if not HAVE_TOOLBOX and self._hw[0:2] == 'xo':
             titlef = 18
@@ -184,8 +223,6 @@ class PortfolioActivity(activity.Activity):
         else:
             titlef = 36
             descriptionf = 24
-
-        self._find_starred()
 
         # Generate the sprites we'll need...
         self._sprites = Sprites(self._canvas)
@@ -215,13 +252,12 @@ class PortfolioActivity(activity.Activity):
             os.path.join(activity.get_bundle_path(), 'icons',
                          'go-next-inactive.svg'), 55, 55)
 
-        self._prev = Sprite(
-            self._sprites, 0, int((self._height - 55)/ 2), self.prev_off_pixbuf)
+        self._prev = Sprite(self._sprites, 0, int((self._height - 55)/ 2),
+                            self.prev_off_pixbuf)
         self._prev.set_layer(DRAG)
         self._prev.type = 'prev'
-        self._next = Sprite(
-            self._sprites, self._width - 55,
-            int((self._height - 55)/ 2), self.next_pixbuf)
+        self._next = Sprite(self._sprites, self._width - 55,
+                            int((self._height - 55)/ 2), self.next_pixbuf)
         self._next.set_layer(DRAG)
         self._next.type = 'next'
 
@@ -236,7 +272,7 @@ class PortfolioActivity(activity.Activity):
 
         self._title = Sprite(self._sprites, 0, 0, svg_str_to_pixbuf(
                 genblank(self._width, int(TITLEH * self._scale),
-                          self.colors)))
+                          self._colors)))
         self._title.set_label_attributes(int(titlef * self._scale),
                                          rescale=False)
         self._title.type = 'title'
@@ -244,7 +280,7 @@ class PortfolioActivity(activity.Activity):
             int((self._width - int(PREVIEWW * self._scale)) / 2),
             int(PREVIEWY * self._scale), svg_str_to_pixbuf(genblank(
                     int(PREVIEWW * self._scale), int(PREVIEWH * self._scale),
-                    self.colors)))
+                    self._colors)))
 
         self._description = Sprite(self._sprites,
                                    int(DESCRIPTIONX * self._scale),
@@ -252,14 +288,14 @@ class PortfolioActivity(activity.Activity):
                                    svg_str_to_pixbuf(
                 genblank(int(self._width - (2 * DESCRIPTIONX * self._scale)),
                           int(DESCRIPTIONH * self._scale),
-                          self.colors)))
+                          self._colors)))
         self._description.set_label_attributes(int(descriptionf * self._scale))
         self._description.type = 'description'
 
         self._my_canvas = Sprite(
             self._sprites, 0, 0, svg_str_to_pixbuf(genblank(
-                    self._width, self._height, (self.colors[0],
-                                                self.colors[0]))))
+                    self._width, self._height, (self._colors[0],
+                                                self._colors[0]))))
         self._my_canvas.set_layer(BOTTOM)
 
         self._clear_screen()
@@ -273,7 +309,7 @@ class PortfolioActivity(activity.Activity):
     def _setup_toolbars(self):
         ''' Setup the toolbars. '''
 
-        self.max_participants = 1  # no sharing
+        self.max_participants = 2  # sharing
 
         if HAVE_TOOLBOX:
             toolbox = ToolbarBox()
@@ -347,15 +383,15 @@ class PortfolioActivity(activity.Activity):
 
         separator_factory(self.toolbar)
 
-        slide_button = radio_factory('slide-view', self.toolbar,
-                                     self._slides_cb, group=None,
-                                     tooltip=_('Slide view'))
+        self._slide_button = radio_factory('slide-view', self.toolbar,
+                                           self._slides_cb, group=None,
+                                           tooltip=_('Slide view'))
 
-        radio_factory('thumbs-view', self.toolbar, self._thumbs_cb,
-                      tooltip=_('Thumbnail view'),
-                      group=slide_button)
-
-        separator_factory(self.toolbar)
+        self._thumb_button = radio_factory('thumbs-view',
+                                           self.toolbar,
+                                           self._thumbs_cb,
+                                           tooltip=_('Thumbnail view'),
+                                           group=self._slide_button)
 
         label_factory(record_toolbar, _('Record a sound') + ':')
         self._record_button = button_factory(
@@ -406,8 +442,40 @@ class PortfolioActivity(activity.Activity):
 
     def _find_starred(self):
         ''' Find all the _favorites in the Journal. '''
+        self._uids = []
+        self._dirty = []
+        self._titles = []
+        self._previews = []
+        self._descriptions = []
+        self._thumbs = []
+        self._favorites = []
         self.dsobjects, self._nobjects = datastore.find({'keep': '1'})
         _logger.debug('found %d starred items', self._nobjects)
+        for dsobj in self.dsobjects:
+            self._uids.append(dsobj.object_id)
+            self._dirty.append(False)
+            if hasattr(dsobj, 'metadata'):
+                if 'title' in dsobj.metadata:
+                    self._titles.append(dsobj.metadata['title'])
+                else:
+                    self._titles.append('')
+                if 'description' in dsobj.metadata:
+                    self._descriptions.append(dsobj.metadata['description'])
+                else:
+                    self._descriptions.append('')
+                if 'mime_type' in dsobj.metadata and \
+                   dsobj.metadata['mime_type'][0:5] == 'image':
+                    self._previews.append(
+                        get_pixbuf_from_file(dsobj.file_path,
+                                             int(PREVIEWW * self._scale),
+                                             int(PREVIEWH * self._scale)))
+                elif 'preview' in dsobj.metadata:
+                    self._previews.append(
+                        get_pixbuf_from_journal(dsobj, 300, 225))
+                else:
+                    self._previews.append(None)
+            else:
+                _logger.debug('dsobj has no metadata')
 
     def _first_cb(self, button=None):
         self.i = 0
@@ -431,11 +499,12 @@ class PortfolioActivity(activity.Activity):
 
     def _rescan_cb(self, button=None):
         ''' Rescan the Journal for changes in starred items. '''
+        if self.initiating is not None and not self.initiating:
+            return
         self._help.hide()
         self._find_starred()
         self._make_stars()
         self.i = 0
-        # Reset thumbnails
         self._thumbs = []
         if self._thumbnail_mode:
             self._thumbnail_mode = False
@@ -473,6 +542,8 @@ class PortfolioActivity(activity.Activity):
 
     def _save_as_pdf_cb(self, button=None):
         ''' Export an PDF version of the slideshow to the Journal. '''
+        if self.initiating is not None and not self.initiating:
+            return
         _logger.debug('saving to PDF...')
         if 'description' in self.metadata:
             tmp_file = save_pdf(self, profile.get_nick_name(),
@@ -526,7 +597,8 @@ class PortfolioActivity(activity.Activity):
             return
 
         # Skip slide if unstarred
-        if self._favorites[self.i].type == 'unstar':
+        if self.initiating is None or self.initiating and \
+           self._favorites[self.i].type == 'unstar':
             counter = 0
             while self._favorites[self.i].type == 'unstar':
                 self.i += direction
@@ -548,18 +620,7 @@ class PortfolioActivity(activity.Activity):
         else:
             self._next.set_image(self.next_pixbuf)
 
-        pixbuf = None
-        media_object = False
-        mimetype = None
-        if 'mime_type' in self.dsobjects[self.i].metadata:
-            mimetype = self.dsobjects[self.i].metadata['mime_type']
-        if mimetype[0:5] == 'image':
-            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-                self.dsobjects[self.i].file_path, int(PREVIEWW * self._scale),
-                int(PREVIEWH * self._scale))
-            media_object = True
-        else:
-            pixbuf = get_pixbuf_from_journal(self.dsobjects[self.i], 300, 225)
+        pixbuf = self._previews[self.i]
 
         if pixbuf is not None:
             self._preview.set_shape(pixbuf.scale_simple(
@@ -571,16 +632,12 @@ class PortfolioActivity(activity.Activity):
             if self._preview is not None:
                 self._preview.hide()
 
-        self._title.set_label(self.dsobjects[self.i].metadata['title'])
+        # self._title.set_label(self.dsobjects[self.i].metadata['title'])
+        self._title.set_label(self._titles[self.i])
         self._title.set_layer(MIDDLE)
 
-        if 'description' in self.dsobjects[self.i].metadata:
-            self._description.set_label(
-                self.dsobjects[self.i].metadata['description'])
-            self._description.set_layer(MIDDLE)
-        else:
-            self._description.set_label('')
-            self._description.hide()
+        self._description.set_label(self._descriptions[self.i])
+        self._description.set_layer(MIDDLE)
 
         audio_obj = self._search_for_audio_note(
             self.dsobjects[self.i].object_id)
@@ -602,61 +659,57 @@ class PortfolioActivity(activity.Activity):
     def _thumbs_cb(self, button=None):
         ''' Toggle between thumbnail view and slideshow view. '''
         if not self._thumbnail_mode:
-            self._stop_autoplay()
-            self._current_slide = self.i
-            self._thumbnail_mode = True
-            self._clear_screen()
-
-            self._prev.hide()
-            self._next.hide()
-
-            n = int(ceil(sqrt(self._nobjects)))
-            if n > 0:
-                w = int(self._width / n)
-            else:
-                w = self._width
-            h = int(w * 0.75)  # maintain 4:3 aspect ratio
-            x_off = int((self._width - n * w) / 2)
-            x = x_off
-            y = 0
-            for i in range(self._nobjects):
-                self.i = i
-                self._show_thumb(x, y, w, h)
-                self._favorites[i].set_layer(STAR)
-                self._favorites[i].move((x, y))
-                x += w
-                if x + w > self._width:
-                    x = x_off
-                    y += h
-            self.i = 0  # Reset position in slideshow to the beginning
+            self._show_thumbs()
         else:
             self._prev.set_layer(DRAG)
             self._next.set_layer(DRAG)
         return False
+
+    def _show_thumbs(self):
+        self._stop_autoplay()
+        self._current_slide = self.i
+        self._thumbnail_mode = True
+        self._clear_screen()
+
+        self._prev.hide()
+        self._next.hide()
+
+        n = int(ceil(sqrt(self._nobjects)))
+        if n > 0:
+            w = int(self._width / n)
+        else:
+            w = self._width
+        h = int(w * 0.75)  # maintain 4:3 aspect ratio
+        x_off = int((self._width - n * w) / 2)
+        x = x_off
+        y = 0
+        for i in range(self._nobjects):
+            self.i = i
+            self._show_thumb(x, y, w, h)
+            if self.initiating is None or self.initiating:
+                self._favorites[i].set_layer(STAR)
+                self._favorites[i].move((x, y))
+            x += w
+            if x + w > self._width:
+                x = x_off
+                y += h
+        self.i = 0  # Reset position in slideshow to the beginning
 
     def _show_thumb(self, x, y, w, h):
         ''' Display a preview image and title as a thumbnail. '''
 
         if len(self._thumbs) < self.i + 1:
             # Create a Sprite for this thumbnail
-            pixbuf = None
-            try:
-                pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-                    self.dsobjects[self.i].file_path, int(w), int(h))
-            except:
-                pixbuf = get_pixbuf_from_journal(self.dsobjects[self.i],
-                                                 int(w), int(h))
-
-            if pixbuf is not None:
-                pixbuf_thumb = pixbuf.scale_simple(int(w), int(h),
-                                                   gtk.gdk.INTERP_TILES)
+            if self._previews[self.i] is not None:
+                pixbuf_thumb = self._previews[self.i].scale_simple(
+                    int(w), int(h), gtk.gdk.INTERP_TILES)
             else:
                 pixbuf_thumb = svg_str_to_pixbuf(genblank(int(w), int(h),
-                                                          self.colors))
+                                                          self._colors))
             self._thumbs.append([Sprite(self._sprites, x, y, pixbuf_thumb),
                                      x, y, self.i])
             self._thumbs[-1][0].set_image(svg_str_to_pixbuf(
-                    svg_rectangle(int(w), int(h), self.colors)), i=1)
+                    svg_rectangle(int(w), int(h), self._colors)), i=1)
             self._thumbs[-1][0].set_label(str(self.i + 1))
         self._thumbs[self.i][0].set_layer(TOP)
 
@@ -681,9 +734,12 @@ class PortfolioActivity(activity.Activity):
 
     def write_file(self, file_path):
         ''' Clean up '''
-        if self._dirty:
-            self._save_descriptions_cb()
-            self._dirty = False
+        if self.initiating is not None and not self.initiating:
+            _logger.debug('I am a joiner, so I am not saving.')
+            return
+
+        if True in self._dirty:
+            self._save_changes_cb()
         if os.path.exists(os.path.join(self.datapath, 'output.ogg')):
             os.remove(os.path.join(self.datapath, 'output.ogg'))
 
@@ -729,8 +785,19 @@ class PortfolioActivity(activity.Activity):
                 self._unselect()
             self._selected_spr = spr
             self._saved_string = spr.labels[0]
-            label = '%s%s' % (self._selected_spr.labels[0], CURSOR)
-            self._selected_spr.set_label(label)
+            if spr.type == 'description':
+                if self.initiating is not None and not self.initiating:
+                    label = '%s\n[%s] %s' % (self._selected_spr.labels[0],
+                                             profile.get_nick_name(), CURSOR)
+                else:
+                    label = '%s%s' % (self._selected_spr.labels[0], CURSOR)
+                self._selected_spr.set_label(label)
+            elif spr.type == 'title':
+                if self.initiating is None or self.initiating:
+                    label = '%s%s' % (self._selected_spr.labels[0], CURSOR)
+                    self._selected_spr.set_label(label)
+                else:
+                    self._selected_spr = None
         else:
             self._unselect()
 
@@ -759,7 +826,8 @@ class PortfolioActivity(activity.Activity):
         self.last_spr_moved = spr
         self._press = spr
         self._press.set_layer(DRAG)
-        self._favorites[self._spr_to_thumb(self._press)].set_layer(DRAG+1)
+        if self.initiating is None or self.initiating:
+            self._favorites[self._spr_to_thumb(self._press)].set_layer(DRAG+1)
         return False
 
     def _mouse_move_cb(self, win, event):
@@ -774,7 +842,8 @@ class PortfolioActivity(activity.Activity):
         dy = y - self._dragpos[1]
         spr.move_relative([dx, dy])
         # Also move the star
-        self._favorites[self._spr_to_thumb(spr)].move_relative([dx, dy])
+        if self.initiating is None or self.initiating:
+            self._favorites[self._spr_to_thumb(spr)].move_relative([dx, dy])
         self._dragpos = [x, y]
         self._total_drag[0] += dx
         self._total_drag[1] += dy
@@ -792,29 +861,52 @@ class PortfolioActivity(activity.Activity):
             # Drop the dragged thumbnail below the other thumbnails so
             # that you can find the thumbnail beneath it.
             self._press.set_layer(UNDRAG)
-            self._favorites[self._spr_to_thumb(self._press)].set_layer(STAR)
+            if self.initiating is None or self.initiating:
+                self._favorites[self._spr_to_thumb(self._press)].set_layer(STAR)
             i = self._spr_to_thumb(self._press)
             spr = self._sprites.find_sprite((x, y))
             if self._spr_is_thumbnail(spr):
                 self._release = spr
-                # If we found a thumbnail and it is not the one we
-                # dragged, swap their positions.
-                if not self._press == self._release:
+                # If we found a thumbnail
+                # ...and it is the one we dragged, jump to that slide.
+                if self._press == self._release:
+                    if self._total_drag[0] * self._total_drag[0] + \
+                       self._total_drag[1] * self._total_drag[1] < 200:
+                        self._current_slide = self._spr_to_thumb(self._release)
+                        self._slide_button.set_active(True)
+                # ...and it is not the one we dragged, swap their positions.
+                else:
                     j = self._spr_to_thumb(self._release)
                     self._thumbs[i][0] = self._release
                     self._thumbs[j][0] = self._press
                     tmp = self.dsobjects[i]
                     self.dsobjects[i] = self.dsobjects[j]
                     self.dsobjects[j] = tmp
-                    tmp = self._favorites[i]
-                    self._favorites[i] = self._favorites[j]
-                    self._favorites[j] = tmp
+                    if self.initiating is None or self.initiating:
+                        tmp = self._favorites[i]
+                        self._favorites[i] = self._favorites[j]
+                        self._favorites[j] = tmp
+                    tmp = self._uids[i]
+                    self._uids[i] = self._uids[j]
+                    self._uids[j] = tmp
+                    tmp = self._titles[i]
+                    self._titles[i] = self._titles[j]
+                    self._titles[j] = tmp
+                    tmp = self._previews[i]
+                    self._previews[i] = self._previews[j]
+                    self._previews[j] = tmp
+                    tmp = self._descriptions[i]
+                    self._descriptions[i] = self._descriptions[j]
+                    self._descriptions[j] = tmp
                     self._thumbs[j][0].move((self._thumbs[j][1],
                                              self._thumbs[j][2]))
-                    self._favorites[j].move((self._thumbs[j][1],
-                                             self._thumbs[j][2]))
+                    if self.initiating is None or self.initiating:
+                        self._favorites[j].move((self._thumbs[j][1],
+                                                 self._thumbs[j][2]))
             self._thumbs[i][0].move((self._thumbs[i][1], self._thumbs[i][2]))
-            self._favorites[i].move((self._thumbs[i][1], self._thumbs[i][2]))
+            if self.initiating is None or self.initiating:
+                self._favorites[i].move((self._thumbs[i][1],
+                                         self._thumbs[i][2]))
             self._press.set_layer(TOP)
             self._press = None
             self._release = None
@@ -829,6 +921,8 @@ class PortfolioActivity(activity.Activity):
 
     def _record_cb(self, button=None):
         ''' Start/stop audio recording '''
+        if self.initiating is not None and not self.initiating:
+            return
         if self._grecord is None:
             _logger.debug('setting up grecord')
             self._grecord = Grecord(self)
@@ -900,6 +994,8 @@ class PortfolioActivity(activity.Activity):
     def _search_for_audio_note(self, obj_id):
         ''' Look to see if there is already a sound recorded for this
         dsobject '''
+        if self.initiating is not None and not self.initiating:
+            return
         dsobjects, nobjects = datastore.find({'mime_type': ['audio/ogg']})
         # Look for tag that matches the target object id
         for dsobject in dsobjects:
@@ -909,16 +1005,22 @@ class PortfolioActivity(activity.Activity):
                 return dsobject
         return None
 
-    def _save_descriptions_cb(self, button=None):
+    def _save_changes_cb(self, button=None):
         ''' Find the object in the datastore and write out the changes
-        to the decriptions. '''
-        for i in self.dsobjects:
-            jobject = datastore.get(i.object_id)
-            if 'description' in i.metadata:
-                jobject.metadata['description'] = i.metadata['description']
-            if 'title' in i.metadata:
-                jobject.metadata['title'] = i.metadata['title']
-            datastore.write(jobject, update_mtime=False,
+        to the decriptions and titles. '''
+        if self.initiating is not None and not self.initiating:
+            _logger.debug('skipping write (%s)' % (str(self.initiating)))
+            return
+        for i, uid in enumerate(self._uids):
+            if not self._dirty[i]:
+                _logger.debug('%d is not dirty...' % (i))
+                continue
+            _logger.debug('%d is dirty... writing' % (i))
+            jobject = datastore.get(uid)
+            jobject.metadata['description'] = self._descriptions[i]
+            jobject.metadata['title'] = self._titles[i]
+            datastore.write(jobject,
+                            update_mtime=False,
                             reply_handler=self.datastore_write_cb,
                             error_handler=self.datastore_write_error_cb)
 
@@ -1062,8 +1164,294 @@ class PortfolioActivity(activity.Activity):
             if CURSOR in self._selected_spr.labels[0]:
                 parts = self._selected_spr.labels[0].split(CURSOR)
                 self._selected_spr.set_label(string.join(parts))
-                self.dsobjects[self.i].metadata[self._selected_spr.type] = \
-                    self._selected_spr.labels[0]
-                self._dirty = True
+                if self._selected_spr.type == 'title':
+                    self._titles[self.i] = self._selected_spr.labels[0]
+                    if self.initiating is not None and \
+                       self.initiating:
+                        self._send_event('t:%s' % (self._data_dumper(
+                                    [self._uids[self.i],
+                                     self._titles[self.i]])))
+                else:
+                    self._descriptions[self.i] = self._selected_spr.labels[0]
+                    if self.initiating is not None:
+                        self._send_event('d:%s' % (self._data_dumper(
+                                    [self._uids[self.i],
+                                     self._descriptions[self.i]])))
+                _logger.debug('marking %d as dirty' % (self.i))
+                self._dirty[self.i] = True
             self._selected_spr = None
             self._saved_string = ''
+
+    def _restore_cursor(self):
+        ''' No longer waiting, so restore standard cursor. '''
+        if not hasattr(self, 'get_window'):
+            return
+        if hasattr(self.get_window(), 'get_cursor'):
+            self.get_window().set_cursor(self.old_cursor)
+        else:
+            self.get_window().set_cursor(gtk.gdk.Cursor(gtk.gdk.LEFT_PTR))
+
+    def _waiting_cursor(self):
+        ''' Waiting, so set watch cursor. '''
+        if not hasattr(self, 'get_window'):
+            return
+        if hasattr(self.get_window(), 'get_cursor'):
+            self.old_cursor = self.get_window().get_cursor()
+        self.get_window().set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+
+    # Serialize
+
+    def _dump(self, uid, title, pixbuf, description):
+        ''' Dump data for sharing.'''
+        _logger.debug('dumping %s' % (uid))
+        if pixbuf is None:
+            data = [uid, title, None, description]
+        else:
+            data = [uid, title, pixbuf_to_base64(activity, pixbuf), description]
+        return self._data_dumper(data)
+
+    def _data_dumper(self, data):
+        if _OLD_SUGAR_SYSTEM:
+            return json.write(data)
+        else:
+            io = StringIO()
+            jdump(data, io)
+            return io.getvalue()
+
+    def _load(self, data):
+        ''' Load game data from the journal. '''
+        uid, title, base64, description = self._data_loader(data)
+        if not uid in self._uids:
+            _logger.debug('loading %s' % (uid))
+            self._uids.append(uid)
+            self._titles.append(title)
+            if base64 is None:
+                self._previews.append(None)
+            else:
+                self._previews.append(base64_to_pixbuf(activity, base64))
+            self._descriptions.append(description)
+            self._nobjects += 1
+            for thumbnail in self._thumbs:
+                thumbnail[0].hide()
+            self._thumbs = []
+            if not self._thumbnail_mode:
+                self._thumb_button.set_active(True)
+            else:
+                self._show_thumbs()
+        else:
+            _logger.debug('updating description for %s' % (uid))
+            self._titles[self._uids.index(uid)] = title
+            if base64 is None:
+                self._previews[self._uids.index(uid)] = None
+            else:
+                self._previews[self._uids.index(uid)] = base64_to_pixbuf(
+                    activity, base64)
+            self._descriptions[self._uids.index(uid)] = description
+
+    def _data_loader(self, data):
+        if _OLD_SUGAR_SYSTEM:
+            return json.read(data)
+        else:
+            io = StringIO(data)
+            return jload(io)
+
+    # When portfolio is shared, only sharer sends out slides, joiners
+    # send back comments.
+
+    def _setup_presence_service(self):
+        ''' Setup the Presence Service. '''
+        self.pservice = presenceservice.get_instance()
+
+        owner = self.pservice.get_owner()
+        self.owner = owner
+        self.buddies = [owner]
+        self._share = ''
+        self.connect('shared', self._shared_cb)
+        self.connect('joined', self._joined_cb)
+
+    def _shared_cb(self, activity):
+        ''' Either set up initial share...'''
+        if self._shared_activity is None:
+            _logger.error('Failed to share or join activity ... \
+                _shared_activity is null in _shared_cb()')
+            return
+
+        self.initiating = True
+        self.waiting = False
+        _logger.debug('I am sharing...')
+
+        self.conn = self._shared_activity.telepathy_conn
+        self.tubes_chan = self._shared_activity.telepathy_tubes_chan
+        self.text_chan = self._shared_activity.telepathy_text_chan
+
+        self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].connect_to_signal(
+            'NewTube', self._new_tube_cb)
+
+        _logger.debug('This is my activity: making a tube...')
+        id = self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].OfferDBusTube(
+            SERVICE, {})
+
+    def _joined_cb(self, activity):
+        ''' ...or join an exisiting share. '''
+        if self._shared_activity is None:
+            _logger.error('Failed to share or join activity ... \
+                _shared_activity is null in _shared_cb()')
+            return
+
+        self.initiating = False
+        _logger.debug('I joined a shared activity.')
+
+        self.conn = self._shared_activity.telepathy_conn
+        self.tubes_chan = self._shared_activity.telepathy_tubes_chan
+        self.text_chan = self._shared_activity.telepathy_text_chan
+
+        self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].connect_to_signal(\
+            'NewTube', self._new_tube_cb)
+
+        _logger.debug('I am joining an activity: waiting for a tube...')
+        self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].ListTubes(
+            reply_handler=self._list_tubes_reply_cb,
+            error_handler=self._list_tubes_error_cb)
+
+        self.waiting = True
+        # Since we are joining, clear out the slide list
+        self._uids = []
+        self._dirty = []
+        self._titles = []
+        self._previews = []
+        self._descriptions = []
+        self._thumbs = []
+        self._nobjects = 0
+        self._clear_screen()
+        self._help.hide()
+        self._description.set_layer(TOP)
+        self._description.set_label(_('Please wait.'))
+        self._waiting_cursor()
+
+    def _list_tubes_reply_cb(self, tubes):
+        ''' Reply to a list request. '''
+        for tube_info in tubes:
+            self._new_tube_cb(*tube_info)
+
+    def _list_tubes_error_cb(self, e):
+        ''' Log errors. '''
+        _logger.error('ListTubes() failed: %s', e)
+
+    def _new_tube_cb(self, id, initiator, type, service, params, state):
+        ''' Create a new tube. '''
+        _logger.debug('New tube: ID=%d initator=%d type=%d service=%s '
+                     'params=%r state=%d', id, initiator, type, service,
+                     params, state)
+
+        if (type == telepathy.TUBE_TYPE_DBUS and service == SERVICE):
+            if state == telepathy.TUBE_STATE_LOCAL_PENDING:
+                self.tubes_chan[ \
+                              telepathy.CHANNEL_TYPE_TUBES].AcceptDBusTube(id)
+
+            tube_conn = TubeConnection(self.conn,
+                self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES], id, \
+                group_iface=self.text_chan[telepathy.CHANNEL_INTERFACE_GROUP])
+
+            self.chattube = ChatTube(tube_conn, self.initiating, \
+                self.event_received_cb)
+
+            if self.waiting:
+                self._send_event('j:%s' % (profile.get_nick_name()))
+
+    def event_received_cb(self, text):
+        ''' Data is passed as tuples: cmd:text '''
+        _logger.debug('<<< %s' % (text[0]))
+        data = text[2:]
+        if text[0] == 's':  # shared journal objects
+            self._restore_cursor()
+            self._load(data)
+        elif text[0] == 'c': # colors
+            self._update_colors(data)
+        elif text[0] == 'd':  # description has changed
+            self._update_description(data)
+        elif text[0] == 't':  # title has changed
+            self._update_title(data)
+        elif text[0] == 'j':  # someone new has joined
+            _logger.debug('%s has joined' % (data))
+            if data not in self._buddies:
+                self._buddies.append(data)
+            if self.initiating:
+                self._share_colors()
+                self._share_slides()
+
+    def _update_colors(self, data):
+        colors = self._data_loader(data)
+        if colors[0] != self._colors[0] or \
+           colors[1] != self._colors[1]:
+            self._colors = colors[:]
+            self._my_canvas.set_image(svg_str_to_pixbuf(
+                genblank(self._width, self._height, [self._colors[0],
+                                                     self._colors[0]])))
+            self._description.set_image(svg_str_to_pixbuf(
+                    genblank(
+                        int(self._width - (2 * DESCRIPTIONX * self._scale)),
+                        int(DESCRIPTIONH * self._scale), self._colors)))
+            self._title.set_image(svg_str_to_pixbuf(
+                        genblank(self._width, int(TITLEH * self._scale),
+                                 self._colors)))
+
+    def _update_description(self, data):
+        uid, text = self._data_loader(data)
+        if uid in self._uids:
+            _logger.debug('updating description %s' % (uid))
+            self._descriptions[self._uids.index(uid)] = text
+            if self.i == self._uids.index(uid):
+                self._description.set_label(text)
+            if self.initiating:
+                self._dirty[self._uids.index(uid)] = True
+
+    def _update_title(self, data):
+        uid, text = self._data_loader(data)
+        if uid in self._uids:
+            _logger.debug('updating title %s' % (uid))
+            self._titles[self._uids.index(uid)] = text
+            if self.i == self._uids.index(uid):
+                self._title.set_label(text)
+
+    def _share_colors(self):
+        _logger.debug('sharing colors')
+        self._send_event('c:%s' % (self._data_dumper(self._colors)))
+
+    def _share_slides(self):
+        for i in range(len(self._uids)):
+            if self._favorites[i].type == 'star':
+                _logger.debug('sharing %s' % (self._uids[i]))
+                gobject.idle_add(self._send_event, 's:' + str(
+                        self._dump(self._uids[i],
+                                   self._titles[i],
+                                   self._previews[i],
+                                   self._descriptions[i])))
+
+    def _send_event(self, text):
+        ''' Send event through the tube. '''
+        if hasattr(self, 'chattube') and self.chattube is not None:
+            _logger.debug('>>> %s' % (text[0]))
+            self.chattube.SendText(text)
+
+
+class ChatTube(ExportedGObject):
+    ''' Class for setting up tube for sharing '''
+    def __init__(self, tube, is_initiator, stack_received_cb):
+        super(ChatTube, self).__init__(tube, PATH)
+        self.tube = tube
+        self.is_initiator = is_initiator  # Are we sharing or joining activity?
+        self.stack_received_cb = stack_received_cb
+        self.stack = ''
+
+        self.tube.add_signal_receiver(self.send_stack_cb, 'SendText', IFACE,
+                                      path=PATH, sender_keyword='sender')
+
+    def send_stack_cb(self, text, sender=None):
+        if sender == self.tube.get_unique_name():
+            return
+        self.stack = text
+        self.stack_received_cb(text)
+
+    @signal(dbus_interface=IFACE, signature='s')
+    def SendText(self, text):
+        self.stack = text

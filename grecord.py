@@ -159,13 +159,18 @@ filesink name=audioFilesink'
             _logger.debug('EOS.... transcoding finished')
             return True
         else:
-            position = self._query_position(self._audioline)[0]
-            if position == self._audiopos:
+            position, duration = self._query_position(self._audioline)
+            _logger.debug('position: %s, duration: %s' % (str(position),
+                                                          str(duration)))
+            if position == duration:
+                _logger.debug('We are done, even though we did not see EOS')
+                self._clean_up_transcoding_pipeline(self._audioline)
+                return True
+            elif position == self._audiopos:
                 _logger.debug('No progess, so assume we are done')
                 self._clean_up_transcoding_pipeline(self._audioline)
                 return True
             self._audiopos = position
-            # _logger.debug(self._audioline.get_state()[1])
             return False
 
     def blockedCb(self, x, y, z):
@@ -201,8 +206,8 @@ filesink name=audioFilesink'
         return (position, duration)
 
     def _onMuxedAudioMessageCb(self, bus, message, pipe):
+        _logger.debug(message.type)
         if message.type != gst.MESSAGE_EOS:
-            # _logger.debug(message.type)
             return True
         self._clean_up_transcoding_pipeline(pipe)
         return False

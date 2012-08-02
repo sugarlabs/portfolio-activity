@@ -138,6 +138,13 @@ WHITE_SPACE = ['space', 'Tab']
 CURSOR = '█'
 NEWLINE = '\n'
 
+TITLE = 0
+PREVIEW = 1
+DESCRIPTION = 2
+THUMB = 3
+FAV = 4
+DIRTY = 5
+
 class PortfolioActivity(activity.Activity):
     ''' Make a slideshow from starred Journal entries. '''
 
@@ -166,11 +173,15 @@ class PortfolioActivity(activity.Activity):
         self._setup_canvas()
 
         self._uids = []
+        # self._slides = []  # TODO: replace individual arrays???
+
         self._dirty = []
         self._titles = []
         self._previews = []
         self._descriptions = []
+        self._favs = []
         self._thumbs = []
+
         self._thumbnail_mode = False
         self._find_starred()
         self._setup_workspace()
@@ -433,27 +444,31 @@ class PortfolioActivity(activity.Activity):
 
     def _make_stars(self):
         ''' Make stars to include with thumbnails '''
-        self._favorites = []
+        self._favs = []
+        self._stars = []
         for i in range(self._nobjects):
-            self._favorites.append(Sprite(self._sprites, 0, 0,
+            self._favs.append(True)
+            self._stars.append(Sprite(self._sprites, 0, 0,
                                           self._fav_pixbuf))
-            self._favorites[-1].type = 'star'
-            self._favorites[-1].set_layer(STAR)
+            self._stars[-1].type = 'star'
+            self._stars[-1].set_layer(STAR)
 
     def _find_starred(self):
-        ''' Find all the _favorites in the Journal. '''
+        ''' Find all the _stars in the Journal. '''
         self._uids = []
         self._dirty = []
         self._titles = []
         self._previews = []
         self._descriptions = []
         self._thumbs = []
-        self._favorites = []
+        self._favs = []
+        self._stars = []
         self.dsobjects, self._nobjects = datastore.find({'keep': '1'})
         _logger.debug('found %d starred items', self._nobjects)
         for dsobj in self.dsobjects:
             self._uids.append(dsobj.object_id)
             self._dirty.append(False)
+            self._favs.append(True)
             if hasattr(dsobj, 'metadata'):
                 if 'title' in dsobj.metadata:
                     self._titles.append(dsobj.metadata['title'])
@@ -502,10 +517,16 @@ class PortfolioActivity(activity.Activity):
         if self.initiating is not None and not self.initiating:
             return
         self._help.hide()
+        for thumbnail in self._thumbs:
+            thumbnail[0].hide()
+        for star in self._stars:
+            star.hide()
+        self._thumbs = []
         self._find_starred()
         self._make_stars()
         self.i = 0
-        self._thumbs = []
+        if self.initiating:
+            self._share_slides()
         if self._thumbnail_mode:
             self._thumbnail_mode = False
             self._thumbs_cb()
@@ -570,7 +591,7 @@ class PortfolioActivity(activity.Activity):
         if hasattr(self, '_thumbs'):
             for thumbnail in self._thumbs:
                 thumbnail[0].hide()
-        for stars in self._favorites:
+        for stars in self._stars:
             stars.hide()
         self.invalt(0, 0, self._width, self._height)
 
@@ -598,9 +619,9 @@ class PortfolioActivity(activity.Activity):
 
         # Skip slide if unstarred
         if self.initiating is None or self.initiating and \
-           self._favorites[self.i].type == 'unstar':
+           not self._favs[self.i]:
             counter = 0
-            while self._favorites[self.i].type == 'unstar':
+            while not self._favs[self.i]:
                 self.i += direction
                 if self.i < 0:
                     self.i = self._nobjects - 1
@@ -608,7 +629,7 @@ class PortfolioActivity(activity.Activity):
                     self.i = 0
                 counter += 1
                 if counter == self._nobjects:
-                    _logger.debug('No _favorites: nothing to show')
+                    _logger.debug('No _stars: nothing to show')
                     return
 
         if self.i == 0:            
@@ -687,8 +708,8 @@ class PortfolioActivity(activity.Activity):
             self.i = i
             self._show_thumb(x, y, w, h)
             if self.initiating is None or self.initiating:
-                self._favorites[i].set_layer(STAR)
-                self._favorites[i].move((x, y))
+                self._stars[i].set_layer(STAR)
+                self._stars[i].move((x, y))
             x += w
             if x + w > self._width:
                 x = x_off
@@ -813,11 +834,17 @@ class PortfolioActivity(activity.Activity):
         if spr.type == 'star':
             spr.set_shape(self._unfav_pixbuf)
             spr.type = 'unstar'
-            i = self._favorites.index(spr)
+            i = self._stars.index(spr)
+            self._favs[i] = False
+            if self.initiating:
+                self.send_star(i, False)
         elif spr.type == 'unstar':
             spr.set_shape(self._fav_pixbuf)
             spr.type = 'star'
-            i = self._favorites.index(spr)
+            i = self._stars.index(spr)
+            self._favs[i] = True
+            if self.initiating:
+                self.send_star(i, True)
 
         # Are we clicking on a thumbnail?
         if not self._spr_is_thumbnail(spr):
@@ -827,7 +854,7 @@ class PortfolioActivity(activity.Activity):
         self._press = spr
         self._press.set_layer(DRAG)
         if self.initiating is None or self.initiating:
-            self._favorites[self._spr_to_thumb(self._press)].set_layer(DRAG+1)
+            self._stars[self._spr_to_thumb(self._press)].set_layer(DRAG+1)
         return False
 
     def _mouse_move_cb(self, win, event):
@@ -843,7 +870,7 @@ class PortfolioActivity(activity.Activity):
         spr.move_relative([dx, dy])
         # Also move the star
         if self.initiating is None or self.initiating:
-            self._favorites[self._spr_to_thumb(spr)].move_relative([dx, dy])
+            self._stars[self._spr_to_thumb(spr)].move_relative([dx, dy])
         self._dragpos = [x, y]
         self._total_drag[0] += dx
         self._total_drag[1] += dy
@@ -855,16 +882,19 @@ class PortfolioActivity(activity.Activity):
         self._dragpos = [0, 0]
         x, y = map(int, event.get_coords())
 
+        if self._press is None:
+            return
+
         if self._thumbnail_mode:
-            if self._press is None:
-                return
+            i = self._spr_to_thumb(self._press)
             # Drop the dragged thumbnail below the other thumbnails so
-            # that you can find the thumbnail beneath it.
+            # that you can find the thumbnail beneath it...
             self._press.set_layer(UNDRAG)
             if self.initiating is None or self.initiating:
-                self._favorites[self._spr_to_thumb(self._press)].set_layer(STAR)
-            i = self._spr_to_thumb(self._press)
+                self._stars[self._spr_to_thumb(self._press)].set_layer(STAR)
             spr = self._sprites.find_sprite((x, y))
+            self._press.set_layer(TOP)  # and then restore press to top layer
+
             if self._spr_is_thumbnail(spr):
                 self._release = spr
                 # If we found a thumbnail
@@ -883,9 +913,9 @@ class PortfolioActivity(activity.Activity):
                     self.dsobjects[i] = self.dsobjects[j]
                     self.dsobjects[j] = tmp
                     if self.initiating is None or self.initiating:
-                        tmp = self._favorites[i]
-                        self._favorites[i] = self._favorites[j]
-                        self._favorites[j] = tmp
+                        tmp = self._stars[i]
+                        self._stars[i] = self._stars[j]
+                        self._stars[j] = tmp
                     tmp = self._uids[i]
                     self._uids[i] = self._uids[j]
                     self._uids[j] = tmp
@@ -901,15 +931,14 @@ class PortfolioActivity(activity.Activity):
                     self._thumbs[j][0].move((self._thumbs[j][1],
                                              self._thumbs[j][2]))
                     if self.initiating is None or self.initiating:
-                        self._favorites[j].move((self._thumbs[j][1],
+                        self._stars[j].move((self._thumbs[j][1],
                                                  self._thumbs[j][2]))
             self._thumbs[i][0].move((self._thumbs[i][1], self._thumbs[i][2]))
             if self.initiating is None or self.initiating:
-                self._favorites[i].move((self._thumbs[i][1],
+                self._stars[i].move((self._thumbs[i][1],
                                          self._thumbs[i][2]))
-            self._press.set_layer(TOP)
-            self._press = None
-            self._release = None
+        self._press = None
+        self._release = None
         return False
 
     def _unit_combo_cb(self, arg=None):
@@ -1220,6 +1249,7 @@ class PortfolioActivity(activity.Activity):
 
     def _load(self, data):
         ''' Load game data from the journal. '''
+        self._restore_cursor()
         uid, title, base64, description = self._data_loader(data)
         if not uid in self._uids:
             _logger.debug('loading %s' % (uid))
@@ -1360,24 +1390,26 @@ class PortfolioActivity(activity.Activity):
 
     def event_received_cb(self, text):
         ''' Data is passed as tuples: cmd:text '''
+        dispatch_table = {'s': self._load,
+                          'c': self._update_colors,
+                          'd': self._update_description,
+                          't': self._update_title,
+                          'S': self._update_star,
+                          'j': self._new_join,
+                          }
         _logger.debug('<<< %s' % (text[0]))
-        data = text[2:]
-        if text[0] == 's':  # shared journal objects
-            self._restore_cursor()
-            self._load(data)
-        elif text[0] == 'c': # colors
-            self._update_colors(data)
-        elif text[0] == 'd':  # description has changed
-            self._update_description(data)
-        elif text[0] == 't':  # title has changed
-            self._update_title(data)
-        elif text[0] == 'j':  # someone new has joined
-            _logger.debug('%s has joined' % (data))
-            if data not in self._buddies:
-                self._buddies.append(data)
-            if self.initiating:
-                self._share_colors()
-                self._share_slides()
+        dispatch_table[text[0]](text[2:])
+
+    def _new_join(self, data):
+        if data not in self._buddies:
+            self._buddies.append(data)
+        if self.initiating:
+            self._share_colors()
+            self._share_slides()
+
+    def _update_star(self, data):
+        i, status = self._data_loader(data)
+        self._favs[i] = status
 
     def _update_colors(self, data):
         colors = self._data_loader(data)
@@ -1419,13 +1451,17 @@ class PortfolioActivity(activity.Activity):
 
     def _share_slides(self):
         for i in range(len(self._uids)):
-            if self._favorites[i].type == 'star':
+            if self._favs[i]:
                 _logger.debug('sharing %s' % (self._uids[i]))
                 gobject.idle_add(self._send_event, 's:' + str(
                         self._dump(self._uids[i],
                                    self._titles[i],
                                    self._previews[i],
                                    self._descriptions[i])))
+
+    def _send_star(self, i, status):
+        _logger.debug('sharing star for %s (%s)' % (self._uids[i], str(status)))
+        self._send_event('S:%s' % (self._dump(self._uids[i], status)))
 
     def _send_event(self, text):
         ''' Send event through the tube. '''

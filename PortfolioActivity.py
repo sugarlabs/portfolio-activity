@@ -138,6 +138,31 @@ WHITE_SPACE = ['space', 'Tab']
 CURSOR = '█'
 NEWLINE = '\n'
 
+
+class Slide():
+    ''' A container for a slide '''
+
+    def __init__(self, owner, uid, colors, title, preview, desc):
+        self.active = True
+        self.owner = owner
+        self.uid = uid
+        self.colors = colors
+        self.title = title
+        self.preview = preview  # pixbuf
+        self.description = desc
+        self.sound = None
+        self.dirty = False
+        self.fav = True
+        self.thumb = None
+        self.star = None
+
+    def hide(self):
+        if self.star is not None:
+            self.star.hide()
+        if self.thumb is not None:
+            self.thumb.hide()
+
+
 class PortfolioActivity(activity.Activity):
     ''' Make a slideshow from starred Journal entries. '''
 
@@ -165,12 +190,8 @@ class PortfolioActivity(activity.Activity):
         self._setup_toolbars()
         self._setup_canvas()
 
-        self._uids = []
-        self._dirty = []
-        self._titles = []
-        self._previews = []
-        self._descriptions = []
-        self._thumbs = []
+        self._slides = []
+
         self._thumbnail_mode = False
         self._find_starred()
         self._setup_workspace()
@@ -183,6 +204,8 @@ class PortfolioActivity(activity.Activity):
         self._selected_spr = None
         self._dead_key = ''
         self._saved_string = ''
+        self._startpos = [0, 0]
+        self._dragpos = [0, 0]
 
         self._setup_presence_service()
 
@@ -237,7 +260,6 @@ class PortfolioActivity(activity.Activity):
         self._unfav_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'favorite-off.svg'), star_size, star_size)
-        self._make_stars()
 
         self.prev_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
@@ -431,51 +453,91 @@ class PortfolioActivity(activity.Activity):
         ''' Clean up on the way out. '''
         gtk.main_quit()
 
-    def _make_stars(self):
-        ''' Make stars to include with thumbnails '''
-        self._favorites = []
-        for i in range(self._nobjects):
-            self._favorites.append(Sprite(self._sprites, 0, 0,
-                                          self._fav_pixbuf))
-            self._favorites[-1].type = 'star'
-            self._favorites[-1].set_layer(STAR)
+    def _thumb_to_slide(self, spr):
+        for slide in self._slides:
+            if slide.thumb == spr:
+                return slide
+        return None
+
+    def _star_to_slide(self, spr):
+        for slide in self._slides:
+            if slide.star == spr:
+                return slide
+        return None
+
+    def _uid_to_slide(self, uid):
+        for slide in self._slides:
+            if slide.uid == uid:
+                return slide
+        return None
+
+    def _make_star(self, slide):
+        slide.star = Sprite(self._sprites, 0, 0, self._fav_pixbuf)
+        slide.star.type = 'star'
+        slide.star.set_layer(STAR)
+        slide.fav = True
 
     def _find_starred(self):
-        ''' Find all the _favorites in the Journal. '''
-        self._uids = []
-        self._dirty = []
-        self._titles = []
-        self._previews = []
-        self._descriptions = []
-        self._thumbs = []
-        self._favorites = []
+        ''' Find all the _stars in the Journal. '''
+        for slide in self._slides:
+            slide.active = False
         self.dsobjects, self._nobjects = datastore.find({'keep': '1'})
         _logger.debug('found %d starred items', self._nobjects)
         for dsobj in self.dsobjects:
-            self._uids.append(dsobj.object_id)
-            self._dirty.append(False)
+            slide = self._uid_to_slide(dsobj.object_id)
+            owner = self._buddies[0]
+            title = ''
+            desc = ''
+            preview = None
             if hasattr(dsobj, 'metadata'):
                 if 'title' in dsobj.metadata:
-                    self._titles.append(dsobj.metadata['title'])
-                else:
-                    self._titles.append('')
+                    title = dsobj.metadata['title']
                 if 'description' in dsobj.metadata:
-                    self._descriptions.append(dsobj.metadata['description'])
-                else:
-                    self._descriptions.append('')
+                    desc = dsobj.metadata['description']
                 if 'mime_type' in dsobj.metadata and \
                    dsobj.metadata['mime_type'][0:5] == 'image':
-                    self._previews.append(
-                        get_pixbuf_from_file(dsobj.file_path,
-                                             int(PREVIEWW * self._scale),
-                                             int(PREVIEWH * self._scale)))
+                    preview = get_pixbuf_from_file(dsobj.file_path,
+                                                   int(PREVIEWW * self._scale),
+                                                   int(PREVIEWH * self._scale))
                 elif 'preview' in dsobj.metadata:
-                    self._previews.append(
-                        get_pixbuf_from_journal(dsobj, 300, 225))
-                else:
-                    self._previews.append(None)
+                    preview = get_pixbuf_from_journal(dsobj, 300, 225)
             else:
                 _logger.debug('dsobj has no metadata')
+
+            if slide is None:
+                self._slides.append(Slide(owner,
+                                         dsobj.object_id,
+                                         self._colors,
+                                         title,
+                                         preview,
+                                         desc))
+            else:
+                slide.title = title
+                slide.preview = preview
+                slide.description = desc
+                slide.active = True
+                slide.fav = True
+                if slide.star is not None:
+                    slide.star.hide()
+                if slide.thumb is not None:
+                    slide.thumb.hide()
+
+    def _rescan_cb(self, button=None):
+        ''' Rescan the Journal for changes in starred items. '''
+        if self.initiating is not None and not self.initiating:
+            return
+        if self.initiating:
+            self._send_event('R:rescanning')
+        self._help.hide()
+        self._find_starred()
+        self.i = 0
+        if self.initiating:
+            self._share_slides()
+        if self._thumbnail_mode:
+            self._thumbnail_mode = False
+            self._thumbs_cb()
+        else:
+            self._show_slide()
 
     def _first_cb(self, button=None):
         self.i = 0
@@ -496,21 +558,6 @@ class PortfolioActivity(activity.Activity):
     def _last_cb(self, button=None):
         self.i = self._nobjects - 1
         self._show_slide()
-
-    def _rescan_cb(self, button=None):
-        ''' Rescan the Journal for changes in starred items. '''
-        if self.initiating is not None and not self.initiating:
-            return
-        self._help.hide()
-        self._find_starred()
-        self._make_stars()
-        self.i = 0
-        self._thumbs = []
-        if self._thumbnail_mode:
-            self._thumbnail_mode = False
-            self._thumbs_cb()
-        else:
-            self._show_slide()
 
     def _autoplay_cb(self, button=None):
         ''' The autoplay button has been clicked; step through slides. '''
@@ -552,8 +599,8 @@ class PortfolioActivity(activity.Activity):
             tmp_file = save_pdf(self, profile.get_nick_name())
 
         dsobject = datastore.create()
-        dsobject.metadata['title'] = profile.get_nick_name() + ' ' + \
-                                     _('Portfolio')
+        dsobject.metadata['title'] = '%s %s' % (profile.get_nick_name(),
+                                                _('Portfolio'))
         dsobject.metadata['icon-color'] = profile.get_color().to_string()
         dsobject.metadata['mime_type'] = 'application/pdf'
         dsobject.set_file_path(tmp_file)
@@ -564,14 +611,11 @@ class PortfolioActivity(activity.Activity):
 
     def _clear_screen(self):
         ''' Clear the screen to the darker of the two XO colors. '''
+        for slide in self._slides:
+            slide.hide()
         self._title.hide()
         self._preview.hide()
         self._description.hide()
-        if hasattr(self, '_thumbs'):
-            for thumbnail in self._thumbs:
-                thumbnail[0].hide()
-        for stars in self._favorites:
-            stars.hide()
         self.invalt(0, 0, self._width, self._height)
 
         # Reset drag settings
@@ -587,7 +631,7 @@ class PortfolioActivity(activity.Activity):
         object. '''
         self._clear_screen()
 
-        if self._nobjects == 0:
+        if len(self._slides) == 0:
             self._prev.set_image(self.prev_off_pixbuf)
             self._next.set_image(self.next_off_pixbuf)
             self._description.set_label(
@@ -596,31 +640,32 @@ class PortfolioActivity(activity.Activity):
             self._description.set_layer(MIDDLE)
             return
 
-        # Skip slide if unstarred
-        if self.initiating is None or self.initiating and \
-           self._favorites[self.i].type == 'unstar':
+        slide = self._slides[self.i]
+        # Skip slide if unstarred or inactive
+        if not slide.active or not slide.fav:
             counter = 0
-            while self._favorites[self.i].type == 'unstar':
+            while not slide.active or not slide.fav:
                 self.i += direction
                 if self.i < 0:
-                    self.i = self._nobjects - 1
-                elif self.i > self._nobjects - 1:
+                    self.i = len(self._slides) - 1
+                elif self.i > len(self._slides) - 1:
                     self.i = 0
                 counter += 1
-                if counter == self._nobjects:
-                    _logger.debug('No _favorites: nothing to show')
+                if counter == len(self._slides):
+                    _logger.debug('No _stars: nothing to show')
                     return
+                slide = self._slides[self.i]
 
         if self.i == 0:            
             self._prev.set_image(self.prev_off_pixbuf)
         else:
             self._prev.set_image(self.prev_pixbuf)
-        if self.i == self._nobjects - 1:
+        if self.i == len(self._slides) - 1:
             self._next.set_image(self.next_off_pixbuf)
         else:
             self._next.set_image(self.next_pixbuf)
 
-        pixbuf = self._previews[self.i]
+        pixbuf = slide.preview
 
         if pixbuf is not None:
             self._preview.set_shape(pixbuf.scale_simple(
@@ -632,23 +677,24 @@ class PortfolioActivity(activity.Activity):
             if self._preview is not None:
                 self._preview.hide()
 
-        # self._title.set_label(self.dsobjects[self.i].metadata['title'])
-        self._title.set_label(self._titles[self.i])
+        self._title.set_label(slide.title)
         self._title.set_layer(MIDDLE)
 
-        self._description.set_label(self._descriptions[self.i])
+        self._description.set_label(slide.description)
         self._description.set_layer(MIDDLE)
 
-        audio_obj = self._search_for_audio_note(
-            self.dsobjects[self.i].object_id)
-        if audio_obj is not None:
-            _logger.debug('Playing audio note')
-            gobject.idle_add(play_audio_from_file, audio_obj.file_path)
-            self._playback_button.set_icon('media-playback-start')
-            self._playback_button.set_tooltip(_('Play recording'))
-        else:
-            self._playback_button.set_icon('media-playback-start-insensitive')
-            self._playback_button.set_tooltip(_('Nothing to play'))
+        if self.initiating is None or self.initiating:
+            if slide.sound is None:
+                slide.sound = self._search_for_audio_note(slide.uid)
+            if slide.sound is not None:
+                _logger.debug('Playing audio note')
+                gobject.idle_add(play_audio_from_file, slide.sound.file_path)
+                self._playback_button.set_icon('media-playback-start')
+                self._playback_button.set_tooltip(_('Play recording'))
+            else:
+                self._playback_button.set_icon(
+                    'media-playback-start-insensitive')
+                self._playback_button.set_tooltip(_('Nothing to play'))
 
     def _slides_cb(self, button=None):
         if self._thumbnail_mode:
@@ -665,6 +711,13 @@ class PortfolioActivity(activity.Activity):
             self._next.set_layer(DRAG)
         return False
 
+    def _count_active(self):
+        count = 0
+        for slide in self._slides:
+            if slide.active:
+                count += 1
+        return count
+
     def _show_thumbs(self):
         self._stop_autoplay()
         self._current_slide = self.i
@@ -674,7 +727,7 @@ class PortfolioActivity(activity.Activity):
         self._prev.hide()
         self._next.hide()
 
-        n = int(ceil(sqrt(self._nobjects)))
+        n = int(ceil(sqrt(self._count_active())))
         if n > 0:
             w = int(self._width / n)
         else:
@@ -683,35 +736,43 @@ class PortfolioActivity(activity.Activity):
         x_off = int((self._width - n * w) / 2)
         x = x_off
         y = 0
-        for i in range(self._nobjects):
-            self.i = i
-            self._show_thumb(x, y, w, h)
-            if self.initiating is None or self.initiating:
-                self._favorites[i].set_layer(STAR)
-                self._favorites[i].move((x, y))
+        for slide in self._slides:
+            if not slide.active:
+                continue
+            self._show_thumb(slide, x, y, w, h)
             x += w
             if x + w > self._width:
                 x = x_off
                 y += h
         self.i = 0  # Reset position in slideshow to the beginning
 
-    def _show_thumb(self, x, y, w, h):
+    def _show_thumb(self, slide, x, y, w, h):
         ''' Display a preview image and title as a thumbnail. '''
 
-        if len(self._thumbs) < self.i + 1:
-            # Create a Sprite for this thumbnail
-            if self._previews[self.i] is not None:
-                pixbuf_thumb = self._previews[self.i].scale_simple(
-                    int(w), int(h), gtk.gdk.INTERP_TILES)
+        # Is size has changed, regenerate the thumbnail
+        if slide.thumb is not None:
+            sw, sh = slide.thumb.get_dimensions()
+            if sw == w and sh == h:
+                slide.thumb.move((x, y))
+            else:
+                slide.thumb.hide()
+                slide.thumb = None
+        if slide.thumb is None:
+            if slide.preview is not None:
+                pixbuf_thumb = slide.preview.scale_simple(int(w), int(h),
+                                                          gtk.gdk.INTERP_TILES)
             else:
                 pixbuf_thumb = svg_str_to_pixbuf(genblank(int(w), int(h),
                                                           self._colors))
-            self._thumbs.append([Sprite(self._sprites, x, y, pixbuf_thumb),
-                                     x, y, self.i])
-            self._thumbs[-1][0].set_image(svg_str_to_pixbuf(
-                    svg_rectangle(int(w), int(h), self._colors)), i=1)
-            self._thumbs[-1][0].set_label(str(self.i + 1))
-        self._thumbs[self.i][0].set_layer(TOP)
+            slide.thumb = Sprite(self._sprites, x, y, pixbuf_thumb)
+            # Add a border
+            slide.thumb.set_image(svg_str_to_pixbuf(
+                    svg_rectangle(int(w), int(h), slide.colors)), i=1)
+        slide.thumb.set_layer(TOP)
+        if slide.star is None:
+            self._make_star(slide)
+        slide.star.set_layer(STAR)
+        slide.star.move((x, y))
 
     def _expose_cb(self, win, event):
         ''' Callback to handle window expose events '''
@@ -738,8 +799,7 @@ class PortfolioActivity(activity.Activity):
             _logger.debug('I am a joiner, so I am not saving.')
             return
 
-        if True in self._dirty:
-            self._save_changes_cb()
+        self._save_changes_cb()
         if os.path.exists(os.path.join(self.datapath, 'output.ogg')):
             os.remove(os.path.join(self.datapath, 'output.ogg'))
 
@@ -752,20 +812,6 @@ class PortfolioActivity(activity.Activity):
         self._canvas.window.invalidate_rect(
             gtk.gdk.Rectangle(int(x), int(y), int(w), int(h)), False)
 
-    def _spr_to_thumb(self, spr):
-        ''' Find which entry in the thumbnails table matches spr. '''
-        for i, thumb in enumerate(self._thumbs):
-            if spr == thumb[0]:
-                return i
-        return -1
-
-    def _spr_is_thumbnail(self, spr):
-        ''' Does spr match an entry in the thumbnails table? '''
-        if self._spr_to_thumb(spr) == -1:
-            return False
-        else:
-            return True
-
     def _button_press_cb(self, win, event):
         ''' The mouse button was pressed. Is it on a thumbnail sprite? '''
         x, y = map(int, event.get_coords())
@@ -774,6 +820,8 @@ class PortfolioActivity(activity.Activity):
         self._total_drag = [0, 0]
 
         spr = self._sprites.find_sprite((x, y))
+        if spr is not None:
+            self._startpos = spr.get_xy()
         self._press = None
         self._release = None
 
@@ -813,21 +861,27 @@ class PortfolioActivity(activity.Activity):
         if spr.type == 'star':
             spr.set_shape(self._unfav_pixbuf)
             spr.type = 'unstar'
-            i = self._favorites.index(spr)
+            slide = self._star_to_slide(spr)
+            slide.fav = False
+            if self.initiating:
+                self._send_star(slide.uid, False)
         elif spr.type == 'unstar':
             spr.set_shape(self._fav_pixbuf)
             spr.type = 'star'
-            i = self._favorites.index(spr)
+            slide = self._star_to_slide(spr)
+            slide.fav = True
+            if self.initiating:
+                self._send_star(slide.uid, True)
 
         # Are we clicking on a thumbnail?
-        if not self._spr_is_thumbnail(spr):
+        slide = self._thumb_to_slide(spr)
+        if slide is None:
             return False
 
         self.last_spr_moved = spr
         self._press = spr
         self._press.set_layer(DRAG)
-        if self.initiating is None or self.initiating:
-            self._favorites[self._spr_to_thumb(self._press)].set_layer(DRAG+1)
+        slide.star.set_layer(DRAG+1)
         return False
 
     def _mouse_move_cb(self, win, event):
@@ -842,8 +896,9 @@ class PortfolioActivity(activity.Activity):
         dy = y - self._dragpos[1]
         spr.move_relative([dx, dy])
         # Also move the star
-        if self.initiating is None or self.initiating:
-            self._favorites[self._spr_to_thumb(spr)].move_relative([dx, dy])
+        slide = self._thumb_to_slide(spr)
+        if slide is not None:
+            slide.star.move_relative([dx, dy])
         self._dragpos = [x, y]
         self._total_drag[0] += dx
         self._total_drag[1] += dy
@@ -855,61 +910,49 @@ class PortfolioActivity(activity.Activity):
         self._dragpos = [0, 0]
         x, y = map(int, event.get_coords())
 
+        if self._press is None:
+            return
+
         if self._thumbnail_mode:
-            if self._press is None:
-                return
+            press_slide = self._thumb_to_slide(self._press)
             # Drop the dragged thumbnail below the other thumbnails so
-            # that you can find the thumbnail beneath it.
+            # that you can find the thumbnail beneath it...
             self._press.set_layer(UNDRAG)
-            if self.initiating is None or self.initiating:
-                self._favorites[self._spr_to_thumb(self._press)].set_layer(STAR)
-            i = self._spr_to_thumb(self._press)
+            if press_slide is not None:
+                press_slide.star.set_layer(STAR)
             spr = self._sprites.find_sprite((x, y))
-            if self._spr_is_thumbnail(spr):
+            self._press.set_layer(TOP)  # and then restore press to top layer
+
+            if press_slide is not None:
                 self._release = spr
                 # If we found a thumbnail
                 # ...and it is the one we dragged, jump to that slide.
                 if self._press == self._release:
                     if self._total_drag[0] * self._total_drag[0] + \
                        self._total_drag[1] * self._total_drag[1] < 200:
-                        self._current_slide = self._spr_to_thumb(self._release)
+                        self._current_slide = self._slides.index(press_slide)
                         self._slide_button.set_active(True)
                 # ...and it is not the one we dragged, swap their positions.
                 else:
-                    j = self._spr_to_thumb(self._release)
-                    self._thumbs[i][0] = self._release
-                    self._thumbs[j][0] = self._press
-                    tmp = self.dsobjects[i]
-                    self.dsobjects[i] = self.dsobjects[j]
-                    self.dsobjects[j] = tmp
-                    if self.initiating is None or self.initiating:
-                        tmp = self._favorites[i]
-                        self._favorites[i] = self._favorites[j]
-                        self._favorites[j] = tmp
-                    tmp = self._uids[i]
-                    self._uids[i] = self._uids[j]
-                    self._uids[j] = tmp
-                    tmp = self._titles[i]
-                    self._titles[i] = self._titles[j]
-                    self._titles[j] = tmp
-                    tmp = self._previews[i]
-                    self._previews[i] = self._previews[j]
-                    self._previews[j] = tmp
-                    tmp = self._descriptions[i]
-                    self._descriptions[i] = self._descriptions[j]
-                    self._descriptions[j] = tmp
-                    self._thumbs[j][0].move((self._thumbs[j][1],
-                                             self._thumbs[j][2]))
-                    if self.initiating is None or self.initiating:
-                        self._favorites[j].move((self._thumbs[j][1],
-                                                 self._thumbs[j][2]))
-            self._thumbs[i][0].move((self._thumbs[i][1], self._thumbs[i][2]))
-            if self.initiating is None or self.initiating:
-                self._favorites[i].move((self._thumbs[i][1],
-                                         self._thumbs[i][2]))
-            self._press.set_layer(TOP)
-            self._press = None
-            self._release = None
+                    # Could have released on top of a star or a thumbnail
+                    if self._release.type in ['star', 'unstar']:
+                        release_slide = self._star_to_slide(self._release)
+                    else:
+                        release_slide = self._thumb_to_slide(self._release)
+                    if release_slide is None:  # Move to end of slide list
+                        pass  # TODO
+                    else:
+                        i = self._slides.index(press_slide)
+                        j = self._slides.index(release_slide)
+                        self._slides[i] = release_slide
+                        self._slides[j] = press_slide
+                        x, y = release_slide.thumb.get_xy()
+                        press_slide.thumb.move((x, y))
+                        press_slide.star.move((x, y))
+                        release_slide.thumb.move(self._startpos)
+                        release_slide.star.move(self._startpos)
+        self._press = None
+        self._release = None
         return False
 
     def _unit_combo_cb(self, arg=None):
@@ -937,8 +980,8 @@ class PortfolioActivity(activity.Activity):
             self._save_recording_button.set_icon('sound-save')
             self._save_recording_button.set_tooltip(_('Save recording'))
             # Autosave if there was not already a recording
-            if self._search_for_audio_note(
-                self.dsobjects[self.i].object_id) is None:
+            slide = self._slides[self.i]
+            if self._search_for_audio_note(slide.uid) is None:
                 _logger.debug('Autosaving recording')
                 self._notify_successful_save(title=_('Save recording'))
                 gobject.timeout_add(100, self._wait_for_transcoding_to_finish)
@@ -968,23 +1011,23 @@ class PortfolioActivity(activity.Activity):
     def _save_recording(self):
         if os.path.exists(os.path.join(self.datapath, 'output.ogg')):
             _logger.debug('Saving recording to Journal...')
-            obj_id = self.dsobjects[self.i].object_id
+            slide = self._slides[self.i]
             copyfile(os.path.join(self.datapath, 'output.ogg'),
-                     os.path.join(self.datapath, '%s.ogg' % (obj_id)))
-            dsobject = self._search_for_audio_note(obj_id)
+                     os.path.join(self.datapath, '%s.ogg' % (slide.uid)))
+            dsobject = self._search_for_audio_note(slide.uid)
             if dsobject is None:
                 dsobject = datastore.create()
             if dsobject is not None:
-                _logger.debug(self.dsobjects[self.i].metadata['title'])
+                _logger.debug(slide.title)
+                slide.sound = dsobject
                 dsobject.metadata['title'] = _('audio note for %s') % \
-                    (self.dsobjects[self.i].metadata['title'])
+                    (slide.title)
                 dsobject.metadata['icon-color'] = \
                     profile.get_color().to_string()
-                dsobject.metadata['tags'] = obj_id
+                dsobject.metadata['tags'] = slide.uid
                 dsobject.metadata['mime_type'] = 'audio/ogg'
                 dsobject.set_file_path(
-                    os.path.join(self.datapath, '%s.ogg' % (obj_id)))
-                    # os.path.join(self.datapath, 'output.ogg'))
+                    os.path.join(self.datapath, '%s.ogg' % (slide.uid)))
                 datastore.write(dsobject)
                 dsobject.destroy()
         else:
@@ -1011,14 +1054,14 @@ class PortfolioActivity(activity.Activity):
         if self.initiating is not None and not self.initiating:
             _logger.debug('skipping write (%s)' % (str(self.initiating)))
             return
-        for i, uid in enumerate(self._uids):
-            if not self._dirty[i]:
-                _logger.debug('%d is not dirty...' % (i))
+        for slide in self._slides:
+            if not slide.dirty:
                 continue
-            _logger.debug('%d is dirty... writing' % (i))
-            jobject = datastore.get(uid)
-            jobject.metadata['description'] = self._descriptions[i]
-            jobject.metadata['title'] = self._titles[i]
+            _logger.debug('%d is dirty... writing' % (
+                    self._slides.index(slide)))
+            jobject = datastore.get(slide.uid)
+            jobject.metadata['description'] = slide.description
+            jobject.metadata['title'] = slide.title
             datastore.write(jobject,
                             update_mtime=False,
                             reply_handler=self.datastore_write_cb,
@@ -1164,21 +1207,19 @@ class PortfolioActivity(activity.Activity):
             if CURSOR in self._selected_spr.labels[0]:
                 parts = self._selected_spr.labels[0].split(CURSOR)
                 self._selected_spr.set_label(string.join(parts))
+                slide = self._slides[self.i]
                 if self._selected_spr.type == 'title':
-                    self._titles[self.i] = self._selected_spr.labels[0]
-                    if self.initiating is not None and \
-                       self.initiating:
+                    slide.title = self._selected_spr.labels[0]
+                    if self.initiating is not None and self.initiating:
                         self._send_event('t:%s' % (self._data_dumper(
-                                    [self._uids[self.i],
-                                     self._titles[self.i]])))
+                                    [slide.uid, slide.title])))
                 else:
-                    self._descriptions[self.i] = self._selected_spr.labels[0]
+                    slide.description = self._selected_spr.labels[0]
                     if self.initiating is not None:
                         self._send_event('d:%s' % (self._data_dumper(
-                                    [self._uids[self.i],
-                                     self._descriptions[self.i]])))
+                                    [slide.uid, slide.description])))
                 _logger.debug('marking %d as dirty' % (self.i))
-                self._dirty[self.i] = True
+                slide.dirty = True
             self._selected_spr = None
             self._saved_string = ''
 
@@ -1201,13 +1242,15 @@ class PortfolioActivity(activity.Activity):
 
     # Serialize
 
-    def _dump(self, uid, title, pixbuf, description):
+    def _dump(self, slide):
         ''' Dump data for sharing.'''
-        _logger.debug('dumping %s' % (uid))
-        if pixbuf is None:
-            data = [uid, title, None, description]
+        _logger.debug('dumping %s' % (slide.uid))
+        if slide.preview is None:
+            data = [slide.uid, slide.title, None, slide.description]
         else:
-            data = [uid, title, pixbuf_to_base64(activity, pixbuf), description]
+            data = [slide.uid, slide.title,
+                    pixbuf_to_base64(activity, slide.preview),
+                    slide.description]
         return self._data_dumper(data)
 
     def _data_dumper(self, data):
@@ -1220,33 +1263,39 @@ class PortfolioActivity(activity.Activity):
 
     def _load(self, data):
         ''' Load game data from the journal. '''
+        self._restore_cursor()
         uid, title, base64, description = self._data_loader(data)
-        if not uid in self._uids:
+        if self._uid_to_slide(uid) is None:
             _logger.debug('loading %s' % (uid))
-            self._uids.append(uid)
-            self._titles.append(title)
             if base64 is None:
-                self._previews.append(None)
+                preview = None
             else:
-                self._previews.append(base64_to_pixbuf(activity, base64))
-            self._descriptions.append(description)
-            self._nobjects += 1
-            for thumbnail in self._thumbs:
-                thumbnail[0].hide()
-            self._thumbs = []
-            if not self._thumbnail_mode:
-                self._thumb_button.set_active(True)
-            else:
-                self._show_thumbs()
+                preview = base64_to_pixbuf(activity, base64)
+            self._slides.append(Slide(self._buddies[-1],
+                                      uid,
+                                      self._colors,
+                                      title,
+                                      preview,
+                                      description))
         else:
             _logger.debug('updating description for %s' % (uid))
-            self._titles[self._uids.index(uid)] = title
+            slide = self._uid_to_slide(uid)
+            slide.title = title
             if base64 is None:
-                self._previews[self._uids.index(uid)] = None
+                slide.preview = None
             else:
-                self._previews[self._uids.index(uid)] = base64_to_pixbuf(
-                    activity, base64)
-            self._descriptions[self._uids.index(uid)] = description
+                slide.preview = base64_to_pixbuf(activity, base64)
+            slide.description = description
+            slide.active = True
+            if not slide.fav:
+                slide.fav = True
+                if slide.star is not None:
+                    slide.star.set_shape(self._fav_pixbuf)
+                    slide.star.type = 'star'
+        if not self._thumbnail_mode:
+            self._thumb_button.set_active(True)
+        else:
+            self._show_thumbs()
 
     def _data_loader(self, data):
         if _OLD_SUGAR_SYSTEM:
@@ -1315,13 +1364,8 @@ class PortfolioActivity(activity.Activity):
 
         self.waiting = True
         # Since we are joining, clear out the slide list
-        self._uids = []
-        self._dirty = []
-        self._titles = []
-        self._previews = []
-        self._descriptions = []
-        self._thumbs = []
-        self._nobjects = 0
+        for slide in self._slides:
+            slide.active = False
         self._clear_screen()
         self._help.hide()
         self._description.set_layer(TOP)
@@ -1360,24 +1404,42 @@ class PortfolioActivity(activity.Activity):
 
     def event_received_cb(self, text):
         ''' Data is passed as tuples: cmd:text '''
+        dispatch_table = {'s': self._load,
+                          'c': self._update_colors,
+                          'd': self._update_description,
+                          't': self._update_title,
+                          'S': self._update_star,
+                          'R': self._reset,
+                          'j': self._new_join,
+                          }
         _logger.debug('<<< %s' % (text[0]))
-        data = text[2:]
-        if text[0] == 's':  # shared journal objects
-            self._restore_cursor()
-            self._load(data)
-        elif text[0] == 'c': # colors
-            self._update_colors(data)
-        elif text[0] == 'd':  # description has changed
-            self._update_description(data)
-        elif text[0] == 't':  # title has changed
-            self._update_title(data)
-        elif text[0] == 'j':  # someone new has joined
-            _logger.debug('%s has joined' % (data))
-            if data not in self._buddies:
-                self._buddies.append(data)
-            if self.initiating:
-                self._share_colors()
-                self._share_slides()
+        dispatch_table[text[0]](text[2:])
+
+    def _reset(self, data):
+        for slide in self._slides:
+            slide.active = False
+
+    def _new_join(self, data):
+        if data not in self._buddies:
+            self._buddies.append(data)
+        if self.initiating:
+            self._share_colors()
+            self._share_slides()
+
+    def _update_star(self, data):
+        uid, status = self._data_loader(data)
+        slide = self._uid_to_slide(uid)
+        if slide is None:
+            _logger.debug('slide %s not found' % (uid))
+            return
+        slide.fav = status
+        if slide.star is not None:
+            if status:
+                slide.star.set_shape(self._fav_pixbuf)
+                slide.star.type = 'star'
+            else:
+                slide.star.set_shape(self._unfav_pixbuf)
+                slide.star.type = 'unstar'
 
     def _update_colors(self, data):
         colors = self._data_loader(data)
@@ -1397,35 +1459,44 @@ class PortfolioActivity(activity.Activity):
 
     def _update_description(self, data):
         uid, text = self._data_loader(data)
-        if uid in self._uids:
-            _logger.debug('updating description %s' % (uid))
-            self._descriptions[self._uids.index(uid)] = text
-            if self.i == self._uids.index(uid):
-                self._description.set_label(text)
-            if self.initiating:
-                self._dirty[self._uids.index(uid)] = True
+        slide = self._uid_to_slide(uid)
+        if slide is None:
+            _logger.debug('slide %s not found' % (uid))
+            return
+        _logger.debug('updating description %s' % (uid))
+        slide.description = text
+        if self.i == self._slides.index(slide):
+            self._description.set_label(text)
+        if self.initiating:
+            slide.dirty = True
 
     def _update_title(self, data):
         uid, text = self._data_loader(data)
-        if uid in self._uids:
-            _logger.debug('updating title %s' % (uid))
-            self._titles[self._uids.index(uid)] = text
-            if self.i == self._uids.index(uid):
-                self._title.set_label(text)
+        slide = self._uid_to_slide(uid)
+        if slide is None:
+            _logger.debug('slide %s not found' % (uid))
+            return
+        _logger.debug('updating title %s' % (uid))
+        slide.title = text
+        if self.i == self._slides.index(slide):
+            self._title.set_label(text)
+        if self.initiating:
+            slide.dirty = True
 
     def _share_colors(self):
         _logger.debug('sharing colors')
         self._send_event('c:%s' % (self._data_dumper(self._colors)))
 
     def _share_slides(self):
-        for i in range(len(self._uids)):
-            if self._favorites[i].type == 'star':
-                _logger.debug('sharing %s' % (self._uids[i]))
-                gobject.idle_add(self._send_event, 's:' + str(
-                        self._dump(self._uids[i],
-                                   self._titles[i],
-                                   self._previews[i],
-                                   self._descriptions[i])))
+        for slide in self._slides:
+            if slide.active and slide.fav:
+                _logger.debug('sharing %s' % (slide.uid))
+                gobject.idle_add(self._send_event, 's:%s' % (
+                        str(self._dump(slide))))
+
+    def _send_star(self, uid, status):
+        _logger.debug('sharing star for %s (%s)' % (uid, str(status)))
+        self._send_event('S:%s' % (self._data_dumper([uid, status])))
 
     def _send_event(self, text):
         ''' Send event through the tube. '''

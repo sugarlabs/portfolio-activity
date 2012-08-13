@@ -261,6 +261,33 @@ class PortfolioActivity(activity.Activity):
             os.path.join(activity.get_bundle_path(), 'icons',
                          'favorite-off.svg'), star_size, star_size)
 
+        self.record_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+            os.path.join(activity.get_bundle_path(), 'icons',
+                         'media-audio.svg'), 55, 55)
+        self.recording_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+            os.path.join(activity.get_bundle_path(), 'icons',
+                         'media-audio-recording.svg'), 55, 55)
+        self.playback_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+            os.path.join(activity.get_bundle_path(), 'icons',
+                         'speaker-100.svg'), 55, 55)
+        self.playing_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+            os.path.join(activity.get_bundle_path(), 'icons',
+                         'speaker-0.svg'), 55, 55)
+
+        self._record_button = Sprite(self._sprites,
+                                     self._width - 55,
+                                     int(TITLEH * self._scale),
+                                     self.record_pixbuf)
+        self._record_button.set_layer(DRAG)
+        self._record_button.type = 'record'
+
+        self._playback_button = Sprite(self._sprites,
+                                   self._width - 55,
+                                   int(TITLEH * self._scale) + 55,
+                                   self.playback_pixbuf)
+        self._playback_button.type = 'noplay'
+        self._playback_button.hide()
+
         self.prev_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'go-previous.svg'), 55, 55)
@@ -278,6 +305,7 @@ class PortfolioActivity(activity.Activity):
                             self.prev_off_pixbuf)
         self._prev.set_layer(DRAG)
         self._prev.type = 'prev'
+
         self._next = Sprite(self._sprites, self._width - 55,
                             int((self._height - 55)/ 2), self.next_pixbuf)
         self._next.set_layer(DRAG)
@@ -331,7 +359,7 @@ class PortfolioActivity(activity.Activity):
     def _setup_toolbars(self):
         ''' Setup the toolbars. '''
 
-        self.max_participants = 2  # sharing
+        self.max_participants = 5  # sharing
 
         if HAVE_TOOLBOX:
             toolbox = ToolbarBox()
@@ -354,6 +382,7 @@ class PortfolioActivity(activity.Activity):
             adjust_toolbar.show_all()
             adjust_toolbar_button.show()
 
+            '''
             record_toolbar = gtk.Toolbar()
             record_toolbar_button = ToolbarButton(
                 label=_('Record a sound'),
@@ -361,6 +390,7 @@ class PortfolioActivity(activity.Activity):
                 icon_name='media-audio')
             record_toolbar.show_all()
             record_toolbar_button.show()
+            '''
         else:
             # Use pre-0.86 toolbar design
             primary_toolbar = gtk.Toolbar()
@@ -369,14 +399,16 @@ class PortfolioActivity(activity.Activity):
             toolbox.add_toolbar(_('Page'), primary_toolbar)
             adjust_toolbar = gtk.Toolbar()
             toolbox.add_toolbar(_('Adjust'), adjust_toolbar)
+            '''
             record_toolbar = gtk.Toolbar()
             toolbox.add_toolbar(_('Record'), record_toolbar)
+            '''
             toolbox.show()
             toolbox.set_current_toolbar(1)
             self.toolbar = primary_toolbar
 
         if HAVE_TOOLBOX:
-            toolbox.toolbar.insert(record_toolbar_button, -1)
+            # toolbox.toolbar.insert(record_toolbar_button, -1)
             toolbox.toolbar.insert(adjust_toolbar_button, -1)
 
         button_factory('view-fullscreen', self.toolbar,
@@ -415,6 +447,7 @@ class PortfolioActivity(activity.Activity):
                                            tooltip=_('Thumbnail view'),
                                            group=self._slide_button)
 
+        '''
         label_factory(record_toolbar, _('Record a sound') + ':')
         self._record_button = button_factory(
             'media-record', record_toolbar,
@@ -429,6 +462,7 @@ class PortfolioActivity(activity.Activity):
         self._save_recording_button = button_factory(
             'sound-save-insensitive', record_toolbar,
             self._wait_for_transcoding_to_finish, tooltip=_('Nothing to save'))
+        '''
 
         if HAVE_TOOLBOX:
             separator_factory(activity_button_toolbar)
@@ -687,14 +721,26 @@ class PortfolioActivity(activity.Activity):
             if slide.sound is None:
                 slide.sound = self._search_for_audio_note(slide.uid)
             if slide.sound is not None:
-                _logger.debug('Playing audio note')
-                gobject.idle_add(play_audio_from_file, slide.sound.file_path)
+                if self._playing:
+                    _logger.debug('Playing audio note')
+                    gobject.idle_add(play_audio_from_file,
+                                     slide.sound.file_path)
+                '''
                 self._playback_button.set_icon('media-playback-start')
                 self._playback_button.set_tooltip(_('Play recording'))
+                '''
+                self._playback_button.set_image(self.playback_pixbuf)
+                self._playback_button.type = 'play'
+                self._playback_button.set_layer(DRAG)
             else:
+                '''
                 self._playback_button.set_icon(
                     'media-playback-start-insensitive')
                 self._playback_button.set_tooltip(_('Nothing to play'))
+                '''
+                self._playback_button.hide()
+                self._playback_button.type = 'noplay'
+            self._record_button.set_image(self.record_pixbuf)
 
     def _slides_cb(self, button=None):
         if self._thumbnail_mode:
@@ -709,6 +755,8 @@ class PortfolioActivity(activity.Activity):
         else:
             self._prev.set_layer(DRAG)
             self._next.set_layer(DRAG)
+            self._record_button.set_layer(DRAG)
+            self._playback_button.set_layer(DRAG)
         return False
 
     def _count_active(self):
@@ -724,6 +772,8 @@ class PortfolioActivity(activity.Activity):
         self._thumbnail_mode = True
         self._clear_screen()
 
+        self._record_button.hide()
+        self._playback_button.hide()
         self._prev.hide()
         self._next.hide()
 
@@ -850,11 +900,21 @@ class PortfolioActivity(activity.Activity):
             self._unselect()
 
         # Are we clicking on a button?
+        _logger.debug(spr.type)
         if spr.type == 'next':
             self._next_cb()
             return True
         elif spr.type == 'prev':
             self._prev_cb()
+            return True
+        elif spr.type == 'record':
+            self._record_cb()
+            return True
+        elif spr.type == 'recording':
+            self._record_cb()
+            return True
+        elif spr.type == 'play':
+            self._playback_recording_cb()
             return True
 
         # Are we clicking on a star?
@@ -973,26 +1033,44 @@ class PortfolioActivity(activity.Activity):
             _logger.debug('recording...True. Preparing to save.')
             self._grecord.stop_recording_audio()
             self._recording = False
+            self._record_button.set_image(self.record_pixbuf)
+            self._record_button.type = 'record'
+            self._record_button.set_layer(DRAG)
+            self._playback_button.set_image(self.playback_pixbuf)
+            self._playback_button.type = 'play'
+            self._playback_button.set_layer(DRAG)
+            '''
             self._record_button.set_icon('media-record')
             self._record_button.set_tooltip(_('Start recording'))
             self._playback_button.set_icon('media-playback-start')
             self._playback_button.set_tooltip(_('Play recording'))
             self._save_recording_button.set_icon('sound-save')
             self._save_recording_button.set_tooltip(_('Save recording'))
+            '''
             # Autosave if there was not already a recording
             slide = self._slides[self.i]
+            _logger.debug('Autosaving recording')
+            self._notify_successful_save(title=_('Save recording'))
+            gobject.timeout_add(100, self._wait_for_transcoding_to_finish)
+            '''
             if self._search_for_audio_note(slide.uid) is None:
                 _logger.debug('Autosaving recording')
                 self._notify_successful_save(title=_('Save recording'))
                 gobject.timeout_add(100, self._wait_for_transcoding_to_finish)
             else:
                 _logger.debug('Waiting for manual save.')
+            '''
         else:  # Wasn't recording, so start
             _logger.debug('recording...False. Start recording.')
+            self._record_button.set_image(self.recording_pixbuf)
+            self._record_button.type = 'recording'
+            self._record_button.set_layer(DRAG)
             self._grecord.record_audio()
             self._recording = True
+            '''
             self._record_button.set_icon('media-recording')
             self._record_button.set_tooltip(_('Stop recording'))
+            '''
 
     def _wait_for_transcoding_to_finish(self, button=None):
         while not self._grecord.transcoding_complete():
@@ -1005,8 +1083,16 @@ class PortfolioActivity(activity.Activity):
     def _playback_recording_cb(self, button=None):
         ''' Play back current recording '''
         _logger.debug('Playback current recording from output.ogg...')
+        self._playback_button.set_image(self.playing_pixbuf)
+        self._playback_button.set_layer(DRAG)
+        self._playback_button.type = 'playing'
+        gobject.timeout_add(1000, self._playback_button_reset)
         play_audio_from_file(os.path.join(self.datapath, 'output.ogg'))
-        return
+
+    def _playback_button_reset(self):
+        self._playback_button.set_image(self.playback_pixbuf)
+        self._playback_button.set_layer(DRAG)
+        self._playback_button.type = 'play'
 
     def _save_recording(self):
         if os.path.exists(os.path.join(self.datapath, 'output.ogg')):

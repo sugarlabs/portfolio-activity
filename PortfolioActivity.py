@@ -175,6 +175,8 @@ class PortfolioActivity(activity.Activity):
         self._colors = profile.get_color().to_string().split(',')
         self.initiating = None  # sharing (True) or joining (False)
 
+        self._playing = False
+
         self._width = gtk.gdk.screen_width()
         self._height = gtk.gdk.screen_height()
         self._scale = gtk.gdk.screen_height() / 900.

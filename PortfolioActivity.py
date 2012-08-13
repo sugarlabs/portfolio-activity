@@ -1335,7 +1335,8 @@ class PortfolioActivity(activity.Activity):
             data = [slide.uid, slide.title, None, slide.description]
         else:
             data = [slide.uid, slide.title,
-                    pixbuf_to_base64(activity, slide.preview),
+                    pixbuf_to_base64(activity, slide.preview,
+                                     width=300, height=225),
                     slide.description]
         return self._data_dumper(data)
 

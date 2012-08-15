@@ -383,16 +383,6 @@ class PortfolioActivity(activity.Activity):
                 icon_name='preferences-system')
             adjust_toolbar.show_all()
             adjust_toolbar_button.show()
-
-            '''
-            record_toolbar = gtk.Toolbar()
-            record_toolbar_button = ToolbarButton(
-                label=_('Record a sound'),
-                page=record_toolbar,
-                icon_name='media-audio')
-            record_toolbar.show_all()
-            record_toolbar_button.show()
-            '''
         else:
             # Use pre-0.86 toolbar design
             primary_toolbar = gtk.Toolbar()
@@ -401,10 +391,6 @@ class PortfolioActivity(activity.Activity):
             toolbox.add_toolbar(_('Page'), primary_toolbar)
             adjust_toolbar = gtk.Toolbar()
             toolbox.add_toolbar(_('Adjust'), adjust_toolbar)
-            '''
-            record_toolbar = gtk.Toolbar()
-            toolbox.add_toolbar(_('Record'), record_toolbar)
-            '''
             toolbox.show()
             toolbox.set_current_toolbar(1)
             self.toolbar = primary_toolbar
@@ -426,7 +412,8 @@ class PortfolioActivity(activity.Activity):
 
         separator_factory(adjust_toolbar, False, False)
 
-        self._unit_combo = combo_factory(UNITS, adjust_toolbar,
+        self._unit_combo = combo_factory(UNITS,
+                                         adjust_toolbar,
                                          self._unit_combo_cb,
                                          default=UNITS[TEN],
                                          tooltip=_('Adjust playback speed'))
@@ -439,8 +426,10 @@ class PortfolioActivity(activity.Activity):
 
         separator_factory(self.toolbar)
 
-        self._slide_button = radio_factory('slide-view', self.toolbar,
-                                           self._slides_cb, group=None,
+        self._slide_button = radio_factory('slide-view',
+                                           self.toolbar,
+                                           self._slides_cb,
+                                           group=None,
                                            tooltip=_('Slide view'))
 
         self._thumb_button = radio_factory('thumbs-view',
@@ -449,33 +438,11 @@ class PortfolioActivity(activity.Activity):
                                            tooltip=_('Thumbnail view'),
                                            group=self._slide_button)
 
-        '''
-        label_factory(record_toolbar, _('Record a sound') + ':')
-        self._record_button = button_factory(
-            'media-record', record_toolbar,
-            self._record_cb, tooltip=_('Start recording'))
-
-        separator_factory(record_toolbar)
-
-        self._playback_button = button_factory(
-            'media-playback-start-insensitive',  record_toolbar,
-            self._playback_recording_cb, tooltip=_('Nothing to play'))
-
-        self._save_recording_button = button_factory(
-            'sound-save-insensitive', record_toolbar,
-            self._wait_for_transcoding_to_finish, tooltip=_('Nothing to save'))
-        '''
-
-        if HAVE_TOOLBOX:
-            separator_factory(activity_button_toolbar)
-            self._save_pdf = button_factory(
-                'save-as-pdf', activity_button_toolbar,
-                self._save_as_pdf_cb, tooltip=_('Save as PDF'))
-        else:
-            separator_factory(self.toolbar)
-            self._save_pdf = button_factory(
-                'save-as-pdf', self.toolbar,
-                self._save_as_pdf_cb, tooltip=_('Save as PDF'))
+        separator_factory(self.toolbar)
+        self._save_pdf = button_factory('save-as-pdf',
+                                        self.toolbar,
+                                        self._save_as_pdf_cb,
+                                        tooltip=_('Save as PDF'))
 
         if HAVE_TOOLBOX:
             separator_factory(toolbox.toolbar, True, False)
@@ -1041,27 +1008,11 @@ class PortfolioActivity(activity.Activity):
             self._playback_button.set_image(self.playback_pixbuf)
             self._playback_button.type = 'play'
             self._playback_button.set_layer(DRAG)
-            '''
-            self._record_button.set_icon('media-record')
-            self._record_button.set_tooltip(_('Start recording'))
-            self._playback_button.set_icon('media-playback-start')
-            self._playback_button.set_tooltip(_('Play recording'))
-            self._save_recording_button.set_icon('sound-save')
-            self._save_recording_button.set_tooltip(_('Save recording'))
-            '''
             # Autosave if there was not already a recording
             slide = self._slides[self.i]
             _logger.debug('Autosaving recording')
             self._notify_successful_save(title=_('Save recording'))
             gobject.timeout_add(100, self._wait_for_transcoding_to_finish)
-            '''
-            if self._search_for_audio_note(slide.uid) is None:
-                _logger.debug('Autosaving recording')
-                self._notify_successful_save(title=_('Save recording'))
-                gobject.timeout_add(100, self._wait_for_transcoding_to_finish)
-            else:
-                _logger.debug('Waiting for manual save.')
-            '''
         else:  # Wasn't recording, so start
             _logger.debug('recording...False. Start recording.')
             self._record_button.set_image(self.recording_pixbuf)
@@ -1069,10 +1020,6 @@ class PortfolioActivity(activity.Activity):
             self._record_button.set_layer(DRAG)
             self._grecord.record_audio()
             self._recording = True
-            '''
-            self._record_button.set_icon('media-recording')
-            self._record_button.set_tooltip(_('Stop recording'))
-            '''
 
     def _wait_for_transcoding_to_finish(self, button=None):
         while not self._grecord.transcoding_complete():

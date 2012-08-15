@@ -193,6 +193,7 @@ class PortfolioActivity(activity.Activity):
         self._setup_canvas()
 
         self._slides = []
+        self._current_slide = 0
 
         self._thumbnail_mode = False
         self._find_starred()
@@ -349,6 +350,7 @@ class PortfolioActivity(activity.Activity):
                     self._width, self._height, (self._colors[0],
                                                 self._colors[0]))))
         self._my_canvas.set_layer(BOTTOM)
+        self._my_canvas.type = 'background'
 
         self._clear_screen()
 
@@ -421,7 +423,9 @@ class PortfolioActivity(activity.Activity):
 
         separator_factory(adjust_toolbar)
 
-        button_factory('system-restart', adjust_toolbar, self._rescan_cb,
+        button_factory('system-restart',
+                       adjust_toolbar,
+                       self._rescan_cb,
                        tooltip=_('Refresh'))
 
         separator_factory(self.toolbar)
@@ -457,12 +461,16 @@ class PortfolioActivity(activity.Activity):
         gtk.main_quit()
 
     def _thumb_to_slide(self, spr):
+        if spr is None:
+            return None
         for slide in self._slides:
             if slide.thumb == spr:
                 return slide
         return None
 
     def _star_to_slide(self, spr):
+        if spr is None:
+            return None
         for slide in self._slides:
             if slide.star == spr:
                 return slide
@@ -694,19 +702,10 @@ class PortfolioActivity(activity.Activity):
                     _logger.debug('Playing audio note')
                     gobject.idle_add(play_audio_from_file,
                                      slide.sound.file_path)
-                '''
-                self._playback_button.set_icon('media-playback-start')
-                self._playback_button.set_tooltip(_('Play recording'))
-                '''
                 self._playback_button.set_image(self.playback_pixbuf)
                 self._playback_button.type = 'play'
                 self._playback_button.set_layer(DRAG)
             else:
-                '''
-                self._playback_button.set_icon(
-                    'media-playback-start-insensitive')
-                self._playback_button.set_tooltip(_('Nothing to play'))
-                '''
                 self._playback_button.hide()
                 self._playback_button.type = 'noplay'
             self._record_button.set_image(self.record_pixbuf)
@@ -714,18 +713,16 @@ class PortfolioActivity(activity.Activity):
     def _slides_cb(self, button=None):
         if self._thumbnail_mode:
             self._thumbnail_mode = False
-            self.i = self._current_slide
-            self._show_slide()
+        self.i = self._current_slide
+        self._prev.set_layer(DRAG)
+        self._next.set_layer(DRAG)
+        self._record_button.set_layer(DRAG)
+        self._playback_button.set_layer(DRAG)
+        self._show_slide()
 
     def _thumbs_cb(self, button=None):
         ''' Toggle between thumbnail view and slideshow view. '''
-        if not self._thumbnail_mode:
-            self._show_thumbs()
-        else:
-            self._prev.set_layer(DRAG)
-            self._next.set_layer(DRAG)
-            self._record_button.set_layer(DRAG)
-            self._playback_button.set_layer(DRAG)
+        self._show_thumbs()
         return False
 
     def _count_active(self):
@@ -869,7 +866,6 @@ class PortfolioActivity(activity.Activity):
             self._unselect()
 
         # Are we clicking on a button?
-        _logger.debug(spr.type)
         if spr.type == 'next':
             self._next_cb()
             return True
@@ -959,8 +955,22 @@ class PortfolioActivity(activity.Activity):
                 if self._press == self._release:
                     if self._total_drag[0] * self._total_drag[0] + \
                        self._total_drag[1] * self._total_drag[1] < 200:
-                        self._current_slide = self._slides.index(press_slide)
+                        self.i = self._slides.index(press_slide)
+                        self._current_slide = self.i
                         self._slide_button.set_active(True)
+                    else:  # TODO: test for dragged to beginning
+                        i = self._slides.index(press_slide)
+                        n = len(self._slides) - 1
+                        press_slide.thumb.move(self._startpos)
+                        press_slide.star.move(self._startpos)
+                        if self._total_drag[1] > 0:
+                            while i < n:
+                                self._swap_slides(i, i + 1)
+                                i += 1
+                        else:
+                            while i > 0:
+                                self._swap_slides(i, i - 1)
+                                i -= 1
                 # ...and it is not the one we dragged, swap their positions.
                 else:
                     # Could have released on top of a star or a thumbnail
@@ -968,21 +978,25 @@ class PortfolioActivity(activity.Activity):
                         release_slide = self._star_to_slide(self._release)
                     else:
                         release_slide = self._thumb_to_slide(self._release)
-                    if release_slide is None:  # Move to end of slide list
-                        pass  # TODO
-                    else:
-                        i = self._slides.index(press_slide)
-                        j = self._slides.index(release_slide)
-                        self._slides[i] = release_slide
-                        self._slides[j] = press_slide
-                        x, y = release_slide.thumb.get_xy()
-                        press_slide.thumb.move((x, y))
-                        press_slide.star.move((x, y))
-                        release_slide.thumb.move(self._startpos)
-                        release_slide.star.move(self._startpos)
+                    press_slide.thumb.move(self._startpos)
+                    press_slide.star.move(self._startpos)
+                    self._swap_slides(self._slides.index(press_slide),
+                                      self._slides.index(release_slide))
         self._press = None
         self._release = None
         return False
+
+    def _swap_slides(self, i, j):
+        ''' Swap order and x, y position of two slides '''
+        tmp = self._slides[i]
+        self._slides[i] = self._slides[j]
+        self._slides[j] = tmp
+        xi, yi = self._slides[i].thumb.get_xy()
+        xj, yj = self._slides[j].thumb.get_xy()
+        self._slides[i].thumb.move((xj, yj))
+        self._slides[i].star.move((xj, yj))
+        self._slides[j].thumb.move((xi, yi))
+        self._slides[j].star.move((xi, yi))
 
     def _unit_combo_cb(self, arg=None):
         ''' Read value of predefined conversion factors from combo box '''
@@ -1298,7 +1312,7 @@ class PortfolioActivity(activity.Activity):
             return io.getvalue()
 
     def _load(self, data):
-        ''' Load game data from the journal. '''
+        ''' Load slide data from a sharer. '''
         self._restore_cursor()
         uid, title, base64, description = self._data_loader(data)
         if self._uid_to_slide(uid) is None:

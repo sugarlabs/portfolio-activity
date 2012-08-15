@@ -88,8 +88,6 @@ PREVIEWW = 600
 PREVIEWH = 450
 PREVIEWY = 80
 TITLEH = 60
-DESCRIPTIONH = 250
-DESCRIPTIONX = 50
 DESCRIPTIONY = 550
 
 TWO = 0
@@ -148,7 +146,8 @@ class Slide():
         self.uid = uid
         self.colors = colors
         self.title = title
-        self.preview = preview  # pixbuf
+        self.preview = preview
+        self.preview2 = None  # larger version for fullscreen mode
         self.description = desc
         self.sound = None
         self.dirty = False
@@ -180,6 +179,15 @@ class PortfolioActivity(activity.Activity):
         self._width = gtk.gdk.screen_width()
         self._height = gtk.gdk.screen_height()
         self._scale = gtk.gdk.screen_height() / 900.
+
+        self._titlewh = [self._width, TITLEH * self._scale]
+        self._titlexy = [0, 0]
+        self._previewwh = [PREVIEWW * self._scale, PREVIEWH * self._scale]
+        self._previewxy = [(self._width - self._previewwh[0]) / 2,
+                           PREVIEWY * self._scale]
+        self._descriptionwh = [self._width,
+                               self._height - DESCRIPTIONY * self._scale - 55]
+        self._descriptionxy = [0, DESCRIPTIONY * self._scale]
 
         if hasattr(self, 'get_window') and \
            hasattr(self.get_window(), 'get_cursor'):
@@ -226,13 +234,44 @@ class PortfolioActivity(activity.Activity):
         self._canvas.add_events(gtk.gdk.POINTER_MOTION_MASK)
         self._canvas.add_events(gtk.gdk.BUTTON_RELEASE_MASK)
         self._canvas.add_events(gtk.gdk.KEY_PRESS_MASK)
-        self._canvas.connect("expose-event", self._expose_cb)
-        self._canvas.connect("button-press-event", self._button_press_cb)
-        self._canvas.connect("button-release-event", self._button_release_cb)
-        self._canvas.connect("motion-notify-event", self._mouse_move_cb)
-        self._canvas.connect("key-press-event", self._keypress_cb)
+        self._canvas.add_events(gtk.gdk.CONFIGURE)
+        self._canvas.connect('expose-event', self._expose_cb)
+        self._canvas.connect('button-press-event', self._button_press_cb)
+        self._canvas.connect('button-release-event', self._button_release_cb)
+        self._canvas.connect('motion-notify-event', self._mouse_move_cb)
+        self._canvas.connect('key-press-event', self._keypress_cb)
+        self._canvas.connect('configure-event', self._configure_cb)
 
         self._canvas.grab_focus()
+
+    def _configure_cb(self, win, event):
+        _logger.debug('configure event')
+        _logger.debug('%d, %d' % (int(gtk.gdk.screen_width()),
+                                      int(gtk.gdk.screen_height())))
+        # landscape or portrait?
+        self._width = gtk.gdk.screen_width()
+        self._height = gtk.gdk.screen_height()
+        if self._width > self._height:
+            self._scale = gtk.gdk.screen_height() / 900.
+        else:
+            self._scale = gtk.gdk.screen_width() / 1200.
+
+        self._my_canvas.hide()
+        self._title.hide()
+        self._description.hide()
+        self._titlewh = [self._width, TITLEH * self._scale]
+        self._titlexy = [0, 0]
+        self._previewwh = [PREVIEWW * self._scale, PREVIEWH * self._scale]
+        self._previewxy = [(self._width - self._previewwh[0]) / 2,
+                           PREVIEWY * self._scale]
+        self._descriptionwh = [self._width,
+                               self._height - DESCRIPTIONY * self._scale - 55]
+        self._descriptionxy = [0, DESCRIPTIONY * self._scale]
+
+        self._configured_sprites()  # Some sprites are sized to screen
+        self._clear_screen()
+        # To do: check for thumbview
+        self._show_slide()
 
     def _setup_workspace(self):
         ''' Prepare to render the datastore entries. '''
@@ -244,11 +283,11 @@ class PortfolioActivity(activity.Activity):
             self._colors[1] = tmp
 
         if not HAVE_TOOLBOX and self._hw[0:2] == 'xo':
-            titlef = 18
-            descriptionf = 12
+            self._titlef = 18
+            self._descriptionf = 12
         else:
-            titlef = 36
-            descriptionf = 24
+            self._titlef = 36
+            self._descriptionf = 24
 
         # Generate the sprites we'll need...
         self._sprites = Sprites(self._canvas)
@@ -277,17 +316,12 @@ class PortfolioActivity(activity.Activity):
             os.path.join(activity.get_bundle_path(), 'icons',
                          'speaker-0.svg'), 55, 55)
 
-        self._record_button = Sprite(self._sprites,
-                                     self._width - 55,
-                                     int(TITLEH * self._scale),
-                                     self.record_pixbuf)
+        self._record_button = Sprite(self._sprites, 0, 0, self.record_pixbuf)
         self._record_button.set_layer(DRAG)
         self._record_button.type = 'record'
 
-        self._playback_button = Sprite(self._sprites,
-                                   self._width - 55,
-                                   int(TITLEH * self._scale) + 55,
-                                   self.playback_pixbuf)
+        self._playback_button = Sprite(self._sprites, 0, 0,
+                                       self.playback_pixbuf)
         self._playback_button.type = 'noplay'
         self._playback_button.hide()
 
@@ -304,53 +338,30 @@ class PortfolioActivity(activity.Activity):
             os.path.join(activity.get_bundle_path(), 'icons',
                          'go-next-inactive.svg'), 55, 55)
 
-        self._prev = Sprite(self._sprites, 0, int((self._height - 55)/ 2),
-                            self.prev_off_pixbuf)
+        self._prev = Sprite(self._sprites, 0, 0, self.prev_off_pixbuf)
         self._prev.set_layer(DRAG)
         self._prev.type = 'prev'
 
-        self._next = Sprite(self._sprites, self._width - 55,
-                            int((self._height - 55)/ 2), self.next_pixbuf)
+        self._next = Sprite(self._sprites, 0, 0, self.next_pixbuf)
         self._next.set_layer(DRAG)
         self._next.type = 'next'
 
-        self._help = Sprite(
-            self._sprites,
-            int((self._width - int(PREVIEWW * self._scale)) / 2),
-            int(PREVIEWY * self._scale),
-            gtk.gdk.pixbuf_new_from_file_at_size(
+        self._help = Sprite(self._sprites,
+                            0, 0,
+                            gtk.gdk.pixbuf_new_from_file_at_size(
                 os.path.join(activity.get_bundle_path(), 'help.png'),
-                int(PREVIEWW * self._scale), int(PREVIEWH * self._scale)))
+                int(self._previewwh[0]),
+                int(self._previewwh[1])))
         self._help.hide()
 
-        self._title = Sprite(self._sprites, 0, 0, svg_str_to_pixbuf(
-                genblank(self._width, int(TITLEH * self._scale),
-                          self._colors)))
-        self._title.set_label_attributes(int(titlef * self._scale),
-                                         rescale=False)
-        self._title.type = 'title'
         self._preview = Sprite(self._sprites,
-            int((self._width - int(PREVIEWW * self._scale)) / 2),
-            int(PREVIEWY * self._scale), svg_str_to_pixbuf(genblank(
-                    int(PREVIEWW * self._scale), int(PREVIEWH * self._scale),
-                    self._colors)))
+                               0, 0,
+                               svg_str_to_pixbuf(genblank(
+                        int(self._previewwh[0]),
+                        int(self._previewwh[1]),
+                        self._colors)))
 
-        self._description = Sprite(self._sprites,
-                                   int(DESCRIPTIONX * self._scale),
-                                   int(DESCRIPTIONY * self._scale),
-                                   svg_str_to_pixbuf(
-                genblank(int(self._width - (2 * DESCRIPTIONX * self._scale)),
-                          int(DESCRIPTIONH * self._scale),
-                          self._colors)))
-        self._description.set_label_attributes(int(descriptionf * self._scale))
-        self._description.type = 'description'
-
-        self._my_canvas = Sprite(
-            self._sprites, 0, 0, svg_str_to_pixbuf(genblank(
-                    self._width, self._height, (self._colors[0],
-                                                self._colors[0]))))
-        self._my_canvas.set_layer(BOTTOM)
-        self._my_canvas.type = 'background'
+        self._configured_sprites()  # Some sprites are sized to screen
 
         self._clear_screen()
 
@@ -359,6 +370,45 @@ class PortfolioActivity(activity.Activity):
 
         self._playing = False
         self._rate = 10
+
+    def _configured_sprites(self):
+        ''' Some sprites are sized or positioned based on screen
+        configuration '''
+
+        self._preview.move((int(self._previewxy[0]),
+                            int(self._previewxy[1])))
+        self._help.move((int(self._previewxy[0]),
+                         int(self._previewxy[1])))
+        self._record_button.move((self._width - 55, self._titlewh[1]))
+        self._playback_button.move((self._width - 55, self._titlewh[1] + 55))
+        self._prev.move((0, int((self._height - 55) / 2)))
+        self._next.move((self._width - 55, int((self._height - 55) / 2)))
+        self._title = Sprite(self._sprites,
+                             int(self._titlexy[0]),
+                             int(self._titlexy[1]),
+                             svg_str_to_pixbuf(
+                genblank(self._titlewh[0], self._titlewh[1], self._colors)))
+        self._title.set_label_attributes(int(self._titlef * self._scale),
+                                         rescale=False)
+        self._title.type = 'title'
+
+        self._description = Sprite(self._sprites,
+                                   int(self._descriptionxy[0]),
+                                   int(self._descriptionxy[1]),
+                                   svg_str_to_pixbuf(
+                genblank(int(self._descriptionwh[0]),
+                         int(self._descriptionwh[1]),
+                         self._colors)))
+        self._description.set_label_attributes(
+            int(self._descriptionf * self._scale))
+        self._description.type = 'description'
+
+        self._my_canvas = Sprite(
+            self._sprites, 0, 0, svg_str_to_pixbuf(genblank(
+                    self._width, self._height, (self._colors[0],
+                                                self._colors[0]))))
+        self._my_canvas.set_layer(BOTTOM)
+        self._my_canvas.type = 'background'
 
     def _setup_toolbars(self):
         ''' Setup the toolbars. '''
@@ -914,7 +964,7 @@ class PortfolioActivity(activity.Activity):
         return False
 
     def _mouse_move_cb(self, win, event):
-        """ Drag a thumbnail with the mouse. """
+        ''' Drag a thumbnail with the mouse. '''
         spr = self._press
         if spr is None:
             self._dragpos = [0, 0]
@@ -1253,7 +1303,7 @@ class PortfolioActivity(activity.Activity):
                     newleft = oldleft + NEWLINE
                 else:
                     newleft = oldleft + keyname
-        self._selected_spr.set_label("%s%s%s" % (newleft, CURSOR, oldright))
+        self._selected_spr.set_label('%s%s%s' % (newleft, CURSOR, oldright))
 
     def _unselect(self):
         if self._selected_spr is not None:
@@ -1506,10 +1556,12 @@ class PortfolioActivity(activity.Activity):
                                                      self._colors[0]])))
             self._description.set_image(svg_str_to_pixbuf(
                     genblank(
-                        int(self._width - (2 * DESCRIPTIONX * self._scale)),
-                        int(DESCRIPTIONH * self._scale), self._colors)))
+                        int(self._descriptionwh[0]),
+                        int(self._descriptionwh[1]),
+                        self._colors)))
             self._title.set_image(svg_str_to_pixbuf(
-                        genblank(self._width, int(TITLEH * self._scale),
+                        genblank(int(self._titlewh[0]),
+                                 int(self._titlewh[1]),
                                  self._colors)))
 
     def _update_description(self, data):

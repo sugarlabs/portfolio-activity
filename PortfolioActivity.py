@@ -245,9 +245,6 @@ class PortfolioActivity(activity.Activity):
         self._canvas.grab_focus()
 
     def _configure_cb(self, win, event):
-        _logger.debug('configure event')
-        _logger.debug('%d, %d' % (int(gtk.gdk.screen_width()),
-                                      int(gtk.gdk.screen_height())))
         # landscape or portrait?
         self._width = gtk.gdk.screen_width()
         self._height = gtk.gdk.screen_height()
@@ -270,8 +267,10 @@ class PortfolioActivity(activity.Activity):
 
         self._configured_sprites()  # Some sprites are sized to screen
         self._clear_screen()
-        # To do: check for thumbview
-        self._show_slide()
+        if self._thumbnail_mode:
+            self._thumbs_cb()
+        else:
+            self._show_slide()
 
     def _setup_workspace(self):
         ''' Prepare to render the datastore entries. '''
@@ -595,7 +594,6 @@ class PortfolioActivity(activity.Activity):
         if self.initiating:
             self._share_slides()
         if self._thumbnail_mode:
-            self._thumbnail_mode = False
             self._thumbs_cb()
         else:
             self._show_slide()
@@ -776,6 +774,8 @@ class PortfolioActivity(activity.Activity):
 
     def _thumbs_cb(self, button=None):
         ''' Toggle between thumbnail view and slideshow view. '''
+        if not self._thumbnail_mode:
+            self._thumbnail_mode = True
         self._show_thumbs()
         return False
 
@@ -789,7 +789,6 @@ class PortfolioActivity(activity.Activity):
     def _show_thumbs(self):
         self._stop_autoplay()
         self._current_slide = self.i
-        self._thumbnail_mode = True
         self._clear_screen()
 
         self._record_button.hide()

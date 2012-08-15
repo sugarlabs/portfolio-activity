@@ -601,17 +601,18 @@ class PortfolioActivity(activity.Activity):
     def _save_as_pdf_cb(self, button=None):
         ''' Export an PDF version of the slideshow to the Journal. '''
         if self.initiating is not None and not self.initiating:
-            return
+            nick = self._buddies[-1]
+        else:
+            nick = profile.get_nick_name()
         _logger.debug('saving to PDF...')
         if 'description' in self.metadata:
-            tmp_file = save_pdf(self, profile.get_nick_name(),
+            tmp_file = save_pdf(self, nick,
                                 description=self.metadata['description'])
         else:
             tmp_file = save_pdf(self, profile.get_nick_name())
 
         dsobject = datastore.create()
-        dsobject.metadata['title'] = '%s %s' % (profile.get_nick_name(),
-                                                _('Portfolio'))
+        dsobject.metadata['title'] = '%s %s' % (nick, _('Portfolio'))
         dsobject.metadata['icon-color'] = profile.get_color().to_string()
         dsobject.metadata['mime_type'] = 'application/pdf'
         dsobject.set_file_path(tmp_file)
@@ -1453,7 +1454,7 @@ class PortfolioActivity(activity.Activity):
                 self.event_received_cb)
 
             if self.waiting:
-                self._send_event('j:%s' % (profile.get_nick_name()))
+                self._share_nick()
 
     def event_received_cb(self, text):
         ''' Data is passed as tuples: cmd:text '''
@@ -1476,6 +1477,7 @@ class PortfolioActivity(activity.Activity):
         if data not in self._buddies:
             self._buddies.append(data)
         if self.initiating:
+            self._share_nick()
             self._share_colors()
             self._share_slides()
 
@@ -1535,6 +1537,10 @@ class PortfolioActivity(activity.Activity):
             self._title.set_label(text)
         if self.initiating:
             slide.dirty = True
+
+    def _share_nick(self):
+        _logger.debug('sharing nick')
+        self._send_event('j:%s' % (profile.get_nick_name()))
 
     def _share_colors(self):
         _logger.debug('sharing colors')

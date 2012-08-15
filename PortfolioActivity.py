@@ -709,6 +709,9 @@ class PortfolioActivity(activity.Activity):
                 self._playback_button.hide()
                 self._playback_button.type = 'noplay'
             self._record_button.set_image(self.record_pixbuf)
+        else:
+            self._record_button.hide()
+            self._playback_button.hide()
 
     def _slides_cb(self, button=None):
         if self._thumbnail_mode:

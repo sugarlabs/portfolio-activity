@@ -1,12 +1,17 @@
 27
 
 ENHANCEMENTS:
+* Added sharing (joiners can annotate sharer's portfolio)
 * New translations
 * Cleaned up thumbnail graphics
 * Added preliminary support for sharing comments
+* Moved audio note recording/playback buttons to slides area
+* Moved next/prev slide buttons to slides area
+* Moved save to PDF button to main toolbar
 
 BUG FIX:
 * Check mime type for images
+* Handle screen rotation
 
 26
 

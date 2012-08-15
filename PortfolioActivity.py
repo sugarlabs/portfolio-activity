@@ -1103,7 +1103,8 @@ class PortfolioActivity(activity.Activity):
         self._playback_button.set_layer(DRAG)
         self._playback_button.type = 'playing'
         gobject.timeout_add(1000, self._playback_button_reset)
-        play_audio_from_file(os.path.join(self.datapath, 'output.ogg'))
+        gobject.idle_add(play_audio_from_file,
+                         self._slides[self.i].sound.file_path)
 
     def _playback_button_reset(self):
         self._playback_button.set_image(self.playback_pixbuf)

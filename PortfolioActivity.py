@@ -175,6 +175,7 @@ class PortfolioActivity(activity.Activity):
         self.initiating = None  # sharing (True) or joining (False)
 
         self._playing = False
+        self._first_time = True
 
         self._width = gtk.gdk.screen_width()
         self._height = gtk.gdk.screen_height()
@@ -626,6 +627,9 @@ class PortfolioActivity(activity.Activity):
             if self._thumbnail_mode:
                 self._thumbnail_mode = False
                 self.i = self._current_slide
+            if self._first_time:
+                self.i -= 1
+                self._first_time = False
             self._playing = True
             self._auto_button.set_icon('media-playback-pause')
             self._loop()
@@ -776,6 +780,7 @@ class PortfolioActivity(activity.Activity):
         ''' Toggle between thumbnail view and slideshow view. '''
         if not self._thumbnail_mode:
             self._thumbnail_mode = True
+        self._first_time = True
         self._show_thumbs()
         return False
 

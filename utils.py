@@ -11,7 +11,7 @@
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 
 
-import gtk
+from gi.repository import Gtk
 import os
 import subprocess
 
@@ -88,7 +88,7 @@ def lighter_color(colors):
 
 def svg_str_to_pixbuf(svg_string):
     ''' Load pixbuf from SVG string '''
-    pl = gtk.gdk.PixbufLoader('svg')
+    pl = GdkPixbuf.PixbufLoader('svg')
     pl.write(svg_string)
     pl.close()
     pixbuf = pl.get_pixbuf()
@@ -124,7 +124,7 @@ def svg_rectangle(width, height, colors):
 
 def load_svg_from_file(file_path, width, height):
     '''Create a pixbuf from SVG in a file. '''
-    return gtk.gdk.pixbuf_new_from_file_at_size(file_path, width, height)
+    return GdkPixbuf.Pixbuf.new_from_file_at_size(file_path, width, height)
 
 
 def file_to_base64(activity, path):
@@ -143,7 +143,7 @@ def pixbuf_to_base64(activity, pixbuf, width=100, height=75):
     ''' Convert pixbuf to base64-encoded data '''
     png_file = os.path.join(get_path(activity, 'instance'), 'imagetmp.png')
     if pixbuf != None:
-        pixbuf = pixbuf.scale_simple(width, height, gtk.gdk.INTERP_NEAREST)
+        pixbuf = pixbuf.scale_simple(width, height, GdkPixbuf.InterpType.NEAREST)
         pixbuf.save(png_file, "png")
     data = file_to_base64(activity, png_file)
     os.remove(png_file)
@@ -165,7 +165,7 @@ def base64_to_pixbuf(activity, data, width=300, height=225):
     ''' Convert base64-encoded data to a pixbuf '''
     png_file = os.path.join(get_path(activity, 'instance'), 'imagetmp.png')
     base64_to_file(activity, data, png_file)
-    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(png_file, width, height)
+    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(png_file, width, height)
     os.remove(png_file)
     return pixbuf
 
@@ -173,7 +173,7 @@ def base64_to_pixbuf(activity, data, width=300, height=225):
 def get_pixbuf_from_journal(dsobject, w, h):
     """ Load a pixbuf from a Journal object. """
     pixbufloader = \
-        gtk.gdk.pixbuf_loader_new_with_mime_type('image/png')
+        GdkPixbuf.Pixbuf.loader_new_with_mime_type('image/png')
     pixbufloader.set_size(min(300, int(w)), min(225, int(h)))
     try:
         pixbufloader.write(dsobject.metadata['preview'])
@@ -186,7 +186,7 @@ def get_pixbuf_from_journal(dsobject, w, h):
 
 def get_pixbuf_from_file(file_path, w, h):
     """ Load a pixbuf from a file. """
-    return gtk.gdk.pixbuf_new_from_file_at_size(file_path, w, h)
+    return GdkPixbuf.Pixbuf.new_from_file_at_size(file_path, w, h)
 
 
 def genblank(w, h, colors, stroke_width=1.0):

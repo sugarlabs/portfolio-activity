@@ -13,6 +13,7 @@
 
 from gi.repository import Gtk
 from gi.repository import Gdk
+from gi.repository import GdkPixbuf
 from gi.repository import GObject
 import subprocess
 import os
@@ -34,7 +35,7 @@ from sugar3.datastore import datastore
 from sugar3.graphics.alert import Alert
 
 from sprites import Sprites, Sprite
-from exportpdf import save_pdf
+#from exportpdf import save_pdf
 from utils import get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle, \
     play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware, \
     pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file
@@ -217,13 +218,13 @@ class PortfolioActivity(activity.Activity):
         self.set_canvas(self._canvas)
         self.show_all()
 
-        self._canvas.set_flags(Gtk.CAN_FOCUS)
+        #self._canvas.set_flags(Gtk.CAN_FOCUS)
         self._canvas.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self._canvas.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self._canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
         self._canvas.add_events(Gdk.EventMask.KEY_PRESS_MASK)
-        self._canvas.add_events(Gdk.CONFIGURE)
-        self._canvas.connect('expose-event', self._expose_cb)
+        #self._canvas.add_events(Gdk.CONFIGURE)
+        self._canvas.connect('draw', self._expose_cb)
         self._canvas.connect('button-press-event', self._button_press_cb)
         self._canvas.connect('button-release-event', self._button_release_cb)
         self._canvas.connect('motion-notify-event', self._mouse_move_cb)
@@ -855,8 +856,9 @@ class PortfolioActivity(activity.Activity):
 
     def invalt(self, x, y, w, h):
         ''' Mark a region for refresh '''
-        self._canvas.window.invalidate_rect(
-            (int(x), int(y), int(w), int(h)), False)
+        rect = Gdk.Rectangle()
+        rect.x, rect.y, rect.width, rect.height = x, y, w, h
+        self._canvas.props.window.invalidate_rect(rect, False)
 
     def _button_press_cb(self, win, event):
         ''' The mouse button was pressed. Is it on a thumbnail sprite? '''

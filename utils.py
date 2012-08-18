@@ -11,7 +11,7 @@
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 
 
-from gi.repository import Gtk
+from gi.repository import GdkPixbuf
 import os
 import subprocess
 
@@ -88,7 +88,7 @@ def lighter_color(colors):
 
 def svg_str_to_pixbuf(svg_string):
     ''' Load pixbuf from SVG string '''
-    pl = GdkPixbuf.PixbufLoader('svg')
+    pl = GdkPixbuf.PixbufLoader()
     pl.write(svg_string)
     pl.close()
     pixbuf = pl.get_pixbuf()

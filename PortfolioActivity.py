@@ -224,7 +224,7 @@ class PortfolioActivity(activity.Activity):
         self._canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
         self._canvas.add_events(Gdk.EventMask.KEY_PRESS_MASK)
         #self._canvas.add_events(Gdk.CONFIGURE)
-        self._canvas.connect('draw', self._expose_cb)
+        self._canvas.connect('draw', self._draw_cb)
         self._canvas.connect('button-press-event', self._button_press_cb)
         self._canvas.connect('button-release-event', self._button_release_cb)
         self._canvas.connect('motion-notify-event', self._mouse_move_cb)
@@ -821,20 +821,22 @@ class PortfolioActivity(activity.Activity):
         slide.star.set_layer(STAR)
         slide.star.move((x, y))
 
-    def _expose_cb(self, win, event):
-        ''' Callback to handle window expose events '''
-        self.do_expose_event(event)
+    def _draw_cb(self, win, context):
+        ''' Callback to handle window draw events '''
+        self.do_draw_event(context)
         return True
 
-    # Handle the expose-event by drawing
-    def do_expose_event(self, event):
+    # Handle the draw-event by drawing
+    def do_draw_event(self, context):
+
+        allocation = self.get_allocation()
 
         # Create the cairo context
-        cr = self.canvas.window.cairo_create()
+        cr = self.canvas.props.window.cairo_create()
 
-        # Restrict Cairo to the exposed area; avoid extra work
-        cr.rectangle(event.area.x, event.area.y,
-                event.area.width, event.area.height)
+        # Restrict Cairo to the drawd area; avoid extra work
+        cr.rectangle(allocation.x, allocation.y,
+                allocation.width, allocation.height)
         cr.clip()
 
         # Refresh sprite list

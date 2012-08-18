@@ -13,7 +13,8 @@
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GdkPixbuf
 from glib import GError
 import os.path
 import time
@@ -33,13 +34,13 @@ LEFT_MARGIN = 10
 TOP_MARGIN = 20
 
 
-def save_pdf(activity,  nick, description=None):
+def save_pdf(activity, nick, description=None):
     ''' Output a PDF document from the title, pictures, and descriptions '''
 
     if len(activity.dsobjects) == 0:
         return None
 
-    tmp_file = os.path.join(activity.datapath, 'output.pdf') 
+    tmp_file = os.path.join(activity.datapath, 'output.pdf')
     pdf_surface = cairo.PDFSurface(tmp_file, 504, 648)
 
     fd = Pango.FontDescription('Sans')
@@ -93,6 +94,7 @@ def save_pdf(activity,  nick, description=None):
         cr.show_page()
 
     return tmp_file
+
 
 def show_text(cr, fd, label, size, x, y):
     cr = pangocairo.CairoContext(cr)

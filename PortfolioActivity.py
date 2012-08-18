@@ -67,9 +67,9 @@ from sugar3.presence import presenceservice
 from sugar3.presence.tubeconn import TubeConnection
 
 
-SERVICE = 'org.sugar3labs.PortfolioActivity'
+SERVICE = 'org.sugarlabs.PortfolioActivity'
 IFACE = SERVICE
-PATH = '/org/sugar3labs/PortfolioActivity'
+PATH = '/org/sugarlabs/PortfolioActivity'
 
 # Size and position of title, preview image, and description
 PREVIEWW = 600

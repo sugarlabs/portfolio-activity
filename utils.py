@@ -173,7 +173,7 @@ def base64_to_pixbuf(activity, data, width=300, height=225):
 def get_pixbuf_from_journal(dsobject, w, h):
     """ Load a pixbuf from a Journal object. """
     pixbufloader = \
-        GdkPixbuf.Pixbuf.loader_new_with_mime_type('image/png')
+        GdkPixbuf.PixbufLoader.new_with_mime_type('image/png')
     pixbufloader.set_size(min(300, int(w)), min(225, int(h)))
     try:
         pixbufloader.write(dsobject.metadata['preview'])

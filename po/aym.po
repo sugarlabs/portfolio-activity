@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-14 00:30-0400\n"
-"PO-Revision-Date: 2012-08-13 20:04+0200\n"
-"Last-Translator: EdgarQuispeChambi <quispedgar@yahoo.es>\n"
+"PO-Revision-Date: 2012-09-06 00:24+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: aym\n"
 "MIME-Version: 1.0\n"
@@ -39,7 +39,7 @@ msgstr "1 t'ijtäwi"
 
 #: PortfolioActivity.py:381 PortfolioActivity.py:403
 msgid "Adjust"
-msgstr ""
+msgstr "Wakichthapiña"
 
 #  "Página"
 #: PortfolioActivity.py:401
@@ -53,45 +53,45 @@ msgstr "Maypacha uñtawi"
 
 #: PortfolioActivity.py:422
 msgid "Autoplay"
-msgstr ""
+msgstr "Jani khitina qhantayirina qhantayaña"
 
 #: PortfolioActivity.py:424 PortfolioActivity.py:432
 msgid "Adjust playback speed"
-msgstr ""
+msgstr "Qhantayaña wakichata k'atakiptayaña wakichthapiña"
 
 #: PortfolioActivity.py:438
 msgid "Refresh"
-msgstr ""
+msgstr "Machaqachaña"
 
 #: PortfolioActivity.py:444
 msgid "Slide view"
-msgstr ""
+msgstr "Rixitanaka wakichata uñaña"
 
 #: PortfolioActivity.py:449
 msgid "Thumbnail view"
-msgstr ""
+msgstr "Jisk'a rixitanaka wakichatanaka"
 
 #: PortfolioActivity.py:473 PortfolioActivity.py:478
 msgid "Save as PDF"
-msgstr ""
+msgstr "PDF wakichatjama imaña"
 
 #: PortfolioActivity.py:674
 msgid "Do you have any items in your Journal starred?"
-msgstr ""
+msgstr "Sapa uru luratanakama wakichatama machaqa luräwinakama utjiti?"
 
 #: PortfolioActivity.py:1055
 msgid "Save recording"
-msgstr ""
+msgstr "Katuqatanaka imaña"
 
 #: PortfolioActivity.py:1111
 #, python-format
 msgid "audio note for %s"
-msgstr ""
+msgstr "Ist'añanaka tuqita qillqata wakisiri %s"
 
 #: PortfolioActivity.py:1461
 msgid "Please wait."
-msgstr ""
+msgstr "Mira suma suyt'asikmalla."
 
 #: exportpdf.py:64
 msgid "untitled"
-msgstr ""
+msgstr "jani_sutini"

@@ -1,0 +1,95 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-08-14 00:30-0400\n"
+"PO-Revision-Date: 2012-09-21 11:15+0200\n"
+"Last-Translator: hariru <hariruroa@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: mi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 2.0.5\n"
+
+#: activity/activity.info:2 PortfolioActivity.py:639
+msgid "Portfolio"
+msgstr "Kōpaki"
+
+#: PortfolioActivity.py:99
+msgid "2 seconds"
+msgstr "2 hēkona"
+
+#: PortfolioActivity.py:99
+msgid "10 seconds"
+msgstr "10 hēkona"
+
+#: PortfolioActivity.py:99
+msgid "30 seconds"
+msgstr "30 hēkona"
+
+#: PortfolioActivity.py:99
+msgid "1 minute"
+msgstr "1 meneti"
+
+#: PortfolioActivity.py:381 PortfolioActivity.py:403
+msgid "Adjust"
+msgstr "Whakarite"
+
+#: PortfolioActivity.py:401
+msgid "Page"
+msgstr "Whārangi"
+
+#: PortfolioActivity.py:417
+msgid "Fullscreen"
+msgstr "Matakatoa"
+
+#: PortfolioActivity.py:422
+msgid "Autoplay"
+msgstr "Pūreiaunoa"
+
+#: PortfolioActivity.py:424 PortfolioActivity.py:432
+msgid "Adjust playback speed"
+msgstr "Whakaritea te tere pūrei anō"
+
+#: PortfolioActivity.py:438
+msgid "Refresh"
+msgstr "Tāmata"
+
+#: PortfolioActivity.py:444
+msgid "Slide view"
+msgstr "Tiro kiriata"
+
+#: PortfolioActivity.py:449
+msgid "Thumbnail view"
+msgstr "Tiro karakōnui"
+
+#: PortfolioActivity.py:473 PortfolioActivity.py:478
+msgid "Save as PDF"
+msgstr "Tiakina hei PDF"
+
+#: PortfolioActivity.py:674
+msgid "Do you have any items in your Journal starred?"
+msgstr "He tūemi tohungia ā-whetū i tō Tuhitaka?"
+
+#: PortfolioActivity.py:1055
+msgid "Save recording"
+msgstr "Tiaki hopukanga"
+
+#: PortfolioActivity.py:1111
+#, python-format
+msgid "audio note for %s"
+msgstr "tuhipoka ororongo mō ngā %s"
+
+#: PortfolioActivity.py:1461
+msgid "Please wait."
+msgstr "Taihoa koa."
+
+#: exportpdf.py:64
+msgid "untitled"
+msgstr "taitara kore"

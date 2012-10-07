@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:33-0400\n"
+"POT-Creation-Date: 2012-08-14 00:30-0400\n"
 "PO-Revision-Date: 2012-03-01 21:41+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,127 +17,109 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:503
+#: activity/activity.info:2 PortfolioActivity.py:639
 msgid "Portfolio"
 msgstr "Dhayáb-uw"
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "2 seconds"
 msgstr "2 adhik k'ijchik"
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "10 seconds"
 msgstr "10 adhik k'ijchik"
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "30 seconds"
 msgstr "30 adhik k'ijchik"
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "1 minute"
 msgstr "1 tsakam k'ij"
 
-#: PortfolioActivity.py:231 PortfolioActivity.py:251
+#: PortfolioActivity.py:381 PortfolioActivity.py:403
 msgid "Adjust"
 msgstr "Xut'ut'uy"
 
-#: PortfolioActivity.py:239 PortfolioActivity.py:328
-msgid "Record a sound"
-msgstr ""
-
-#: PortfolioActivity.py:249
+#: PortfolioActivity.py:401
 msgid "Page"
 msgstr "Walxeklek"
 
-#: PortfolioActivity.py:253
-#, fuzzy
-msgid "Record"
-msgstr "Ts'at'a'"
-
-#: PortfolioActivity.py:260
-msgid "Prev slide"
-msgstr "Wat'elom lamk'otbixtaláb"
-
-#: PortfolioActivity.py:264
-msgid "Next slide"
-msgstr "Ok'ox lamk'ot'bixtaláb"
-
-#: PortfolioActivity.py:268
-msgid "Autoplay"
-msgstr "Kwetém tejwa´mél"
-
-#: PortfolioActivity.py:274 PortfolioActivity.py:282
-msgid "Adjust playback speed"
-msgstr "T'ojojonchidh in adhík ti tejwa'mél"
-
-#: PortfolioActivity.py:288
-msgid "Refresh"
-msgstr "Itmédha'"
-
-#: PortfolioActivity.py:294
-msgid "Slide view"
-msgstr "Ka beldha' a tsu'uxtal"
-
-#: PortfolioActivity.py:297
-msgid "Thumbnail view"
-msgstr "Thumbnail view"
-
-#: PortfolioActivity.py:301
+#: PortfolioActivity.py:417
 msgid "Fullscreen"
 msgstr "Putat walek"
 
-#: PortfolioActivity.py:308
-msgid "Update description"
-msgstr ""
+#: PortfolioActivity.py:422
+msgid "Autoplay"
+msgstr "Kwetém tejwa´mél"
 
-#: PortfolioActivity.py:331 PortfolioActivity.py:847
-#, fuzzy
-msgid "Start recording"
-msgstr "Kubla' an ts'át'altaláb"
+#: PortfolioActivity.py:424 PortfolioActivity.py:432
+msgid "Adjust playback speed"
+msgstr "T'ojojonchidh in adhík ti tejwa'mél"
 
-#: PortfolioActivity.py:337 PortfolioActivity.py:617
-msgid "Nothing to play"
-msgstr ""
+#: PortfolioActivity.py:438
+msgid "Refresh"
+msgstr "Itmédha'"
 
-#: PortfolioActivity.py:341
-msgid "Nothing to save"
-msgstr ""
+#: PortfolioActivity.py:444
+msgid "Slide view"
+msgstr "Ka beldha' a tsu'uxtal"
 
-#: PortfolioActivity.py:347 PortfolioActivity.py:359
+#: PortfolioActivity.py:449
+msgid "Thumbnail view"
+msgstr "Thumbnail view"
+
+#: PortfolioActivity.py:473 PortfolioActivity.py:478
 #, fuzzy
 msgid "Save as PDF"
 msgstr "Dhaya' jant'odha' PDF"
 
-#: PortfolioActivity.py:541
+#: PortfolioActivity.py:674
 msgid "Do you have any items in your Journal starred?"
 msgstr ""
 "¿A kwa'al i otsentalábchik ta chudhél dhuchlábil axi k'wajat kits'odh abal a "
 "lej kulbetnál?"
 
-#: PortfolioActivity.py:614 PortfolioActivity.py:849
-#, fuzzy
-msgid "Play recording"
-msgstr "T'eney xi ts'at'badhits"
-
-#: PortfolioActivity.py:851
+#: PortfolioActivity.py:1055
 #, fuzzy
 msgid "Save recording"
 msgstr "Kubla' an ts'át'altaláb"
 
-#: PortfolioActivity.py:864
-#, fuzzy
-msgid "Stop recording"
-msgstr "Kubla' an ts'át'altaláb"
-
-#: PortfolioActivity.py:883
+#: PortfolioActivity.py:1111
 #, python-format
 msgid "audio note for %s"
 msgstr ""
 
-#: exportpdf.py:61
+#: PortfolioActivity.py:1461
+msgid "Please wait."
+msgstr ""
+
+#: exportpdf.py:64
 #, fuzzy
 msgid "untitled"
 msgstr "yab bijidh"
+
+#, fuzzy
+#~ msgid "Record"
+#~ msgstr "Ts'at'a'"
+
+#, fuzzy
+#~ msgid "Start recording"
+#~ msgstr "Kubla' an ts'át'altaláb"
+
+#, fuzzy
+#~ msgid "Play recording"
+#~ msgstr "T'eney xi ts'at'badhits"
+
+#, fuzzy
+#~ msgid "Stop recording"
+#~ msgstr "Kubla' an ts'át'altaláb"
+
+#~ msgid "Prev slide"
+#~ msgstr "Wat'elom lamk'otbixtaláb"
+
+#~ msgid "Next slide"
+#~ msgstr "Ok'ox lamk'ot'bixtaláb"
 
 #~ msgid "Save as HTML"
 #~ msgstr "Dhaya' jant'odha' HTML"

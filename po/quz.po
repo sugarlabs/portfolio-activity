@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:33-0400\n"
-"PO-Revision-Date: 2011-11-21 05:42+0200\n"
+"POT-Creation-Date: 2012-08-14 00:30-0400\n"
+"PO-Revision-Date: 2012-06-23 22:05+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Voluntarios quechuas Sugar Camp Lima\n"
 "Language: quz\n"
@@ -15,133 +15,103 @@ msgstr ""
 "X-Generator: Pootle 2.0.5\n"
 
 #  "Obras"
-#: activity/activity.info:2 PortfolioActivity.py:503
+#: activity/activity.info:2 PortfolioActivity.py:639
 msgid "Portfolio"
 msgstr "Llamk'aykuna"
 
 #  "2 segundos"
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "2 seconds"
 msgstr "2 segundukuna"
 
 #  "10 segundos"
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "10 seconds"
 msgstr "10 segundukuna"
 
 #  "30 segundos"
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "30 seconds"
 msgstr "30 segundukuna"
 
 #  "1 minuto"
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "1 minute"
 msgstr "1 chinini"
 
 #  "Ajustar"
-#: PortfolioActivity.py:231 PortfolioActivity.py:251
+#: PortfolioActivity.py:381 PortfolioActivity.py:403
 msgid "Adjust"
 msgstr "mat´iy"
 
-#: PortfolioActivity.py:239 PortfolioActivity.py:328
-msgid "Record a sound"
-msgstr ""
-
 #  "Página"
-#: PortfolioActivity.py:249
+#: PortfolioActivity.py:401
 msgid "Page"
 msgstr "Raphi"
 
-#: PortfolioActivity.py:253
-msgid "Record"
-msgstr ""
-
-#  "Diapositiva anterior"
-#: PortfolioActivity.py:260
-msgid "Prev slide"
-msgstr "Ñawpa diapositiwa"
-
-#  "Diapositiva siguiente"
-#: PortfolioActivity.py:264
-msgid "Next slide"
-msgstr "Hamuq diapositiwa"
+#  "Pantalla completa"
+#: PortfolioActivity.py:417
+msgid "Fullscreen"
+msgstr "Hunt'asqa pantalla"
 
 #  "Reproducción automática"
-#: PortfolioActivity.py:268
+#: PortfolioActivity.py:422
 msgid "Autoplay"
 msgstr "Sapan puriq"
 
 #  "Ajustar velocidad de reproducción"
-#: PortfolioActivity.py:274 PortfolioActivity.py:282
+#: PortfolioActivity.py:424 PortfolioActivity.py:432
 msgid "Adjust playback speed"
 msgstr "Puriqpa phawayninta mat'iy"
 
 #  "Actualizar"
-#: PortfolioActivity.py:288
+#: PortfolioActivity.py:438
 msgid "Refresh"
 msgstr "Kunanyachiy"
 
 #  "Ver diapositivas"
-#: PortfolioActivity.py:294
+#: PortfolioActivity.py:444
 msgid "Slide view"
 msgstr "Diapositiwakunata qhaway"
 
 #  "Vistas en miniatura"
-#: PortfolioActivity.py:297
+#: PortfolioActivity.py:449
 msgid "Thumbnail view"
 msgstr "Huch´uy qhawanakuna"
 
-#  "Pantalla completa"
-#: PortfolioActivity.py:301
-msgid "Fullscreen"
-msgstr "Hunt'asqa pantalla"
-
-#: PortfolioActivity.py:308
-msgid "Update description"
-msgstr ""
-
-#: PortfolioActivity.py:331 PortfolioActivity.py:847
-msgid "Start recording"
-msgstr ""
-
-#: PortfolioActivity.py:337 PortfolioActivity.py:617
-msgid "Nothing to play"
-msgstr ""
-
-#: PortfolioActivity.py:341
-msgid "Nothing to save"
-msgstr ""
-
-#: PortfolioActivity.py:347 PortfolioActivity.py:359
+#: PortfolioActivity.py:473 PortfolioActivity.py:478
 msgid "Save as PDF"
 msgstr ""
 
 #  "Tienes entradas en tu diario marcadas como favoritas?"
-#: PortfolioActivity.py:541
+#: PortfolioActivity.py:674
 msgid "Do you have any items in your Journal starred?"
 msgstr "Kachkanchu p'anqaykipi ancha munasqa ch'ikusqakuna?"
 
-#: PortfolioActivity.py:614 PortfolioActivity.py:849
-msgid "Play recording"
-msgstr ""
-
-#: PortfolioActivity.py:851
+#: PortfolioActivity.py:1055
 msgid "Save recording"
 msgstr ""
 
-#: PortfolioActivity.py:864
-msgid "Stop recording"
-msgstr ""
-
-#: PortfolioActivity.py:883
+#: PortfolioActivity.py:1111
 #, python-format
 msgid "audio note for %s"
 msgstr ""
 
-#: exportpdf.py:61
+#: PortfolioActivity.py:1461
+msgid "Please wait."
+msgstr ""
+
+#: exportpdf.py:64
 msgid "untitled"
 msgstr ""
+
+#  "Diapositiva anterior"
+#~ msgid "Prev slide"
+#~ msgstr "Ñawpa diapositiwa"
+
+#  "Diapositiva siguiente"
+#~ msgid "Next slide"
+#~ msgstr "Hamuq diapositiwa"
 
 #  "Guardar como HTML"
 #~ msgid "Save as HTML"

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:33-0400\n"
-"PO-Revision-Date: 2012-06-25 13:08+0200\n"
+"POT-Creation-Date: 2012-08-14 00:30-0400\n"
+"PO-Revision-Date: 2012-08-11 06:41+0200\n"
 "Last-Translator: andika <andika@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: id\n"
@@ -17,115 +17,109 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:503
+#: activity/activity.info:2 PortfolioActivity.py:639
 msgid "Portfolio"
 msgstr "Portfolio"
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "2 seconds"
 msgstr "2 detik"
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "10 seconds"
 msgstr "10 detik"
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "30 seconds"
 msgstr "30 detik"
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "1 minute"
 msgstr "1 menit"
 
-#: PortfolioActivity.py:231 PortfolioActivity.py:251
+#: PortfolioActivity.py:381 PortfolioActivity.py:403
 msgid "Adjust"
 msgstr "Sesuaikan"
 
-#: PortfolioActivity.py:239 PortfolioActivity.py:328
-msgid "Record a sound"
-msgstr "Rekam suara"
-
-#: PortfolioActivity.py:249
+#: PortfolioActivity.py:401
 msgid "Page"
 msgstr "Halaman"
 
-#: PortfolioActivity.py:253
-msgid "Record"
-msgstr "Rekam"
-
-#: PortfolioActivity.py:260
-msgid "Prev slide"
-msgstr "Slide sebelumnya"
-
-#: PortfolioActivity.py:264
-msgid "Next slide"
-msgstr "Slide selanjutnya"
-
-#: PortfolioActivity.py:268
-msgid "Autoplay"
-msgstr "Putar otomatis"
-
-#: PortfolioActivity.py:274 PortfolioActivity.py:282
-msgid "Adjust playback speed"
-msgstr "Atur kecepatan putar"
-
-#: PortfolioActivity.py:288
-msgid "Refresh"
-msgstr "Segarkan"
-
-#: PortfolioActivity.py:294
-msgid "Slide view"
-msgstr "Tilikan slide"
-
-#: PortfolioActivity.py:297
-msgid "Thumbnail view"
-msgstr "Tilikan gambar mini"
-
-#: PortfolioActivity.py:301
+#: PortfolioActivity.py:417
 msgid "Fullscreen"
 msgstr "Layar penuh"
 
-#: PortfolioActivity.py:308
-msgid "Update description"
-msgstr "Mutakhirkan keterangan"
+#: PortfolioActivity.py:422
+msgid "Autoplay"
+msgstr "Putar otomatis"
 
-#: PortfolioActivity.py:331 PortfolioActivity.py:847
-msgid "Start recording"
-msgstr "Mulai merekam"
+#: PortfolioActivity.py:424 PortfolioActivity.py:432
+msgid "Adjust playback speed"
+msgstr "Atur kecepatan putar"
 
-#: PortfolioActivity.py:337 PortfolioActivity.py:617
-msgid "Nothing to play"
-msgstr "Tak ada yang dapat diputar"
+#: PortfolioActivity.py:438
+msgid "Refresh"
+msgstr "Segarkan"
 
-#: PortfolioActivity.py:341
-msgid "Nothing to save"
-msgstr "Tak ada yang dapat disimpan"
+#: PortfolioActivity.py:444
+msgid "Slide view"
+msgstr "Tilikan slide"
 
-#: PortfolioActivity.py:347 PortfolioActivity.py:359
+#: PortfolioActivity.py:449
+msgid "Thumbnail view"
+msgstr "Tilikan gambar mini"
+
+#: PortfolioActivity.py:473 PortfolioActivity.py:478
 msgid "Save as PDF"
 msgstr "Simpan sebagai PDF"
 
-#: PortfolioActivity.py:541
+#: PortfolioActivity.py:674
 msgid "Do you have any items in your Journal starred?"
 msgstr "Apakah ada butir pada Jurnal Anda yang dibintangi?"
 
-#: PortfolioActivity.py:614 PortfolioActivity.py:849
-msgid "Play recording"
-msgstr "Putar rekaman"
-
-#: PortfolioActivity.py:851
+#: PortfolioActivity.py:1055
 msgid "Save recording"
 msgstr "Simpan rekaman"
 
-#: PortfolioActivity.py:864
-msgid "Stop recording"
-msgstr "Hentikan rekaman"
-
-#: PortfolioActivity.py:883
+#: PortfolioActivity.py:1111
 #, python-format
 msgid "audio note for %s"
 msgstr "catatan audio bagi %s"
 
-#: exportpdf.py:61
+#: PortfolioActivity.py:1461
+msgid "Please wait."
+msgstr "Harap tunggu."
+
+#: exportpdf.py:64
 msgid "untitled"
-msgstr "tanpa judul"
+msgstr "nirjudul"
+
+#~ msgid "Record a sound"
+#~ msgstr "Rekam suara"
+
+#~ msgid "Record"
+#~ msgstr "Rekam"
+
+#~ msgid "Start recording"
+#~ msgstr "Mulai merekam"
+
+#~ msgid "Nothing to play"
+#~ msgstr "Tak ada yang dapat diputar"
+
+#~ msgid "Nothing to save"
+#~ msgstr "Tak ada yang dapat disimpan"
+
+#~ msgid "Play recording"
+#~ msgstr "Putar rekaman"
+
+#~ msgid "Stop recording"
+#~ msgstr "Hentikan rekaman"
+
+#~ msgid "Prev slide"
+#~ msgstr "Slide sebelumnya"
+
+#~ msgid "Next slide"
+#~ msgstr "Slide selanjutnya"
+
+#~ msgid "Update description"
+#~ msgstr "Mutakhirkan keterangan"

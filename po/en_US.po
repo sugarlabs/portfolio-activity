@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-02 00:31-0400\n"
+"POT-Creation-Date: 2012-08-14 00:30-0400\n"
 "PO-Revision-Date: 2012-08-03 09:27+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:556
+#: activity/activity.info:2 PortfolioActivity.py:639
 msgid "Portfolio"
 msgstr "Portfolio"
 
@@ -37,90 +37,83 @@ msgstr "30 seconds"
 msgid "1 minute"
 msgstr "1 minute"
 
-#: PortfolioActivity.py:329 PortfolioActivity.py:349
+#: PortfolioActivity.py:381 PortfolioActivity.py:403
 msgid "Adjust"
 msgstr "Adjust"
 
-#: PortfolioActivity.py:337 PortfolioActivity.py:396
-msgid "Record a sound"
-msgstr "Record a sound"
-
-#: PortfolioActivity.py:347
+#: PortfolioActivity.py:401
 msgid "Page"
 msgstr "Page"
 
-#: PortfolioActivity.py:351
-msgid "Record"
-msgstr "Record"
-
-#: PortfolioActivity.py:361
+#: PortfolioActivity.py:417
 msgid "Fullscreen"
 msgstr "Fullscreen"
 
-#: PortfolioActivity.py:366
+#: PortfolioActivity.py:422
 msgid "Autoplay"
 msgstr "Autoplay"
 
-#: PortfolioActivity.py:368 PortfolioActivity.py:376
+#: PortfolioActivity.py:424 PortfolioActivity.py:432
 msgid "Adjust playback speed"
 msgstr "Adjust playback speed"
 
-#: PortfolioActivity.py:382
+#: PortfolioActivity.py:438
 msgid "Refresh"
 msgstr "Refresh"
 
-#: PortfolioActivity.py:388
+#: PortfolioActivity.py:444
 msgid "Slide view"
 msgstr "Slide view"
 
-#: PortfolioActivity.py:393
+#: PortfolioActivity.py:449
 msgid "Thumbnail view"
 msgstr "Thumbnail view"
 
-#: PortfolioActivity.py:399 PortfolioActivity.py:934
-msgid "Start recording"
-msgstr "Start recording"
-
-#: PortfolioActivity.py:405 PortfolioActivity.py:651
-msgid "Nothing to play"
-msgstr "Nothing to play"
-
-#: PortfolioActivity.py:409
-msgid "Nothing to save"
-msgstr "Nothing to save"
-
-#: PortfolioActivity.py:415 PortfolioActivity.py:420
+#: PortfolioActivity.py:473 PortfolioActivity.py:478
 msgid "Save as PDF"
 msgstr "Save as PDF"
 
-#: PortfolioActivity.py:594
+#: PortfolioActivity.py:674
 msgid "Do you have any items in your Journal starred?"
 msgstr "Do you have any items in your Journal starred?"
 
-#: PortfolioActivity.py:648 PortfolioActivity.py:936
-msgid "Play recording"
-msgstr "Play recording"
-
-#: PortfolioActivity.py:938 PortfolioActivity.py:943
+#: PortfolioActivity.py:1055
 msgid "Save recording"
 msgstr "Save recording"
 
-#: PortfolioActivity.py:952
-msgid "Stop recording"
-msgstr "Stop recording"
-
-#: PortfolioActivity.py:979
+#: PortfolioActivity.py:1111
 #, python-format
 msgid "audio note for %s"
 msgstr "audio note for %s"
 
-#: PortfolioActivity.py:1328
+#: PortfolioActivity.py:1461
 msgid "Please wait."
 msgstr "Please wait."
 
 #: exportpdf.py:64
 msgid "untitled"
 msgstr "untitled"
+
+#~ msgid "Record a sound"
+#~ msgstr "Record a sound"
+
+#~ msgid "Record"
+#~ msgstr "Record"
+
+#~ msgid "Start recording"
+#~ msgstr "Start recording"
+
+#~ msgid "Nothing to play"
+#~ msgstr "Nothing to play"
+
+#~ msgid "Nothing to save"
+#~ msgstr "Nothing to save"
+
+#~ msgid "Play recording"
+#~ msgstr "Play recording"
+
+#~ msgid "Stop recording"
+#~ msgstr "Stop recording"
 
 #~ msgid "Prev slide"
 #~ msgstr "Prev slide"

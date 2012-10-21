@@ -199,7 +199,7 @@ class PortfolioActivity(activity.Activity):
         self._setup_presence_service()
 
     def _tablet_mode(self):
-        return True
+        return False  # FIXME: Sugar scrolls the window for me???
 
     def _fixed_resize_cb(self, widget=None, rect=None):
         ''' If a toolbar opens or closes, we need to resize the vbox

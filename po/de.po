@@ -6,129 +6,123 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 00:33-0400\n"
-"PO-Revision-Date: 2011-09-26 22:34+0200\n"
+"POT-Creation-Date: 2012-08-14 00:30-0400\n"
+"PO-Revision-Date: 2012-08-28 19:50+0200\n"
 "Last-Translator: Markus <m.slg@gmx.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:503
+#: activity/activity.info:2 PortfolioActivity.py:639
 msgid "Portfolio"
 msgstr "Portfolio"
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "2 seconds"
 msgstr "2 Sekunden"
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "10 seconds"
 msgstr "10 Sekunden"
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "30 seconds"
 msgstr "30 Sekunden"
 
-#: PortfolioActivity.py:68
+#: PortfolioActivity.py:99
 msgid "1 minute"
 msgstr "1 Minute"
 
-#: PortfolioActivity.py:231 PortfolioActivity.py:251
+#: PortfolioActivity.py:381 PortfolioActivity.py:403
 msgid "Adjust"
 msgstr "Anpassen"
 
-#: PortfolioActivity.py:239 PortfolioActivity.py:328
-msgid "Record a sound"
-msgstr ""
-
-#: PortfolioActivity.py:249
+#: PortfolioActivity.py:401
 msgid "Page"
 msgstr "Seite"
 
-#: PortfolioActivity.py:253
-msgid "Record"
-msgstr ""
-
-#: PortfolioActivity.py:260
-msgid "Prev slide"
-msgstr "Zurück"
-
-#: PortfolioActivity.py:264
-msgid "Next slide"
-msgstr "Vor"
-
-#: PortfolioActivity.py:268
-msgid "Autoplay"
-msgstr "Abspielen"
-
-#: PortfolioActivity.py:274 PortfolioActivity.py:282
-msgid "Adjust playback speed"
-msgstr "Abspielgeschwindigkeit anpassen"
-
-#: PortfolioActivity.py:288
-msgid "Refresh"
-msgstr "Aktualisieren"
-
-#: PortfolioActivity.py:294
-msgid "Slide view"
-msgstr "Diaschau"
-
-#: PortfolioActivity.py:297
-msgid "Thumbnail view"
-msgstr "Miniaturansicht"
-
-#: PortfolioActivity.py:301
+#: PortfolioActivity.py:417
 msgid "Fullscreen"
 msgstr "Vollbild"
 
-#: PortfolioActivity.py:308
-msgid "Update description"
-msgstr ""
+#: PortfolioActivity.py:422
+msgid "Autoplay"
+msgstr "Abspielen"
 
-#: PortfolioActivity.py:331 PortfolioActivity.py:847
-msgid "Start recording"
-msgstr ""
+#: PortfolioActivity.py:424 PortfolioActivity.py:432
+msgid "Adjust playback speed"
+msgstr "Abspielgeschwindigkeit anpassen"
 
-#: PortfolioActivity.py:337 PortfolioActivity.py:617
-msgid "Nothing to play"
-msgstr ""
+#: PortfolioActivity.py:438
+msgid "Refresh"
+msgstr "Aktualisieren"
 
-#: PortfolioActivity.py:341
-msgid "Nothing to save"
-msgstr ""
+#: PortfolioActivity.py:444
+msgid "Slide view"
+msgstr "Diaschau"
 
-#: PortfolioActivity.py:347 PortfolioActivity.py:359
+#: PortfolioActivity.py:449
+msgid "Thumbnail view"
+msgstr "Miniaturansicht"
+
+#: PortfolioActivity.py:473 PortfolioActivity.py:478
 msgid "Save as PDF"
-msgstr ""
+msgstr "Speichern als PDF"
 
-#: PortfolioActivity.py:541
+#: PortfolioActivity.py:674
 msgid "Do you have any items in your Journal starred?"
 msgstr "Hast du in deinem Tagebuch Einträge mit einem Stern versehen?"
 
-#: PortfolioActivity.py:614 PortfolioActivity.py:849
-msgid "Play recording"
-msgstr ""
-
-#: PortfolioActivity.py:851
+#: PortfolioActivity.py:1055
 msgid "Save recording"
-msgstr ""
+msgstr "Aufzeichnung speichern"
 
-#: PortfolioActivity.py:864
-msgid "Stop recording"
-msgstr ""
-
-#: PortfolioActivity.py:883
+#: PortfolioActivity.py:1111
 #, python-format
 msgid "audio note for %s"
-msgstr ""
+msgstr "Sprachnotiz zu %s"
 
-#: exportpdf.py:61
+#: PortfolioActivity.py:1461
+msgid "Please wait."
+msgstr "Bitte warten."
+
+#: exportpdf.py:64
 msgid "untitled"
-msgstr ""
+msgstr "Unbenannt"
+
+#~ msgid "Record a sound"
+#~ msgstr "Einen Klang aufzeichnen"
+
+#~ msgid "Record"
+#~ msgstr "Aufnehmen"
+
+#~ msgid "Start recording"
+#~ msgstr "Aufzeichnung starten"
+
+#~ msgid "Nothing to play"
+#~ msgstr "Nichts abzuspielen"
+
+#~ msgid "Nothing to save"
+#~ msgstr "Nichts zu speichern"
+
+#~ msgid "Play recording"
+#~ msgstr "Aufzeichnung abspielen"
+
+#~ msgid "Stop recording"
+#~ msgstr "Aufzeichnung stoppen"
+
+#~ msgid "Prev slide"
+#~ msgstr "Zurück"
+
+#~ msgid "Next slide"
+#~ msgstr "Vor"
+
+#~ msgid "Update description"
+#~ msgstr "Beschreibung aktualisieren"
 
 #~ msgid "Save as HTML"
 #~ msgstr "Als HTML speichern"

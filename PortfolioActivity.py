@@ -198,6 +198,9 @@ class PortfolioActivity(activity.Activity):
 
         self._setup_presence_service()
 
+    def _tablet_mode(self):
+        return True
+
     def _fixed_resize_cb(self, widget=None, rect=None):
         ''' If a toolbar opens or closes, we need to resize the vbox
         holding out scrolling window. '''
@@ -944,7 +947,10 @@ class PortfolioActivity(activity.Activity):
             self.text_entry.set_size_request(w, h)
             bx, by = spr.get_xy()
             mx, my = spr.label_left_top()
-            self.fixed.move(self.text_entry, bx + mx, by + my * 2)
+            if self._tablet_mode():
+                self.fixed.move(self.text_entry, bx + mx, 0)
+            else:
+                self.fixed.move(self.text_entry, bx + mx, by + my * 2)
             self.fixed.show()
             self.text_entry.connect('focus-out-event', self._text_focus_out_cb)
             self.text_entry.grab_focus()

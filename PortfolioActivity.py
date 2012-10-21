@@ -113,29 +113,6 @@ MIDDLE = 2
 BOTTOM = 1
 HIDE = 0
 
-DEAD_KEYS = ['grave', 'acute', 'circumflex', 'tilde', 'diaeresis', 'abovering']
-DEAD_DICTS = [{'A': 192, 'E': 200, 'I': 204, 'O': 210, 'U': 217, 'a': 224,
-               'e': 232, 'i': 236, 'o': 242, 'u': 249},
-              {'A': 193, 'E': 201, 'I': 205, 'O': 211, 'U': 218, 'a': 225,
-               'e': 233, 'i': 237, 'o': 243, 'u': 250},
-              {'A': 194, 'E': 202, 'I': 206, 'O': 212, 'U': 219, 'a': 226,
-               'e': 234, 'i': 238, 'o': 244, 'u': 251},
-              {'A': 195, 'O': 211, 'N': 209, 'U': 360, 'a': 227, 'o': 245,
-               'n': 241, 'u': 361},
-              {'A': 196, 'E': 203, 'I': 207, 'O': 211, 'U': 218, 'a': 228,
-               'e': 235, 'i': 239, 'o': 245, 'u': 252},
-              {'A': 197, 'a': 229}]
-NOISE_KEYS = ['Shift_L', 'Shift_R', 'Control_L', 'Caps_Lock', 'Pause',
-              'Alt_L', 'Alt_R', 'KP_Enter', 'ISO_Level3_Shift', 'KP_Divide',
-              'Escape', 'Return', 'KP_Page_Up', 'Up', 'Down', 'Menu',
-              'Left', 'Right', 'KP_Home', 'KP_End', 'KP_Up', 'Super_L',
-              'KP_Down', 'KP_Left', 'KP_Right', 'KP_Page_Down', 'Scroll_Lock',
-              'Page_Down', 'Page_Up']
-WHITE_SPACE = ['space', 'Tab']
-
-CURSOR = '█'
-NEWLINE = '\n'
-
 
 class Slide():
     ''' A container for a slide '''
@@ -221,14 +198,34 @@ class PortfolioActivity(activity.Activity):
 
         self._setup_presence_service()
 
+    def _fixed_resize_cb(self, widget=None, rect=None):
+        ''' If a toolbar opens or closes, we need to resize the vbox
+        holding out scrolling window. '''
+        self.vbox.set_size_request(rect[2], rect[3])
+
     def _setup_canvas(self):
-        ''' Create a canvas '''
+        ''' Create a canvas inside a gtk.Fixed '''
+
+        self.fixed = gtk.Fixed()
+        self.fixed.connect('size-allocate', self._fixed_resize_cb)
+        self.fixed.show()
+        self.set_canvas(self.fixed)
+
+        self.vbox = gtk.VBox(False, 0)
+        self.vbox.set_size_request(
+            gtk.gdk.screen_width(),
+            gtk.gdk.screen_height() - style.GRID_CELL_SIZE)
+        self.fixed.put(self.vbox, 0, 0)
+        self.vbox.show()
+
         self._canvas = gtk.DrawingArea()
         self._canvas.set_size_request(int(gtk.gdk.screen_width()),
                                       int(gtk.gdk.screen_height()))
         self._canvas.show()
-        self.set_canvas(self._canvas)
+        # self.set_canvas(self._canvas)
         self.show_all()
+        self.vbox.pack_end(self._canvas, True, True)
+        self.vbox.show()
 
         self._canvas.set_flags(gtk.CAN_FOCUS)
         self._canvas.add_events(gtk.gdk.BUTTON_PRESS_MASK)
@@ -886,6 +883,15 @@ class PortfolioActivity(activity.Activity):
         self._canvas.window.invalidate_rect(
             gtk.gdk.Rectangle(int(x), int(y), int(w), int(h)), False)
 
+    def _add_text_no_changed_cb(self, widget=None, event=None):
+        pass
+
+    def _text_focus_out_cb(self, widget=None, event=None):
+        bounds = self.text_entry.get_buffer().get_bounds()
+        s = self.text_entry.get_buffer().get_text(bounds[0], bounds[1])
+        self._selected_spr.set_label(s)
+        self._saved_string = self._selected_spr.labels[0]
+
     def _button_press_cb(self, win, event):
         ''' The mouse button was pressed. Is it on a thumbnail sprite? '''
         x, y = map(int, event.get_coords())
@@ -909,17 +915,39 @@ class PortfolioActivity(activity.Activity):
             self._saved_string = spr.labels[0]
             if spr.type == 'description':
                 if self.initiating is not None and not self.initiating:
-                    label = '%s\n[%s] %s' % (self._selected_spr.labels[0],
-                                             profile.get_nick_name(), CURSOR)
+                    label = '%s\n[%s] ' % (self._selected_spr.labels[0],
+                                             profile.get_nick_name())
                 else:
-                    label = '%s%s' % (self._selected_spr.labels[0], CURSOR)
+                    label = self._selected_spr.labels[0]
                 self._selected_spr.set_label(label)
             elif spr.type == 'title':
                 if self.initiating is None or self.initiating:
-                    label = '%s%s' % (self._selected_spr.labels[0], CURSOR)
+                    label = self._selected_spr.labels[0]
                     self._selected_spr.set_label(label)
                 else:
                     self._selected_spr = None
+            if not hasattr(self, 'text_entry'):
+                self.text_entry = gtk.TextView()
+                self.text_entry.set_justification(gtk.JUSTIFY_CENTER)
+                self.text_entry.set_pixels_above_lines(4)
+                self.text_buffer = gtk.TextBuffer()
+                self.fixed.put(self.text_entry, 0, 0)
+                '''
+                NOTE: Use override_background_color in GTK3 port to set
+                transparent background.
+                '''
+            self.text_entry.show()
+            self.text_buffer.set_text(self._saved_string)
+            self.text_entry.set_buffer(self.text_buffer)
+            w = spr.label_safe_width()
+            h = spr.label_safe_height()
+            self.text_entry.set_size_request(w, h)
+            bx, by = spr.get_xy()
+            mx, my = spr.label_left_top()
+            self.fixed.move(self.text_entry, bx + mx, by + my * 2)
+            self.fixed.show()
+            self.text_entry.connect('focus-out-event', self._text_focus_out_cb)
+            self.text_entry.grab_focus()
         else:
             self._unselect()
 
@@ -973,7 +1001,7 @@ class PortfolioActivity(activity.Activity):
         if spr is None:
             self._dragpos = [0, 0]
             return False
-        win.grab_focus()
+        # win.grab_focus()
         x, y = map(int, event.get_coords())
         dx = x - self._dragpos[0]
         dy = y - self._dragpos[1]
@@ -989,7 +1017,7 @@ class PortfolioActivity(activity.Activity):
 
     def _button_release_cb(self, win, event):
         ''' Button event is used to swap slides or goto next slide. '''
-        win.grab_focus()
+        # win.grab_focus()
         self._dragpos = [0, 0]
         x, y = map(int, event.get_coords())
 
@@ -1209,8 +1237,6 @@ class PortfolioActivity(activity.Activity):
         if alt_mask:
             if keyname == 'q':
                 exit()
-        elif self._selected_spr is not None:
-            self.process_alphanumeric_input(keyname, keyunicode)
         elif not self._thumbnail_mode:
             if keyname == 'Home':
                 self._first_cb()
@@ -1222,114 +1248,26 @@ class PortfolioActivity(activity.Activity):
                 self._last_cb()
         return True
 
-    def process_alphanumeric_input(self, keyname, keyunicode):
-        ''' Make sure alphanumeric input is properly parsed. '''
-        if len(self._selected_spr.labels[0]) > 0:
-            c = self._selected_spr.labels[0].count(CURSOR)
-            if c == 0:
-                oldleft = self._selected_spr.labels[0]
-                oldright = ''
-            elif len(self._selected_spr.labels[0]) == 1:
-                oldleft = ''
-                oldright = ''
-            elif CURSOR in self._selected_spr.labels[0]:
-                oldleft, oldright = \
-                    self._selected_spr.labels[0].split(CURSOR)
-            else:  # Where did our cursor go?
-                oldleft = self._selected_spr.labels[0]
-                oldright = ''
-        else:
-            oldleft = ''
-            oldright = ''
-        newleft = oldleft
-        if keyname in ['Shift_L', 'Shift_R', 'Control_L', 'Caps_Lock', \
-                       'Alt_L', 'Alt_R', 'KP_Enter', 'ISO_Level3_Shift']:
-            keyname = ''
-            keyunicode = 0
-        # Hack until I sort out input and unicode and dead keys,
-        if keyname[0:5] == 'dead_':
-            self._dead_key = keyname
-            keyname = ''
-            keyunicode = 0
-        if keyname == 'space':
-            keyunicode = 32
-        elif keyname == 'Tab':
-            keyunicode = 9
-        if keyname == 'BackSpace':
-            if len(oldleft) > 1:
-                newleft = oldleft[:len(oldleft) - 1]
-            else:
-                newleft = ''
-        if keyname == 'Delete':
-            if len(oldright) > 0:
-                oldright = oldright[1:]
-        elif keyname == 'Home':
-            oldright = oldleft + oldright
-            newleft = ''
-        elif keyname == 'Left':
-            if len(oldleft) > 0:
-                oldright = oldleft[len(oldleft) - 1:] + oldright
-                newleft = oldleft[:len(oldleft) - 1]
-        elif keyname == 'Right':
-            if len(oldright) > 0:
-                newleft = oldleft + oldright[0]
-                oldright = oldright[1:]
-        elif keyname == 'End':
-            newleft = oldleft + oldright
-            oldright = ''
-        elif keyname == 'Return':
-            newleft = oldleft + NEWLINE
-        elif keyname == 'Down':
-            if NEWLINE in oldright:
-                parts = oldright.split(NEWLINE)
-                newleft = oldleft + string.join(parts[0:2], NEWLINE)
-                oldright = NEWLINE + string.join(parts[2:], NEWLINE)
-        elif keyname == 'Up':
-            if NEWLINE in oldleft:
-                parts = oldleft.split(NEWLINE)
-                newleft = string.join(parts[0:-1], NEWLINE)
-                oldright = NEWLINE + parts[-1] + oldright
-        elif keyname == 'Escape':  # Restore previous state
-            self._selected_spr.set_label(self._saved_string)
-            self._unselect()
-            return
-        else:
-            if self._dead_key is not '':
-                keyunicode = \
-                    DEAD_DICTS[DEAD_KEYS.index(self._dead_key[5:])][keyname]
-                self._dead_key = ''
-            if keyunicode > 0:
-                if unichr(keyunicode) != '\x00':
-                    newleft = oldleft + unichr(keyunicode)
-                else:
-                    newleft = oldleft
-            elif keyunicode == -1:  # clipboard text
-                if keyname == NEWLINE:
-                    newleft = oldleft + NEWLINE
-                else:
-                    newleft = oldleft + keyname
-        self._selected_spr.set_label('%s%s%s' % (newleft, CURSOR, oldright))
-
     def _unselect(self):
+        if hasattr(self, 'text_entry'):
+            self.text_entry.hide()
+
         if self._selected_spr is not None:
-            if CURSOR in self._selected_spr.labels[0]:
-                parts = self._selected_spr.labels[0].split(CURSOR)
-                self._selected_spr.set_label(string.join(parts))
-                slide = self._slides[self.i]
-                if self._selected_spr.type == 'title':
-                    slide.title = self._selected_spr.labels[0]
-                    if self.initiating is not None and self.initiating:
-                        self._send_event('t:%s' % (self._data_dumper(
-                                    [slide.uid, slide.title])))
-                else:
-                    slide.description = self._selected_spr.labels[0]
-                    if self.initiating is not None:
-                        self._send_event('d:%s' % (self._data_dumper(
-                                    [slide.uid, slide.description])))
-                _logger.debug('marking %d as dirty' % (self.i))
-                slide.dirty = True
-            self._selected_spr = None
-            self._saved_string = ''
+            slide = self._slides[self.i]
+            if self._selected_spr.type == 'title':
+                slide.title = self._selected_spr.labels[0]
+                if self.initiating is not None and self.initiating:
+                    self._send_event('t:%s' % (self._data_dumper(
+                                [slide.uid, slide.title])))
+            else:
+                slide.description = self._selected_spr.labels[0]
+                if self.initiating is not None:
+                    self._send_event('d:%s' % (self._data_dumper(
+                                [slide.uid, slide.description])))
+            _logger.debug('marking %d as dirty' % (self.i))
+            slide.dirty = True
+        self._selected_spr = None
+        self._saved_string = ''
 
     def _restore_cursor(self):
         ''' No longer waiting, so restore standard cursor. '''

@@ -8,6 +8,7 @@ ENHANCEMENTS:
 * Moved audio note recording/playback buttons to slides area
 * Moved next/prev slide buttons to slides area
 * Moved save to PDF button to main toolbar
+* Support for touch
 
 BUG FIX:
 * Check mime type for images

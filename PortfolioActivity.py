@@ -13,6 +13,7 @@
 
 import gtk
 import gobject
+import pango
 import subprocess
 import os
 import time
@@ -400,7 +401,7 @@ class PortfolioActivity(activity.Activity):
                          int(self._descriptionwh[1]),
                          self._colors)))
         self._description.set_label_attributes(
-            int(self._descriptionf * self._scale))
+            int(self._descriptionf * self._scale), vert_align='top')
         self._description.type = 'description'
 
         self._my_canvas = Sprite(
@@ -890,13 +891,13 @@ class PortfolioActivity(activity.Activity):
         pass
 
     def _text_focus_out_cb(self, widget=None, event=None):
-        bounds = self.text_entry.get_buffer().get_bounds()
-        s = self.text_entry.get_buffer().get_text(bounds[0], bounds[1])
-        self._selected_spr.set_label(s)
+        bounds = self.text_buffer.get_bounds()
+        text = self.text_buffer.get_text(bounds[0], bounds[1])
+        self._selected_spr.set_label(text)
         self._saved_string = self._selected_spr.labels[0]
 
     def _button_press_cb(self, win, event):
-        ''' The mouse button was pressed. Is it on a thumbnail sprite? '''
+        ''' The mouse button was pressed. Is it on asprite? '''
         x, y = map(int, event.get_coords())
 
         self._dragpos = [x, y]
@@ -923,37 +924,50 @@ class PortfolioActivity(activity.Activity):
                 else:
                     label = self._selected_spr.labels[0]
                 self._selected_spr.set_label(label)
+                if not hasattr(self, 'desc_entry'):
+                    self.desc_entry = gtk.TextView()
+                    self.desc_entry.set_justification(gtk.JUSTIFY_CENTER)
+                    self.desc_entry.set_pixels_above_lines(4)
+                    font_desc = pango.FontDescription('Sans')
+                    font_desc.set_size(16 * pango.SCALE)
+                    self.desc_entry.modify_font(font_desc)
+                    self.desc_buffer = self.desc_entry.get_buffer()
+                    self.fixed.put(self.desc_entry, 0, 0)
+                self.text_entry = self.desc_entry
+                self.text_buffer = self.desc_entry.get_buffer()
+                self.desc_entry.show()
             elif spr.type == 'title':
                 if self.initiating is None or self.initiating:
                     label = self._selected_spr.labels[0]
                     self._selected_spr.set_label(label)
                 else:
                     self._selected_spr = None
-            if not hasattr(self, 'text_entry'):
-                self.text_entry = gtk.TextView()
-                self.text_entry.set_justification(gtk.JUSTIFY_CENTER)
-                self.text_entry.set_pixels_above_lines(4)
-                self.text_buffer = gtk.TextBuffer()
-                self.fixed.put(self.text_entry, 0, 0)
-                '''
-                NOTE: Use override_background_color in GTK3 port to set
-                transparent background.
-                '''
-            self.text_entry.show()
+                if not hasattr(self, 'title_entry'):
+                    self.title_entry = gtk.TextView()
+                    self.title_entry.set_justification(gtk.JUSTIFY_CENTER)
+                    self.title_entry.set_pixels_above_lines(4)
+                    font_desc = pango.FontDescription('Sans')
+                    font_desc.set_size(24 * pango.SCALE)
+                    self.title_entry.modify_font(font_desc)
+                    self.title_buffer = self.title_entry.get_buffer()
+                    self.fixed.put(self.title_entry, 0, 0)
+                self.text_entry = self.title_entry
+                self.text_buffer = self.title_entry.get_buffer()
+                self.title_entry.show()
+            self.text_buffer.set_text('')
             self.text_buffer.set_text(self._saved_string)
-            self.text_entry.set_buffer(self.text_buffer)
+
+            spr.set_label('')  # Clear the label while the text_entry is visible
             w = spr.label_safe_width()
             h = spr.label_safe_height()
-            self.text_entry.set_size_request(w, h)
             bx, by = spr.get_xy()
             mx, my = spr.label_left_top()
-            if self._tablet_mode():
-                self.fixed.move(self.text_entry, bx + mx, 0)
-            else:
-                self.fixed.move(self.text_entry, bx + mx, by + my * 2)
-            self.fixed.show()
-            self.text_entry.connect('focus-out-event', self._text_focus_out_cb)
+            self.text_entry.set_size_request(w, h)
+            self.fixed.move(self.text_entry, bx + mx, by + my * 2)
+            self.text_entry.connect('focus-out-event',
+                                    self._text_focus_out_cb)
             self.text_entry.grab_focus()
+            self.fixed.show()
         else:
             self._unselect()
 

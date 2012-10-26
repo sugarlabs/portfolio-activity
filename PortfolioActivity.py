@@ -16,6 +16,8 @@ from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import Pango
+from gi.repository import PangoCairo
+
 import subprocess
 import os
 import time
@@ -103,6 +105,13 @@ BOTTOM = 1
 HIDE = 0
 
 
+def _get_screen_dpi():
+    xft_dpi = Gtk.Settings.get_default().get_property('gtk-xft-dpi')
+    dpi = float(xft_dpi / 1024)
+    logging.error('Setting dpi to: %f', dpi)
+    return dpi
+
+
 class Slide():
     ''' A container for a slide '''
 
@@ -147,6 +156,8 @@ class PortfolioActivity(activity.Activity):
         self._height = Gdk.Screen.height()
         self._scale = Gdk.Screen.height() / 900.
 
+        self._set_screen_dpi()
+
         self._titlewh = [self._width, TITLEH * self._scale]
         self._titlexy = [0, 0]
         self._previewwh = [PREVIEWW * self._scale, PREVIEWH * self._scale]
@@ -186,6 +197,11 @@ class PortfolioActivity(activity.Activity):
         self._dragpos = [0, 0]
 
         self._setup_presence_service()
+
+    def _set_screen_dpi(self):
+        dpi = _get_screen_dpi()
+        font_map_default = PangoCairo.font_map_get_default()
+        font_map_default.set_resolution(dpi)
 
     def _fixed_resize_cb(self, widget=None, rect=None):
         ''' If a toolbar opens or closes, we need to resize the vbox
@@ -889,7 +905,8 @@ class PortfolioActivity(activity.Activity):
                     self.desc_entry.set_pixels_above_lines(4)
                     self.desc_entry.override_background_color(
                         Gtk.StateType.NORMAL, Gdk.RGBA(0, 0, 0, 0))
-                    font_desc = Pango.font_description_from_string ('16')
+                    font_desc = Pango.font_description_from_string(
+                        str(self._descriptionf * self._scale))
                     self.desc_entry.modify_font(font_desc)
                     self.desc_buffer = self.desc_entry.get_buffer()
                     self.fixed.put(self.desc_entry, 0, 0)
@@ -908,7 +925,8 @@ class PortfolioActivity(activity.Activity):
                     self.title_entry.set_pixels_above_lines(4)
                     self.title_entry.override_background_color(
                         Gtk.StateType.NORMAL, Gdk.RGBA(0, 0, 0, 0))
-                    font_desc = Pango.font_description_from_string ('24')
+                    font_desc = Pango.font_description_from_string(
+                        str(self._titlef * self._scale))
                     self.title_entry.modify_font(font_desc)
                     self.title_buffer = self.title_entry.get_buffer()
                     self.fixed.put(self.title_entry, 0, 0)

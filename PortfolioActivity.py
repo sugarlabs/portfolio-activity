@@ -14,10 +14,13 @@
 import gtk
 import gobject
 import pango
+import pangocairo
+
 import subprocess
 import os
 import time
 import string
+from string import find
 from shutil import copyfile
 
 from math import sqrt, ceil
@@ -115,6 +118,19 @@ BOTTOM = 1
 HIDE = 0
 
 
+def _get_screen_dpi():
+    '''Looking for 'dimensions' line in xdpyinfo
+       dimensions:    1280x800 pixels (339x212 millimeters)'''
+    output = check_output('/usr/bin/xdpyinfo', 'xdpyinfo failed')
+    if output is not None:
+        strings = output[find(output, 'dimensions:'):].split()
+        w = int(strings[1].split('x')[0])  # e.g., 1280x800
+        mm = int(strings[3][1:].split('x')[0])  # e.g., (339x212)
+        return int((w * 25.4 / mm) + 0.5)
+    else:
+        return 96
+
+
 class Slide():
     ''' A container for a slide '''
 
@@ -151,6 +167,8 @@ class PortfolioActivity(activity.Activity):
         self._buddies = [profile.get_nick_name()]
         self._colors = profile.get_color().to_string().split(',')
         self.initiating = None  # sharing (True) or joining (False)
+
+        self._set_screen_dpi()
 
         self._playing = False
         self._first_time = True
@@ -198,6 +216,11 @@ class PortfolioActivity(activity.Activity):
         self._dragpos = [0, 0]
 
         self._setup_presence_service()
+
+    def _set_screen_dpi(self):
+        dpi = _get_screen_dpi()
+        font_map_default = pangocairo.cairo_font_map_get_default()
+        font_map_default.set_resolution(dpi)
 
     def _tablet_mode(self):
         return False  # FIXME: Sugar scrolls the window for me???
@@ -929,7 +952,8 @@ class PortfolioActivity(activity.Activity):
                     self.desc_entry.set_justification(gtk.JUSTIFY_CENTER)
                     self.desc_entry.set_pixels_above_lines(4)
                     font_desc = pango.FontDescription('Sans')
-                    font_desc.set_size(16 * pango.SCALE)
+                    font_desc.set_size(int(
+                        self._descriptionf * pango.SCALE * self._scale))
                     self.desc_entry.modify_font(font_desc)
                     self.desc_buffer = self.desc_entry.get_buffer()
                     self.fixed.put(self.desc_entry, 0, 0)
@@ -947,7 +971,8 @@ class PortfolioActivity(activity.Activity):
                     self.title_entry.set_justification(gtk.JUSTIFY_CENTER)
                     self.title_entry.set_pixels_above_lines(4)
                     font_desc = pango.FontDescription('Sans')
-                    font_desc.set_size(24 * pango.SCALE)
+                    font_desc.set_size(int(
+                        self._titlef * pango.SCALE * self._scale))
                     self.title_entry.modify_font(font_desc)
                     self.title_buffer = self.title_entry.get_buffer()
                     self.fixed.put(self.title_entry, 0, 0)
@@ -1600,3 +1625,25 @@ class ChatTube(ExportedGObject):
     @signal(dbus_interface=IFACE, signature='s')
     def SendText(self, text):
         self.stack = text
+
+
+def check_output(command, warning):
+    ''' Workaround for old systems without subprocess.check_output'''
+    if hasattr(subprocess, 'check_output'):
+        try:
+            output = subprocess.check_output(command)
+        except subprocess.CalledProcessError:
+            log.warning(warning)
+            return None
+    else:
+        import commands
+
+        cmd = ''
+        for c in command:
+            cmd += c
+            cmd += ' '
+        (status, output) = commands.getstatusoutput(cmd)
+        if status != 0:
+            log.warning(warning)
+            return None
+    return output

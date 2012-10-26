@@ -306,7 +306,7 @@ class PortfolioActivity(activity.Activity):
             self._colors[0] = self._colors[1]
             self._colors[1] = tmp
 
-        if not HAVE_TOOLBOX and self._hw[0:2] == 'xo':
+        if self._hw[0:2] == 'xo':
             self._titlef = 18
             self._descriptionf = 12
         else:

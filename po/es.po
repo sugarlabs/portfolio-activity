@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-14 00:30-0400\n"
-"PO-Revision-Date: 2012-08-06 21:58+0200\n"
+"POT-Creation-Date: 2012-10-27 00:30-0400\n"
+"PO-Revision-Date: 2012-10-28 08:34+0200\n"
 "Last-Translator: AlanJAS <alanjas@hotmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
@@ -17,78 +17,86 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:639
+#. TRANS: "name" option from activity.info file
+#: PortfolioActivity.py:691
 msgid "Portfolio"
 msgstr "Obras"
 
-#: PortfolioActivity.py:99
+#. TRANS: "summary" option from activity.info file
+#. TRANS: "description" option from activity.info file
+msgid "create a slide show from Sugar Journal entries that have been 'starred'"
+msgstr ""
+"crea una presentación con diapositivas de las entradas del Diario de Sugar "
+"que han sido marcadas como \"favoritas\""
+
+#: PortfolioActivity.py:101
 msgid "2 seconds"
 msgstr "2 segundos"
 
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:101
 msgid "10 seconds"
 msgstr "10 segundos"
 
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:101
 msgid "30 seconds"
 msgstr "30 segundos"
 
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:101
 msgid "1 minute"
 msgstr "1 minuto"
 
-#: PortfolioActivity.py:381 PortfolioActivity.py:403
+#: PortfolioActivity.py:457 PortfolioActivity.py:469
 msgid "Adjust"
 msgstr "Ajustar"
 
-#: PortfolioActivity.py:401
+#: PortfolioActivity.py:467
 msgid "Page"
 msgstr "Página"
 
-#: PortfolioActivity.py:417
+#: PortfolioActivity.py:479
 msgid "Fullscreen"
 msgstr "Pantalla completa"
 
-#: PortfolioActivity.py:422
+#: PortfolioActivity.py:484
 msgid "Autoplay"
 msgstr "Reproducción automática"
 
-#: PortfolioActivity.py:424 PortfolioActivity.py:432
+#: PortfolioActivity.py:486 PortfolioActivity.py:495
 msgid "Adjust playback speed"
 msgstr "Ajustar velocidad de reproducción"
 
 # Refrescar es menos usado, actualizar es palabra usual
-#: PortfolioActivity.py:438
+#: PortfolioActivity.py:503
 msgid "Refresh"
 msgstr "Actualizar"
 
-#: PortfolioActivity.py:444
+#: PortfolioActivity.py:511
 msgid "Slide view"
 msgstr "Ver diapositivas"
 
-#: PortfolioActivity.py:449
+#: PortfolioActivity.py:516
 msgid "Thumbnail view"
 msgstr "Vistas en miniatura"
 
-#: PortfolioActivity.py:473 PortfolioActivity.py:478
+#: PortfolioActivity.py:523
 msgid "Save as PDF"
 msgstr "Guardar como PDF"
 
-#: PortfolioActivity.py:674
+#: PortfolioActivity.py:726
 msgid "Do you have any items in your Journal starred?"
 msgstr "Tienes entradas en tu diario marcadas como favoritas?"
 
-#: PortfolioActivity.py:1055
+#: PortfolioActivity.py:1159
 msgid "Save recording"
 msgstr "Guardar grabación"
 
-#: PortfolioActivity.py:1111
+#: PortfolioActivity.py:1204
 #, python-format
 #, python-format,
 msgid "audio note for %s"
 msgstr "nota de audio para %s"
 
-#: PortfolioActivity.py:1461
+#: PortfolioActivity.py:1464
 msgid "Please wait."
 msgstr "Por favor espera."
 

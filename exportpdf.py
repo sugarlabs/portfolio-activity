@@ -11,14 +11,15 @@
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 
 
-import pygtk
-pygtk.require('2.0')
-import gtk
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gdk
+from gi.repository import GdkPixbuf
 from glib import GError
 import os.path
 import time
 import cairo
-import pango
+from gi.repository import Pango
 import pangocairo
 from gettext import gettext as _
 
@@ -33,16 +34,16 @@ LEFT_MARGIN = 10
 TOP_MARGIN = 20
 
 
-def save_pdf(activity,  nick, description=None):
+def save_pdf(activity, nick, description=None):
     ''' Output a PDF document from the title, pictures, and descriptions '''
 
     if len(activity.dsobjects) == 0:
         return None
 
-    tmp_file = os.path.join(activity.datapath, 'output.pdf') 
+    tmp_file = os.path.join(activity.datapath, 'output.pdf')
     pdf_surface = cairo.PDFSurface(tmp_file, 504, 648)
 
-    fd = pango.FontDescription('Sans')
+    fd = Pango.FontDescription('Sans')
     cr = cairo.Context(pdf_surface)
     cr.set_source_rgb(0, 0, 0)
 
@@ -67,7 +68,7 @@ def save_pdf(activity,  nick, description=None):
         try:
             w = int(PAGE_WIDTH - LEFT_MARGIN * 2)
             h = int(w * 3 / 4)
-            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(dsobj.file_path,
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(dsobj.file_path,
                                                           w, h)
         except(GError, IOError):
             try:
@@ -81,7 +82,7 @@ def save_pdf(activity,  nick, description=None):
 
         if pixbuf is not None:
             cr.save()
-            cr = gtk.gdk.CairoContext(cr)
+            cr = Gdk.CairoContext(cr)
             cr.set_source_pixbuf(pixbuf, LEFT_MARGIN, TOP_MARGIN + 150)
             cr.rectangle(LEFT_MARGIN, TOP_MARGIN + 150, w, h)
             cr.fill()
@@ -94,16 +95,17 @@ def save_pdf(activity,  nick, description=None):
 
     return tmp_file
 
+
 def show_text(cr, fd, label, size, x, y):
     cr = pangocairo.CairoContext(cr)
     pl = cr.create_layout()
-    fd.set_size(int(size * pango.SCALE))
+    fd.set_size(int(size * Pango.SCALE))
     pl.set_font_description(fd)
     if type(label) == str or type(label) == unicode:
         pl.set_text(label.replace('\0', ' '))
     else:
         pl.set_text(str(label))
-    pl.set_width((PAGE_WIDTH - LEFT_MARGIN * 2) * pango.SCALE)
+    pl.set_width((PAGE_WIDTH - LEFT_MARGIN * 2) * Pango.SCALE)
     cr.save()
     cr.translate(x, y)
     cr.update_layout(pl)

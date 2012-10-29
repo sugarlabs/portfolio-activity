@@ -11,42 +11,38 @@
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 
 
-import gtk
-import gobject
-import pango
-import pangocairo
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GdkPixbuf
+from gi.repository import GObject
+from gi.repository import Pango
+from gi.repository import PangoCairo
 
 import subprocess
 import os
 import time
 import string
-from string import find
 from shutil import copyfile
 
 from math import sqrt, ceil
 
-from sugar.activity import activity
-from sugar import profile
-try:
-    from sugar.graphics.toolbarbox import ToolbarBox
-    HAVE_TOOLBOX = True
-except ImportError:
-    HAVE_TOOLBOX = False
+from sugar3.activity import activity
+from sugar3 import profile
 
-if HAVE_TOOLBOX:
-    from sugar.activity.widgets import ActivityToolbarButton
-    from sugar.activity.widgets import StopButton
-    from sugar.graphics.toolbarbox import ToolbarButton
+from sugar3.graphics.toolbarbox import ToolbarBox
+from sugar3.activity.widgets import ActivityToolbarButton
+from sugar3.activity.widgets import StopButton
+from sugar3.graphics.toolbarbox import ToolbarButton
 
-from sugar.datastore import datastore
-from sugar.graphics.alert import Alert
+from sugar3.datastore import datastore
+from sugar3.graphics.alert import Alert
 
 from sprites import Sprites, Sprite
-from exportpdf import save_pdf
+#from exportpdf import save_pdf
 from utils import get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle, \
     play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware, \
     pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file
-    
+
 from toolbar_utils import radio_factory, button_factory, separator_factory, \
     combo_factory, label_factory
 from grecord import Grecord
@@ -57,30 +53,21 @@ import logging
 _logger = logging.getLogger("portfolio-activity")
 
 try:
-    from sugar.graphics import style
+    from sugar3.graphics import style
     GRID_CELL_SIZE = style.GRID_CELL_SIZE
 except ImportError:
     GRID_CELL_SIZE = 0
 
-try:
-    _OLD_SUGAR_SYSTEM = False
-    import json
-    from json import load as jload
-    from json import dump as jdump
-except(ImportError, AttributeError):
-    try:
-        import simplejson as json
-        from simplejson import load as jload
-        from simplejson import dump as jdump
-    except ImportError:
-        _OLD_SUGAR_SYSTEM = True
+import json
+from json import load as jload
+from json import dump as jdump
 from StringIO import StringIO
 
 import telepathy
 from dbus.service import signal
 from dbus.gobject_service import ExportedGObject
-from sugar.presence import presenceservice
-from sugar.presence.tubeconn import TubeConnection
+from sugar3.presence import presenceservice
+from sugar3.presence.tubeconn import TubeConnection
 
 
 SERVICE = 'org.sugarlabs.PortfolioActivity'
@@ -119,16 +106,10 @@ HIDE = 0
 
 
 def _get_screen_dpi():
-    '''Looking for 'dimensions' line in xdpyinfo
-       dimensions:    1280x800 pixels (339x212 millimeters)'''
-    output = check_output('/usr/bin/xdpyinfo', 'xdpyinfo failed')
-    if output is not None:
-        strings = output[find(output, 'dimensions:'):].split()
-        w = int(strings[1].split('x')[0])  # e.g., 1280x800
-        mm = int(strings[3][1:].split('x')[0])  # e.g., (339x212)
-        return int((w * 25.4 / mm) + 0.5)
-    else:
-        return 96
+    xft_dpi = Gtk.Settings.get_default().get_property('gtk-xft-dpi')
+    dpi = float(xft_dpi / 1024)
+    logging.error('Setting dpi to: %f', dpi)
+    return dpi
 
 
 class Slide():
@@ -168,14 +149,14 @@ class PortfolioActivity(activity.Activity):
         self._colors = profile.get_color().to_string().split(',')
         self.initiating = None  # sharing (True) or joining (False)
 
-        self._set_screen_dpi()
-
         self._playing = False
         self._first_time = True
 
-        self._width = gtk.gdk.screen_width()
-        self._height = gtk.gdk.screen_height()
-        self._scale = gtk.gdk.screen_height() / 900.
+        self._width = Gdk.Screen.width()
+        self._height = Gdk.Screen.height()
+        self._scale = Gdk.Screen.height() / 900.
+
+        self._set_screen_dpi()
 
         self._titlewh = [self._width, TITLEH * self._scale]
         self._titlexy = [0, 0]
@@ -219,64 +200,57 @@ class PortfolioActivity(activity.Activity):
 
     def _set_screen_dpi(self):
         dpi = _get_screen_dpi()
-        font_map_default = pangocairo.cairo_font_map_get_default()
+        font_map_default = PangoCairo.font_map_get_default()
         font_map_default.set_resolution(dpi)
-
-    def _tablet_mode(self):
-        return False  # FIXME: Sugar scrolls the window for me???
 
     def _fixed_resize_cb(self, widget=None, rect=None):
         ''' If a toolbar opens or closes, we need to resize the vbox
         holding out scrolling window. '''
-        self.vbox.set_size_request(rect[2], rect[3])
+        self.vbox.set_size_request(rect.width, rect.height)
 
     def _setup_canvas(self):
-        ''' Create a canvas inside a gtk.Fixed '''
-
-        self.fixed = gtk.Fixed()
+        ''' Create a canvas '''
+        self.fixed = Gtk.Fixed()
         self.fixed.connect('size-allocate', self._fixed_resize_cb)
         self.fixed.show()
         self.set_canvas(self.fixed)
 
-        self.vbox = gtk.VBox(False, 0)
+        self.vbox = Gtk.VBox(False, 0)
         self.vbox.set_size_request(
-            gtk.gdk.screen_width(),
-            gtk.gdk.screen_height() - style.GRID_CELL_SIZE)
+            Gdk.Screen.width(), Gdk.Screen.height() - style.GRID_CELL_SIZE)
         self.fixed.put(self.vbox, 0, 0)
         self.vbox.show()
 
-        self._canvas = gtk.DrawingArea()
-        self._canvas.set_size_request(int(gtk.gdk.screen_width()),
-                                      int(gtk.gdk.screen_height()))
+        self._canvas = Gtk.DrawingArea()
+        self._canvas.set_size_request(int(Gdk.Screen.width()),
+                                      int(Gdk.Screen.height()))
         self._canvas.show()
-        # self.set_canvas(self._canvas)
         self.show_all()
-        self.vbox.pack_end(self._canvas, True, True)
+        self.vbox.pack_end(self._canvas, True, True, 0)
         self.vbox.show()
 
-        self._canvas.set_flags(gtk.CAN_FOCUS)
-        self._canvas.add_events(gtk.gdk.BUTTON_PRESS_MASK)
-        self._canvas.add_events(gtk.gdk.POINTER_MOTION_MASK)
-        self._canvas.add_events(gtk.gdk.BUTTON_RELEASE_MASK)
-        self._canvas.add_events(gtk.gdk.KEY_PRESS_MASK)
-        self._canvas.add_events(gtk.gdk.CONFIGURE)
-        self._canvas.connect('expose-event', self._expose_cb)
+        self._canvas.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self._canvas.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
+        self._canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
+        self._canvas.add_events(Gdk.EventMask.KEY_PRESS_MASK)
+        #self._canvas.add_events(Gdk.CONFIGURE)
+        self._canvas.connect('draw', self._draw_cb)
         self._canvas.connect('button-press-event', self._button_press_cb)
         self._canvas.connect('button-release-event', self._button_release_cb)
         self._canvas.connect('motion-notify-event', self._mouse_move_cb)
         self._canvas.connect('key-press-event', self._keypress_cb)
-        self._canvas.connect('configure-event', self._configure_cb)
+        # self._canvas.connect('configure-event', self._configure_cb)
 
         self._canvas.grab_focus()
 
     def _configure_cb(self, win, event):
         # landscape or portrait?
-        self._width = gtk.gdk.screen_width()
-        self._height = gtk.gdk.screen_height()
+        self._width = Gdk.Screen.width()
+        self._height = Gdk.Screen.height()
         if self._width > self._height:
-            self._scale = gtk.gdk.screen_height() / 900.
+            self._scale = Gdk.Screen.height() / 900.
         else:
-            self._scale = gtk.gdk.screen_width() / 1200.
+            self._scale = Gdk.Screen.width() / 1200.
 
         self._my_canvas.hide()
         self._title.hide()
@@ -320,23 +294,23 @@ class PortfolioActivity(activity.Activity):
             star_size = 55
         else:
             star_size = int(150. / int(ceil(sqrt(self._nobjects))))
-        self._fav_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+        self._fav_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'favorite-on.svg'), star_size, star_size)
-        self._unfav_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+        self._unfav_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'favorite-off.svg'), star_size, star_size)
 
-        self.record_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+        self.record_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'media-audio.svg'), 55, 55)
-        self.recording_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+        self.recording_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'media-audio-recording.svg'), 55, 55)
-        self.playback_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+        self.playback_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'speaker-100.svg'), 55, 55)
-        self.playing_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+        self.playing_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'speaker-0.svg'), 55, 55)
 
@@ -349,16 +323,16 @@ class PortfolioActivity(activity.Activity):
         self._playback_button.type = 'noplay'
         self._playback_button.hide()
 
-        self.prev_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+        self.prev_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'go-previous.svg'), 55, 55)
-        self.next_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+        self.next_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'go-next.svg'), 55, 55)
-        self.prev_off_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+        self.prev_off_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'go-previous-inactive.svg'), 55, 55)
-        self.next_off_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+        self.next_off_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'go-next-inactive.svg'), 55, 55)
 
@@ -372,7 +346,7 @@ class PortfolioActivity(activity.Activity):
 
         self._help = Sprite(self._sprites,
                             0, 0,
-                            gtk.gdk.pixbuf_new_from_file_at_size(
+                            GdkPixbuf.Pixbuf.new_from_file_at_size(
                 os.path.join(activity.get_bundle_path(), 'help.png'),
                 int(self._previewwh[0]),
                 int(self._previewwh[1])))
@@ -424,7 +398,7 @@ class PortfolioActivity(activity.Activity):
                          int(self._descriptionwh[1]),
                          self._colors)))
         self._description.set_label_attributes(
-            int(self._descriptionf * self._scale), vert_align='top')
+            int(self._descriptionf * self._scale), vert_align="top")
         self._description.type = 'description'
 
         self._my_canvas = Sprite(
@@ -439,41 +413,27 @@ class PortfolioActivity(activity.Activity):
 
         self.max_participants = 5  # sharing
 
-        if HAVE_TOOLBOX:
-            toolbox = ToolbarBox()
+        toolbox = ToolbarBox()
 
-            # Activity toolbar
-            activity_button_toolbar = ActivityToolbarButton(self)
+        # Activity toolbar
+        activity_button_toolbar = ActivityToolbarButton(self)
 
-            toolbox.toolbar.insert(activity_button_toolbar, 0)
-            activity_button_toolbar.show()
+        toolbox.toolbar.insert(activity_button_toolbar, 0)
+        activity_button_toolbar.show()
 
-            self.set_toolbar_box(toolbox)
-            toolbox.show()
-            self.toolbar = toolbox.toolbar
+        self.set_toolbar_box(toolbox)
+        toolbox.show()
+        self.toolbar = toolbox.toolbar
 
-            adjust_toolbar = gtk.Toolbar()
-            adjust_toolbar_button = ToolbarButton(
-                label=_('Adjust'),
-                page=adjust_toolbar,
-                icon_name='preferences-system')
-            adjust_toolbar.show_all()
-            adjust_toolbar_button.show()
-        else:
-            # Use pre-0.86 toolbar design
-            primary_toolbar = gtk.Toolbar()
-            toolbox = activity.ActivityToolbox(self)
-            self.set_toolbox(toolbox)
-            toolbox.add_toolbar(_('Page'), primary_toolbar)
-            adjust_toolbar = gtk.Toolbar()
-            toolbox.add_toolbar(_('Adjust'), adjust_toolbar)
-            toolbox.show()
-            toolbox.set_current_toolbar(1)
-            self.toolbar = primary_toolbar
+        adjust_toolbar = Gtk.Toolbar()
+        adjust_toolbar_button = ToolbarButton(
+            label=_('Adjust'),
+            page=adjust_toolbar,
+            icon_name='preferences-system')
+        adjust_toolbar.show_all()
+        adjust_toolbar_button.show()
 
-        if HAVE_TOOLBOX:
-            # toolbox.toolbar.insert(record_toolbar_button, -1)
-            toolbox.toolbar.insert(adjust_toolbar_button, -1)
+        toolbox.toolbar.insert(adjust_toolbar_button, -1)
 
         button_factory('view-fullscreen', self.toolbar,
                        self.do_fullscreen_cb, tooltip=_('Fullscreen'),
@@ -522,17 +482,16 @@ class PortfolioActivity(activity.Activity):
                                         self._save_as_pdf_cb,
                                         tooltip=_('Save as PDF'))
 
-        if HAVE_TOOLBOX:
-            separator_factory(toolbox.toolbar, True, False)
+        separator_factory(toolbox.toolbar, True, False)
 
-            stop_button = StopButton(self)
-            stop_button.props.accelerator = '<Ctrl>q'
-            toolbox.toolbar.insert(stop_button, -1)
-            stop_button.show()
+        stop_button = StopButton(self)
+        stop_button.props.accelerator = '<Ctrl>q'
+        toolbox.toolbar.insert(stop_button, -1)
+        stop_button.show()
 
     def _destroy_cb(self, win, event):
         ''' Clean up on the way out. '''
-        gtk.main_quit()
+        Gtk.main_quit()
 
     def _thumb_to_slide(self, spr):
         if spr is None:
@@ -663,7 +622,7 @@ class PortfolioActivity(activity.Activity):
         self._playing = False
         self._auto_button.set_icon('media-playback-start')
         if hasattr(self, '_timeout_id') and self._timeout_id is not None:
-            gobject.source_remove(self._timeout_id)
+            GObject.source_remove(self._timeout_id)
 
     def _loop(self):
         ''' Show a slide and then call oneself with a timeout. '''
@@ -671,7 +630,7 @@ class PortfolioActivity(activity.Activity):
         if self.i == self._nobjects:
             self.i = 0
         self._show_slide()
-        self._timeout_id = gobject.timeout_add(int(self._rate * 1000),
+        self._timeout_id = GObject.timeout_add(int(self._rate * 1000),
                                                self._loop)
 
     def _save_as_pdf_cb(self, button=None):
@@ -692,7 +651,7 @@ class PortfolioActivity(activity.Activity):
         dsobject.metadata['icon-color'] = profile.get_color().to_string()
         dsobject.metadata['mime_type'] = 'application/pdf'
         dsobject.set_file_path(tmp_file)
-        dsobject.metadata['activity'] = 'org.laptop.sugar.ReadActivity'
+        dsobject.metadata['activity'] = 'org.laptop.sugar3.ReadActivity'
         datastore.write(dsobject)
         dsobject.destroy()
         return
@@ -704,7 +663,6 @@ class PortfolioActivity(activity.Activity):
         self._title.hide()
         self._preview.hide()
         self._description.hide()
-        self.invalt(0, 0, self._width, self._height)
 
         # Reset drag settings
         self._press = None
@@ -744,7 +702,7 @@ class PortfolioActivity(activity.Activity):
                     return
                 slide = self._slides[self.i]
 
-        if self.i == 0:            
+        if self.i == 0:
             self._prev.set_image(self.prev_off_pixbuf)
         else:
             self._prev.set_image(self.prev_pixbuf)
@@ -759,7 +717,7 @@ class PortfolioActivity(activity.Activity):
             self._preview.set_shape(pixbuf.scale_simple(
                     int(PREVIEWW * self._scale),
                     int(PREVIEWH * self._scale),
-                    gtk.gdk.INTERP_NEAREST))
+                    GdkPixbuf.InterpType.NEAREST))
             self._preview.set_layer(MIDDLE)
         else:
             if self._preview is not None:
@@ -777,7 +735,7 @@ class PortfolioActivity(activity.Activity):
             if slide.sound is not None:
                 if self._playing:
                     _logger.debug('Playing audio note')
-                    gobject.idle_add(play_audio_from_file,
+                    GObject.idle_add(play_audio_from_file,
                                      slide.sound.file_path)
                 self._playback_button.set_image(self.playback_pixbuf)
                 self._playback_button.type = 'play'
@@ -858,7 +816,7 @@ class PortfolioActivity(activity.Activity):
         if slide.thumb is None:
             if slide.preview is not None:
                 pixbuf_thumb = slide.preview.scale_simple(int(w), int(h),
-                                                          gtk.gdk.INTERP_TILES)
+                                                          GdkPixbuf.InterpType.TILES)
             else:
                 pixbuf_thumb = svg_str_to_pixbuf(genblank(int(w), int(h),
                                                           self._colors))
@@ -872,20 +830,22 @@ class PortfolioActivity(activity.Activity):
         slide.star.set_layer(STAR)
         slide.star.move((x, y))
 
-    def _expose_cb(self, win, event):
-        ''' Callback to handle window expose events '''
-        self.do_expose_event(event)
+    def _draw_cb(self, win, context):
+        ''' Callback to handle window draw events '''
+        self.do_draw_event(context)
         return True
 
-    # Handle the expose-event by drawing
-    def do_expose_event(self, event):
+    # Handle the draw-event by drawing
+    def do_draw_event(self, context):
+
+        allocation = self.get_allocation()
 
         # Create the cairo context
-        cr = self.canvas.window.cairo_create()
+        cr = self.canvas.props.window.cairo_create()
 
-        # Restrict Cairo to the exposed area; avoid extra work
-        cr.rectangle(event.area.x, event.area.y,
-                event.area.width, event.area.height)
+        # Restrict Cairo to the drawn area; avoid extra work
+        cr.rectangle(allocation.x, allocation.y,
+                allocation.width, allocation.height)
         cr.clip()
 
         # Refresh sprite list
@@ -902,25 +862,17 @@ class PortfolioActivity(activity.Activity):
             os.remove(os.path.join(self.datapath, 'output.ogg'))
 
     def do_fullscreen_cb(self, button):
-        ''' Hide the Sugar toolbars. '''
+        ''' Hide the sugar3 toolbars. '''
         self.fullscreen()
-
-    def invalt(self, x, y, w, h):
-        ''' Mark a region for refresh '''
-        self._canvas.window.invalidate_rect(
-            gtk.gdk.Rectangle(int(x), int(y), int(w), int(h)), False)
-
-    def _add_text_no_changed_cb(self, widget=None, event=None):
-        pass
 
     def _text_focus_out_cb(self, widget=None, event=None):
         bounds = self.text_buffer.get_bounds()
-        text = self.text_buffer.get_text(bounds[0], bounds[1])
+        text = self.text_buffer.get_text(bounds[0], bounds[1], True)
         self._selected_spr.set_label(text)
         self._saved_string = self._selected_spr.labels[0]
 
     def _button_press_cb(self, win, event):
-        ''' The mouse button was pressed. Is it on asprite? '''
+        ''' The mouse button was pressed. Is it on a sprite? '''
         x, y = map(int, event.get_coords())
 
         self._dragpos = [x, y]
@@ -948,12 +900,13 @@ class PortfolioActivity(activity.Activity):
                     label = self._selected_spr.labels[0]
                 self._selected_spr.set_label(label)
                 if not hasattr(self, 'desc_entry'):
-                    self.desc_entry = gtk.TextView()
-                    self.desc_entry.set_justification(gtk.JUSTIFY_CENTER)
+                    self.desc_entry = Gtk.TextView()
+                    self.desc_entry.set_justification(Gtk.Justification.CENTER)
                     self.desc_entry.set_pixels_above_lines(4)
-                    font_desc = pango.FontDescription('Sans')
-                    font_desc.set_size(int(
-                        self._descriptionf * pango.SCALE * self._scale))
+                    self.desc_entry.override_background_color(
+                        Gtk.StateType.NORMAL, Gdk.RGBA(0, 0, 0, 0))
+                    font_desc = Pango.font_description_from_string(
+                        str(int(self._descriptionf * self._scale)))
                     self.desc_entry.modify_font(font_desc)
                     self.desc_buffer = self.desc_entry.get_buffer()
                     self.fixed.put(self.desc_entry, 0, 0)
@@ -967,12 +920,13 @@ class PortfolioActivity(activity.Activity):
                 else:
                     self._selected_spr = None
                 if not hasattr(self, 'title_entry'):
-                    self.title_entry = gtk.TextView()
-                    self.title_entry.set_justification(gtk.JUSTIFY_CENTER)
+                    self.title_entry = Gtk.TextView()
+                    self.title_entry.set_justification(Gtk.Justification.CENTER)
                     self.title_entry.set_pixels_above_lines(4)
-                    font_desc = pango.FontDescription('Sans')
-                    font_desc.set_size(int(
-                        self._titlef * pango.SCALE * self._scale))
+                    self.title_entry.override_background_color(
+                        Gtk.StateType.NORMAL, Gdk.RGBA(0, 0, 0, 0))
+                    font_desc = Pango.font_description_from_string(
+                        str(self._titlef * self._scale))
                     self.title_entry.modify_font(font_desc)
                     self.title_buffer = self.title_entry.get_buffer()
                     self.fixed.put(self.title_entry, 0, 0)
@@ -1046,7 +1000,7 @@ class PortfolioActivity(activity.Activity):
         if spr is None:
             self._dragpos = [0, 0]
             return False
-        # win.grab_focus()
+        win.grab_focus()
         x, y = map(int, event.get_coords())
         dx = x - self._dragpos[0]
         dy = y - self._dragpos[1]
@@ -1062,7 +1016,7 @@ class PortfolioActivity(activity.Activity):
 
     def _button_release_cb(self, win, event):
         ''' Button event is used to swap slides or goto next slide. '''
-        # win.grab_focus()
+        win.grab_focus()
         self._dragpos = [0, 0]
         x, y = map(int, event.get_coords())
 
@@ -1157,7 +1111,7 @@ class PortfolioActivity(activity.Activity):
             slide = self._slides[self.i]
             _logger.debug('Autosaving recording')
             self._notify_successful_save(title=_('Save recording'))
-            gobject.timeout_add(100, self._wait_for_transcoding_to_finish)
+            GObject.timeout_add(100, self._wait_for_transcoding_to_finish)
         else:  # Wasn't recording, so start
             _logger.debug('recording...False. Start recording.')
             self._record_button.set_image(self.recording_pixbuf)
@@ -1180,8 +1134,8 @@ class PortfolioActivity(activity.Activity):
         self._playback_button.set_image(self.playing_pixbuf)
         self._playback_button.set_layer(DRAG)
         self._playback_button.type = 'playing'
-        gobject.timeout_add(1000, self._playback_button_reset)
-        gobject.idle_add(play_audio_from_file,
+        GObject.timeout_add(1000, self._playback_button_reset)
+        GObject.idle_add(play_audio_from_file,
                          self._slides[self.i].sound.file_path)
 
     def _playback_button_reset(self):
@@ -1264,9 +1218,9 @@ class PortfolioActivity(activity.Activity):
 
     def _keypress_cb(self, area, event):
         ''' Keyboard '''
-        keyname = gtk.gdk.keyval_name(event.keyval)
-        keyunicode = gtk.gdk.keyval_to_unicode(event.keyval)
-        if event.get_state() & gtk.gdk.MOD1_MASK:
+        keyname = Gdk.keyval_name(event.keyval)
+        keyunicode = Gdk.keyval_to_unicode(event.keyval)
+        if event.get_state() & Gdk.ModifierType.MOD1_MASK:
             alt_mask = True
             alt_flag = 'T'
         else:
@@ -1321,7 +1275,7 @@ class PortfolioActivity(activity.Activity):
         if hasattr(self.get_window(), 'get_cursor'):
             self.get_window().set_cursor(self.old_cursor)
         else:
-            self.get_window().set_cursor(gtk.gdk.Cursor(gtk.gdk.LEFT_PTR))
+            self.get_window().set_cursor(Gdk.Cursor.new(Gdk.CursorType.LEFT_PTR))
 
     def _waiting_cursor(self):
         ''' Waiting, so set watch cursor. '''
@@ -1329,7 +1283,7 @@ class PortfolioActivity(activity.Activity):
             return
         if hasattr(self.get_window(), 'get_cursor'):
             self.old_cursor = self.get_window().get_cursor()
-        self.get_window().set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        self.get_window().set_cursor(Gdk.Cursor.new(Gdk.CursorType.WATCH))
 
     # Serialize
 
@@ -1346,12 +1300,7 @@ class PortfolioActivity(activity.Activity):
         return self._data_dumper(data)
 
     def _data_dumper(self, data):
-        if _OLD_SUGAR_SYSTEM:
-            return json.write(data)
-        else:
-            io = StringIO()
-            jdump(data, io)
-            return io.getvalue()
+        return json.write(data)
 
     def _load(self, data):
         ''' Load slide data from a sharer. '''
@@ -1390,11 +1339,7 @@ class PortfolioActivity(activity.Activity):
             self._show_thumbs()
 
     def _data_loader(self, data):
-        if _OLD_SUGAR_SYSTEM:
-            return json.read(data)
-        else:
-            io = StringIO(data)
-            return jload(io)
+        return json.read(data)
 
     # When portfolio is shared, only sharer sends out slides, joiners
     # send back comments.
@@ -1590,7 +1535,7 @@ class PortfolioActivity(activity.Activity):
         for slide in self._slides:
             if slide.active and slide.fav:
                 _logger.debug('sharing %s' % (slide.uid))
-                gobject.idle_add(self._send_event, 's:%s' % (
+                GObject.idle_add(self._send_event, 's:%s' % (
                         str(self._dump(slide))))
 
     def _send_star(self, uid, status):
@@ -1625,25 +1570,3 @@ class ChatTube(ExportedGObject):
     @signal(dbus_interface=IFACE, signature='s')
     def SendText(self, text):
         self.stack = text
-
-
-def check_output(command, warning):
-    ''' Workaround for old systems without subprocess.check_output'''
-    if hasattr(subprocess, 'check_output'):
-        try:
-            output = subprocess.check_output(command)
-        except subprocess.CalledProcessError:
-            log.warning(warning)
-            return None
-    else:
-        import commands
-
-        cmd = ''
-        for c in command:
-            cmd += c
-            cmd += ' '
-        (status, output) = commands.getstatusoutput(cmd)
-        if status != 0:
-            log.warning(warning)
-            return None
-    return output

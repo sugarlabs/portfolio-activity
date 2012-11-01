@@ -902,9 +902,11 @@ class PortfolioActivity(activity.Activity):
                 if not hasattr(self, 'desc_entry'):
                     self.desc_entry = Gtk.TextView()
                     self.desc_entry.set_justification(Gtk.Justification.CENTER)
-                    self.desc_entry.set_pixels_above_lines(4)
+                    self.desc_entry.set_pixels_above_lines(0)
+                    rgba = Gdk.RGBA()
+                    rgba.red, rgba.green, rgba.blue, rgba.alpha = 1., 1., 1., 0.
                     self.desc_entry.override_background_color(
-                        Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
+                        Gtk.StateFlags.NORMAL, rgba)
                     font_desc = Pango.font_description_from_string(
                         str(int(self._descriptionf * self._scale)))
                     self.desc_entry.modify_font(font_desc)
@@ -922,9 +924,11 @@ class PortfolioActivity(activity.Activity):
                 if not hasattr(self, 'title_entry'):
                     self.title_entry = Gtk.TextView()
                     self.title_entry.set_justification(Gtk.Justification.CENTER)
-                    self.title_entry.set_pixels_above_lines(4)
+                    self.title_entry.set_pixels_above_lines(1)
+                    rgba = Gdk.RGBA()
+                    rgba.red, rgba.green, rgba.blue, rgba.alpha = 1., 1., 1., 0.
                     self.title_entry.override_background_color(
-                        Gtk.StateType.NORMAL, Gdk.RGBA(0, 0, 0, 0))
+                        Gtk.StateFlags.NORMAL, rgba)
                     font_desc = Pango.font_description_from_string(
                         str(self._titlef * self._scale))
                     self.title_entry.modify_font(font_desc)

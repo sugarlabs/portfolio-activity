@@ -73,6 +73,11 @@ def get_path(activity, subpath):
                             "org.sugarlabs.PortfolioActivity", subpath))
 
 
+def rgb(color):
+    return float(int(color[1:3], 16) / 255.), \
+           float(int(color[3:5], 16) / 255.), \
+           float(int(color[5:7], 16) / 255.)
+
 def _luminance(color):
     ''' Calculate luminance value '''
     return int(color[1:3], 16) * 0.3 + int(color[3:5], 16) * 0.6 + \

@@ -41,7 +41,7 @@ from sprites import Sprites, Sprite
 #from exportpdf import save_pdf
 from utils import get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle, \
     play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware, \
-    pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file
+    pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file, rgb
 
 from toolbar_utils import radio_factory, button_factory, separator_factory, \
     combo_factory, label_factory
@@ -443,7 +443,8 @@ class PortfolioActivity(activity.Activity):
             'media-playback-start', self.toolbar,
             self._autoplay_cb, tooltip=_('Autoplay'))
 
-        label = label_factory(adjust_toolbar, _('Adjust playback speed'))
+        label = label_factory(adjust_toolbar, _('Adjust playback speed'),
+                              width=200)
         label.show()
 
         separator_factory(adjust_toolbar, False, False)
@@ -904,7 +905,8 @@ class PortfolioActivity(activity.Activity):
                     self.desc_entry.set_justification(Gtk.Justification.CENTER)
                     self.desc_entry.set_pixels_above_lines(0)
                     rgba = Gdk.RGBA()
-                    rgba.red, rgba.green, rgba.blue, rgba.alpha = 1., 1., 1., 0.
+                    rgba.red, rgba.green, rgba.blue = rgb(self._colors[1])
+                    rgba.alpha = 1.
                     self.desc_entry.override_background_color(
                         Gtk.StateFlags.NORMAL, rgba)
                     font_desc = Pango.font_description_from_string(
@@ -926,7 +928,8 @@ class PortfolioActivity(activity.Activity):
                     self.title_entry.set_justification(Gtk.Justification.CENTER)
                     self.title_entry.set_pixels_above_lines(1)
                     rgba = Gdk.RGBA()
-                    rgba.red, rgba.green, rgba.blue, rgba.alpha = 1., 1., 1., 0.
+                    rgba.red, rgba.green, rgba.blue = rgb(self._colors[1])
+                    rgba.alpha = 1.
                     self.title_entry.override_background_color(
                         Gtk.StateFlags.NORMAL, rgba)
                     font_desc = Pango.font_description_from_string(

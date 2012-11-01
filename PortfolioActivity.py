@@ -904,7 +904,7 @@ class PortfolioActivity(activity.Activity):
                     self.desc_entry.set_justification(Gtk.Justification.CENTER)
                     self.desc_entry.set_pixels_above_lines(4)
                     self.desc_entry.override_background_color(
-                        Gtk.StateType.NORMAL, Gdk.RGBA(0, 0, 0, 0))
+                        Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
                     font_desc = Pango.font_description_from_string(
                         str(int(self._descriptionf * self._scale)))
                     self.desc_entry.modify_font(font_desc)

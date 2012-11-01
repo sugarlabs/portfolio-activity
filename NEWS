@@ -2,6 +2,8 @@
 
 BUG FIX:
 * Fix problem with creating transparent textviews
+* Improved icon design for Sugar3 radio-button style
+* Expand label width to avoid line wrap
 
 31
 

@@ -615,13 +615,13 @@ class PortfolioActivity(activity.Activity):
                 self.i -= 1
                 self._first_time = False
             self._playing = True
-            self._auto_button.set_icon('media-playback-pause')
+            self._auto_button.set_icon_name('media-playback-pause')
             self._loop()
 
     def _stop_autoplay(self):
         ''' Stop autoplaying. '''
         self._playing = False
-        self._auto_button.set_icon('media-playback-start')
+        self._auto_button.set_icon_name('media-playback-start')
         if hasattr(self, '_timeout_id') and self._timeout_id is not None:
             GObject.source_remove(self._timeout_id)
 

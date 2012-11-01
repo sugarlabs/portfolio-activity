@@ -51,7 +51,13 @@
 		
 		
 		
-	</defs><g
+	</defs><rect
+     width="55"
+     height="55"
+     x="-4.2962074e-07"
+     y="-0.30399999"
+     id="rect3005"
+     style="fill:#282828;fill-opacity:1;stroke:none" /><g
      transform="translate(-1.1206348,-0.06663089)"
      id="g3918"><rect
        width="20"

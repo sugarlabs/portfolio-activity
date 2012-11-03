@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-27 00:30-0400\n"
+"POT-Creation-Date: 2012-10-30 00:30-0400\n"
 "PO-Revision-Date: 2012-10-28 08:34+0200\n"
 "Last-Translator: AlanJAS <alanjas@hotmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: Pootle 2.0.5\n"
 
 #. TRANS: "name" option from activity.info file
-#: PortfolioActivity.py:691
+#: PortfolioActivity.py:650
 msgid "Portfolio"
 msgstr "Obras"
 
@@ -29,80 +29,79 @@ msgstr ""
 "crea una presentación con diapositivas de las entradas del Diario de Sugar "
 "que han sido marcadas como \"favoritas\""
 
-#: PortfolioActivity.py:101
+#: PortfolioActivity.py:88
 msgid "2 seconds"
 msgstr "2 segundos"
 
-#: PortfolioActivity.py:101
+#: PortfolioActivity.py:88
 msgid "10 seconds"
 msgstr "10 segundos"
 
-#: PortfolioActivity.py:101
+#: PortfolioActivity.py:88
 msgid "30 seconds"
 msgstr "30 segundos"
 
-#: PortfolioActivity.py:101
+#: PortfolioActivity.py:88
 msgid "1 minute"
 msgstr "1 minuto"
 
-#: PortfolioActivity.py:457 PortfolioActivity.py:469
+#: PortfolioActivity.py:430
 msgid "Adjust"
 msgstr "Ajustar"
 
-#: PortfolioActivity.py:467
-msgid "Page"
-msgstr "Página"
-
-#: PortfolioActivity.py:479
+#: PortfolioActivity.py:439
 msgid "Fullscreen"
 msgstr "Pantalla completa"
 
-#: PortfolioActivity.py:484
+#: PortfolioActivity.py:444
 msgid "Autoplay"
 msgstr "Reproducción automática"
 
-#: PortfolioActivity.py:486 PortfolioActivity.py:495
+#: PortfolioActivity.py:446 PortfolioActivity.py:455
 msgid "Adjust playback speed"
 msgstr "Ajustar velocidad de reproducción"
 
 # Refrescar es menos usado, actualizar es palabra usual
-#: PortfolioActivity.py:503
+#: PortfolioActivity.py:463
 msgid "Refresh"
 msgstr "Actualizar"
 
-#: PortfolioActivity.py:511
+#: PortfolioActivity.py:471
 msgid "Slide view"
 msgstr "Ver diapositivas"
 
-#: PortfolioActivity.py:516
+#: PortfolioActivity.py:476
 msgid "Thumbnail view"
 msgstr "Vistas en miniatura"
 
-#: PortfolioActivity.py:523
+#: PortfolioActivity.py:483
 msgid "Save as PDF"
 msgstr "Guardar como PDF"
 
-#: PortfolioActivity.py:726
+#: PortfolioActivity.py:684
 msgid "Do you have any items in your Journal starred?"
 msgstr "Tienes entradas en tu diario marcadas como favoritas?"
 
-#: PortfolioActivity.py:1159
+#: PortfolioActivity.py:1113
 msgid "Save recording"
 msgstr "Guardar grabación"
 
-#: PortfolioActivity.py:1204
+#: PortfolioActivity.py:1158
 #, python-format
 #, python-format,
 msgid "audio note for %s"
 msgstr "nota de audio para %s"
 
-#: PortfolioActivity.py:1464
+#: PortfolioActivity.py:1409
 msgid "Please wait."
 msgstr "Por favor espera."
 
-#: exportpdf.py:64
+#: exportpdf.py:65
 msgid "untitled"
 msgstr "sin_titulo"
+
+#~ msgid "Page"
+#~ msgstr "Página"
 
 #~ msgid "Record a sound"
 #~ msgstr "Grabar un sonido"

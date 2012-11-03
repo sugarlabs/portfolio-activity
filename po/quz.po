@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-14 00:30-0400\n"
+"POT-Creation-Date: 2012-10-30 00:30-0400\n"
 "PO-Revision-Date: 2012-06-23 22:05+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Voluntarios quechuas Sugar Camp Lima\n"
@@ -15,95 +15,100 @@ msgstr ""
 "X-Generator: Pootle 2.0.5\n"
 
 #  "Obras"
-#: activity/activity.info:2 PortfolioActivity.py:639
+#. TRANS: "name" option from activity.info file
+#: PortfolioActivity.py:650
 msgid "Portfolio"
 msgstr "Llamk'aykuna"
 
+#. TRANS: "summary" option from activity.info file
+#. TRANS: "description" option from activity.info file
+msgid "create a slide show from Sugar Journal entries that have been 'starred'"
+msgstr ""
+
 #  "2 segundos"
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "2 seconds"
 msgstr "2 segundukuna"
 
 #  "10 segundos"
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "10 seconds"
 msgstr "10 segundukuna"
 
 #  "30 segundos"
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "30 seconds"
 msgstr "30 segundukuna"
 
 #  "1 minuto"
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "1 minute"
 msgstr "1 chinini"
 
 #  "Ajustar"
-#: PortfolioActivity.py:381 PortfolioActivity.py:403
+#: PortfolioActivity.py:430
 msgid "Adjust"
 msgstr "mat´iy"
 
-#  "Página"
-#: PortfolioActivity.py:401
-msgid "Page"
-msgstr "Raphi"
-
 #  "Pantalla completa"
-#: PortfolioActivity.py:417
+#: PortfolioActivity.py:439
 msgid "Fullscreen"
 msgstr "Hunt'asqa pantalla"
 
 #  "Reproducción automática"
-#: PortfolioActivity.py:422
+#: PortfolioActivity.py:444
 msgid "Autoplay"
 msgstr "Sapan puriq"
 
 #  "Ajustar velocidad de reproducción"
-#: PortfolioActivity.py:424 PortfolioActivity.py:432
+#: PortfolioActivity.py:446 PortfolioActivity.py:455
 msgid "Adjust playback speed"
 msgstr "Puriqpa phawayninta mat'iy"
 
 #  "Actualizar"
-#: PortfolioActivity.py:438
+#: PortfolioActivity.py:463
 msgid "Refresh"
 msgstr "Kunanyachiy"
 
 #  "Ver diapositivas"
-#: PortfolioActivity.py:444
+#: PortfolioActivity.py:471
 msgid "Slide view"
 msgstr "Diapositiwakunata qhaway"
 
 #  "Vistas en miniatura"
-#: PortfolioActivity.py:449
+#: PortfolioActivity.py:476
 msgid "Thumbnail view"
 msgstr "Huch´uy qhawanakuna"
 
-#: PortfolioActivity.py:473 PortfolioActivity.py:478
+#: PortfolioActivity.py:483
 msgid "Save as PDF"
 msgstr ""
 
 #  "Tienes entradas en tu diario marcadas como favoritas?"
-#: PortfolioActivity.py:674
+#: PortfolioActivity.py:684
 msgid "Do you have any items in your Journal starred?"
 msgstr "Kachkanchu p'anqaykipi ancha munasqa ch'ikusqakuna?"
 
-#: PortfolioActivity.py:1055
+#: PortfolioActivity.py:1113
 msgid "Save recording"
 msgstr ""
 
-#: PortfolioActivity.py:1111
+#: PortfolioActivity.py:1158
 #, python-format
 msgid "audio note for %s"
 msgstr ""
 
-#: PortfolioActivity.py:1461
+#: PortfolioActivity.py:1409
 msgid "Please wait."
 msgstr ""
 
-#: exportpdf.py:64
+#: exportpdf.py:65
 msgid "untitled"
 msgstr ""
+
+#  "Página"
+#~ msgid "Page"
+#~ msgstr "Raphi"
 
 #  "Diapositiva anterior"
 #~ msgid "Prev slide"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-14 00:30-0400\n"
+"POT-Creation-Date: 2012-10-30 00:30-0400\n"
 "PO-Revision-Date: 2012-04-03 00:25+0200\n"
 "Last-Translator: Eduardo H. <hoboprimate@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,82 +17,87 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:639
+#. TRANS: "name" option from activity.info file
+#: PortfolioActivity.py:650
 msgid "Portfolio"
 msgstr "Portefólio"
 
-#: PortfolioActivity.py:99
+#. TRANS: "summary" option from activity.info file
+#. TRANS: "description" option from activity.info file
+msgid "create a slide show from Sugar Journal entries that have been 'starred'"
+msgstr ""
+
+#: PortfolioActivity.py:88
 msgid "2 seconds"
 msgstr "2 segundos"
 
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "10 seconds"
 msgstr "10 segundos"
 
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "30 seconds"
 msgstr "30 segundos"
 
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "1 minute"
 msgstr "1 minuto"
 
-#: PortfolioActivity.py:381 PortfolioActivity.py:403
+#: PortfolioActivity.py:430
 msgid "Adjust"
 msgstr "Ajustar"
 
-#: PortfolioActivity.py:401
-msgid "Page"
-msgstr "Página"
-
-#: PortfolioActivity.py:417
+#: PortfolioActivity.py:439
 msgid "Fullscreen"
 msgstr "Ecrã Inteiro"
 
-#: PortfolioActivity.py:422
+#: PortfolioActivity.py:444
 msgid "Autoplay"
 msgstr "Tocar automaticamente"
 
-#: PortfolioActivity.py:424 PortfolioActivity.py:432
+#: PortfolioActivity.py:446 PortfolioActivity.py:455
 msgid "Adjust playback speed"
 msgstr "Ajustar a velocidade do playback"
 
-#: PortfolioActivity.py:438
+#: PortfolioActivity.py:463
 msgid "Refresh"
 msgstr "Recarregar"
 
-#: PortfolioActivity.py:444
+#: PortfolioActivity.py:471
 msgid "Slide view"
 msgstr "Vista de slides"
 
-#: PortfolioActivity.py:449
+#: PortfolioActivity.py:476
 msgid "Thumbnail view"
 msgstr "Vista de miniaturas"
 
-#: PortfolioActivity.py:473 PortfolioActivity.py:478
+#: PortfolioActivity.py:483
 msgid "Save as PDF"
 msgstr "Guardar como PDF"
 
-#: PortfolioActivity.py:674
+#: PortfolioActivity.py:684
 msgid "Do you have any items in your Journal starred?"
 msgstr "Tens alguma entrada no teu Diário marcada com uma estrela?"
 
-#: PortfolioActivity.py:1055
+#: PortfolioActivity.py:1113
 msgid "Save recording"
 msgstr "Guardar gravação"
 
-#: PortfolioActivity.py:1111
+#: PortfolioActivity.py:1158
 #, python-format
 msgid "audio note for %s"
 msgstr "nota de som para %s"
 
-#: PortfolioActivity.py:1461
+#: PortfolioActivity.py:1409
 msgid "Please wait."
 msgstr ""
 
-#: exportpdf.py:64
+#: exportpdf.py:65
 msgid "untitled"
 msgstr "sem título"
+
+#~ msgid "Page"
+#~ msgstr "Página"
 
 #~ msgid "Record a sound"
 #~ msgstr "Gravar um som"

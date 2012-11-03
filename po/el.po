@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-14 00:30-0400\n"
+"POT-Creation-Date: 2012-10-30 00:30-0400\n"
 "PO-Revision-Date: 2012-09-08 10:29+0200\n"
 "Last-Translator: Yannis <kiolalis@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,82 +17,87 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:639
+#. TRANS: "name" option from activity.info file
+#: PortfolioActivity.py:650
 msgid "Portfolio"
 msgstr "Χαρτοφυλάκιο"
 
-#: PortfolioActivity.py:99
+#. TRANS: "summary" option from activity.info file
+#. TRANS: "description" option from activity.info file
+msgid "create a slide show from Sugar Journal entries that have been 'starred'"
+msgstr ""
+
+#: PortfolioActivity.py:88
 msgid "2 seconds"
 msgstr "2 δευτερόλεπτα"
 
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "10 seconds"
 msgstr "10 δευτερόλεπτα"
 
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "30 seconds"
 msgstr "30 δευτερόλεπτα"
 
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "1 minute"
 msgstr "1 λεπτό"
 
-#: PortfolioActivity.py:381 PortfolioActivity.py:403
+#: PortfolioActivity.py:430
 msgid "Adjust"
 msgstr "Ρύθμιση"
 
-#: PortfolioActivity.py:401
-msgid "Page"
-msgstr "Σελίδα"
-
-#: PortfolioActivity.py:417
+#: PortfolioActivity.py:439
 msgid "Fullscreen"
 msgstr "Πλήρης οθόνη"
 
-#: PortfolioActivity.py:422
+#: PortfolioActivity.py:444
 msgid "Autoplay"
 msgstr "Αυτόματη αναπαραγωγή"
 
-#: PortfolioActivity.py:424 PortfolioActivity.py:432
+#: PortfolioActivity.py:446 PortfolioActivity.py:455
 msgid "Adjust playback speed"
 msgstr "Ρύθμιση ταχύτητας αναπαραγωγής"
 
-#: PortfolioActivity.py:438
+#: PortfolioActivity.py:463
 msgid "Refresh"
 msgstr "Ανανέωση"
 
-#: PortfolioActivity.py:444
+#: PortfolioActivity.py:471
 msgid "Slide view"
 msgstr "Προβολή διαφανειών"
 
-#: PortfolioActivity.py:449
+#: PortfolioActivity.py:476
 msgid "Thumbnail view"
 msgstr "Προβολή μικρογραφίας"
 
-#: PortfolioActivity.py:473 PortfolioActivity.py:478
+#: PortfolioActivity.py:483
 msgid "Save as PDF"
 msgstr "Αποθήκευση ως PDF"
 
-#: PortfolioActivity.py:674
+#: PortfolioActivity.py:684
 msgid "Do you have any items in your Journal starred?"
 msgstr "Έχετε αντικείμενα στο Ημερολόγιό σας που πρωταγωνιστούν;"
 
-#: PortfolioActivity.py:1055
+#: PortfolioActivity.py:1113
 msgid "Save recording"
 msgstr "Αποθήκευση εγγραφής"
 
-#: PortfolioActivity.py:1111
+#: PortfolioActivity.py:1158
 #, python-format
 msgid "audio note for %s"
 msgstr "ηχητική σημείωση για %s"
 
-#: PortfolioActivity.py:1461
+#: PortfolioActivity.py:1409
 msgid "Please wait."
 msgstr "Παρακαλώ περιμένετε"
 
-#: exportpdf.py:64
+#: exportpdf.py:65
 msgid "untitled"
 msgstr "χωρίς τίτλο"
+
+#~ msgid "Page"
+#~ msgstr "Σελίδα"
 
 #~ msgid "Prev slide"
 #~ msgstr "Προηγούμενη διαφάνεια"

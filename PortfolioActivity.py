@@ -43,6 +43,7 @@ from utils import get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle, \
     play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware, \
     pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file, rgb
 
+from exportpdf import save_pdf
 from toolbar_utils import radio_factory, button_factory, separator_factory, \
     combo_factory, label_factory
 from grecord import Grecord

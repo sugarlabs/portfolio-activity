@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-14 00:30-0400\n"
-"PO-Revision-Date: 2012-08-03 16:58+0200\n"
+"POT-Creation-Date: 2012-10-30 00:30-0400\n"
+"PO-Revision-Date: 2012-10-29 07:01+0200\n"
 "Last-Translator: lite <litekok@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
@@ -17,82 +17,87 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#: activity/activity.info:2 PortfolioActivity.py:639
+#. TRANS: "name" option from activity.info file
+#: PortfolioActivity.py:650
 msgid "Portfolio"
 msgstr "编辑演示稿"
 
-#: PortfolioActivity.py:99
+#. TRANS: "summary" option from activity.info file
+#. TRANS: "description" option from activity.info file
+msgid "create a slide show from Sugar Journal entries that have been 'starred'"
+msgstr "从Sugar日志的加\"星\"条目创建幻灯片"
+
+#: PortfolioActivity.py:88
 msgid "2 seconds"
 msgstr "两秒"
 
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "10 seconds"
 msgstr "十秒"
 
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "30 seconds"
 msgstr "三十秒"
 
-#: PortfolioActivity.py:99
+#: PortfolioActivity.py:88
 msgid "1 minute"
 msgstr "一分钟"
 
-#: PortfolioActivity.py:381 PortfolioActivity.py:403
+#: PortfolioActivity.py:430
 msgid "Adjust"
 msgstr "调整"
 
-#: PortfolioActivity.py:401
-msgid "Page"
-msgstr "页"
-
-#: PortfolioActivity.py:417
+#: PortfolioActivity.py:439
 msgid "Fullscreen"
 msgstr "全屏显示"
 
-#: PortfolioActivity.py:422
+#: PortfolioActivity.py:444
 msgid "Autoplay"
 msgstr "自动播放"
 
-#: PortfolioActivity.py:424 PortfolioActivity.py:432
+#: PortfolioActivity.py:446 PortfolioActivity.py:455
 msgid "Adjust playback speed"
 msgstr "调整播放速度"
 
-#: PortfolioActivity.py:438
+#: PortfolioActivity.py:463
 msgid "Refresh"
 msgstr "刷新"
 
-#: PortfolioActivity.py:444
+#: PortfolioActivity.py:471
 msgid "Slide view"
 msgstr "幻灯片视图"
 
-#: PortfolioActivity.py:449
+#: PortfolioActivity.py:476
 msgid "Thumbnail view"
 msgstr "缩略图视图"
 
-#: PortfolioActivity.py:473 PortfolioActivity.py:478
+#: PortfolioActivity.py:483
 msgid "Save as PDF"
 msgstr "另存为PDF"
 
-#: PortfolioActivity.py:674
+#: PortfolioActivity.py:684
 msgid "Do you have any items in your Journal starred?"
 msgstr "你的日志有没有东西打了星？"
 
-#: PortfolioActivity.py:1055
+#: PortfolioActivity.py:1113
 msgid "Save recording"
 msgstr "保存录音"
 
-#: PortfolioActivity.py:1111
+#: PortfolioActivity.py:1158
 #, python-format
 msgid "audio note for %s"
 msgstr "%s音频笔记"
 
-#: PortfolioActivity.py:1461
+#: PortfolioActivity.py:1409
 msgid "Please wait."
 msgstr "请等候。"
 
-#: exportpdf.py:64
+#: exportpdf.py:65
 msgid "untitled"
 msgstr "无标题"
+
+#~ msgid "Page"
+#~ msgstr "页"
 
 #~ msgid "Record a sound"
 #~ msgstr "录制声音"

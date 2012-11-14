@@ -20,7 +20,7 @@ import os.path
 import time
 import cairo
 from gi.repository import Pango
-import pangocairo
+from gi.repository import PangoCairo
 from gettext import gettext as _
 
 from utils import get_pixbuf_from_journal
@@ -65,25 +65,28 @@ def save_pdf(activity, nick, description=None):
             show_text(cr, fd, _('untitled'), HEAD, LEFT_MARGIN,
                       TOP_MARGIN)
 
-        try:
-            w = int(PAGE_WIDTH - LEFT_MARGIN * 2)
-            h = int(w * 3 / 4)
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(dsobj.file_path,
-                                                          w, h)
-        except(GError, IOError):
+        w = 0
+        h = 0
+        pixbuf = None
+        if os.path.exists(dsobj.file_path):
+            print dsobj.file_path
             try:
-                w = 300
-                h = 225
-                pixbuf = get_pixbuf_from_journal(dsobj, w, h)
-            except(GError, IOError):
-                w = 0
-                h = 0
-                pixbuf = None
+                w = int(PAGE_WIDTH - LEFT_MARGIN * 2)
+                h = int(w * 3 / 4)
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                    dsobj.file_path, w, h)
+            except: # (GError, IOError):
+                try:
+                    w = 300
+                    h = 225
+                    pixbuf = get_pixbuf_from_journal(dsobj, w, h)
+                except: # (GError, IOError):
+                    pass
 
         if pixbuf is not None:
             cr.save()
-            cr = Gdk.CairoContext(cr)
-            cr.set_source_pixbuf(pixbuf, LEFT_MARGIN, TOP_MARGIN + 150)
+            Gdk.cairo_set_source_pixbuf(
+                cr, pixbuf, LEFT_MARGIN, TOP_MARGIN + 150)
             cr.rectangle(LEFT_MARGIN, TOP_MARGIN + 150, w, h)
             cr.fill()
             cr.restore()
@@ -97,17 +100,16 @@ def save_pdf(activity, nick, description=None):
 
 
 def show_text(cr, fd, label, size, x, y):
-    cr = pangocairo.CairoContext(cr)
-    pl = cr.create_layout()
+    pl = PangoCairo.create_layout(cr)
     fd.set_size(int(size * Pango.SCALE))
     pl.set_font_description(fd)
     if type(label) == str or type(label) == unicode:
-        pl.set_text(label.replace('\0', ' '))
+        pl.set_text(label.replace('\0', ' '), -1)
     else:
-        pl.set_text(str(label))
+        pl.set_text(str(label), -1)
     pl.set_width((PAGE_WIDTH - LEFT_MARGIN * 2) * Pango.SCALE)
     cr.save()
     cr.translate(x, y)
-    cr.update_layout(pl)
-    cr.show_layout(pl)
+    PangoCairo.update_layout(cr, pl)
+    PangoCairo.show_layout(cr, pl)
     cr.restore()

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-10-30 00:30-0400\n"
-"PO-Revision-Date: 2012-06-23 22:05+0200\n"
+"PO-Revision-Date: 2012-11-15 06:47+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Voluntarios quechuas Sugar Camp Lima\n"
 "Language: quz\n"
@@ -20,10 +20,14 @@ msgstr ""
 msgid "Portfolio"
 msgstr "Llamk'aykuna"
 
+#  [ES] ""
+#  [ES] "crea una presentación con diapositivas de las entradas del Diario de Sugar "
+#  [ES] "que han sido marcadas como \"favoritas\""
 #. TRANS: "summary" option from activity.info file
 #. TRANS: "description" option from activity.info file
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
 msgstr ""
+"Sugar P'anqanpi 'munasqakuna' hinata diapositivas qhawarichiqkunata kamariy"
 
 #  "2 segundos"
 #: PortfolioActivity.py:88
@@ -80,31 +84,36 @@ msgstr "Diapositiwakunata qhaway"
 msgid "Thumbnail view"
 msgstr "Huch´uy qhawanakuna"
 
+#  [ES] "Guardar como PDF"
 #: PortfolioActivity.py:483
 msgid "Save as PDF"
-msgstr ""
+msgstr "PDF khiputahina waqaychay"
 
 #  "Tienes entradas en tu diario marcadas como favoritas?"
 #: PortfolioActivity.py:684
 msgid "Do you have any items in your Journal starred?"
 msgstr "Kachkanchu p'anqaykipi ancha munasqa ch'ikusqakuna?"
 
+#  [ES] "Guardar grabación"
 #: PortfolioActivity.py:1113
 msgid "Save recording"
-msgstr ""
+msgstr "Grabasqata waqaychay"
 
+#  [ES] "nota de audio para %s"
 #: PortfolioActivity.py:1158
 #, python-format
 msgid "audio note for %s"
-msgstr ""
+msgstr "%s kaypaq uyarinamanta willakuy"
 
+#  [ES] "Por favor espera."
 #: PortfolioActivity.py:1409
 msgid "Please wait."
-msgstr ""
+msgstr "Suyariy."
 
+#  [ES] "sin_titulo"
 #: exportpdf.py:65
 msgid "untitled"
-msgstr ""
+msgstr "Mana sutiyuq"
 
 #  "Página"
 #~ msgid "Page"

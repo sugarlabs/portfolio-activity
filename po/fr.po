@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-10-30 00:30-0400\n"
-"PO-Revision-Date: 2012-10-27 15:07+0200\n"
+"PO-Revision-Date: 2012-11-18 20:36+0200\n"
 "Last-Translator: samy boutayeb <s.boutayeb@free.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fr\n"
@@ -26,6 +26,8 @@ msgstr "Portfolio"
 #. TRANS: "description" option from activity.info file
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
 msgstr ""
+"créer un diaporama à partir des entrées du journal Sugar dont tu as activé "
+"l'étoile"
 
 #: PortfolioActivity.py:88
 msgid "2 seconds"

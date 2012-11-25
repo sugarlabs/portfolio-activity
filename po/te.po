@@ -1,0 +1,96 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-30 00:30-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 1.7.0\n"
+
+#. TRANS: "name" option from activity.info file
+#: PortfolioActivity.py:650
+msgid "Portfolio"
+msgstr ""
+
+#. TRANS: "summary" option from activity.info file
+#. TRANS: "description" option from activity.info file
+msgid "create a slide show from Sugar Journal entries that have been 'starred'"
+msgstr ""
+
+#: PortfolioActivity.py:88
+msgid "2 seconds"
+msgstr ""
+
+#: PortfolioActivity.py:88
+msgid "10 seconds"
+msgstr ""
+
+#: PortfolioActivity.py:88
+msgid "30 seconds"
+msgstr ""
+
+#: PortfolioActivity.py:88
+msgid "1 minute"
+msgstr ""
+
+#: PortfolioActivity.py:430
+msgid "Adjust"
+msgstr ""
+
+#: PortfolioActivity.py:439
+msgid "Fullscreen"
+msgstr ""
+
+#: PortfolioActivity.py:444
+msgid "Autoplay"
+msgstr ""
+
+#: PortfolioActivity.py:446 PortfolioActivity.py:455
+msgid "Adjust playback speed"
+msgstr ""
+
+#: PortfolioActivity.py:463
+msgid "Refresh"
+msgstr ""
+
+#: PortfolioActivity.py:471
+msgid "Slide view"
+msgstr ""
+
+#: PortfolioActivity.py:476
+msgid "Thumbnail view"
+msgstr ""
+
+#: PortfolioActivity.py:483
+msgid "Save as PDF"
+msgstr ""
+
+#: PortfolioActivity.py:684
+msgid "Do you have any items in your Journal starred?"
+msgstr ""
+
+#: PortfolioActivity.py:1113
+msgid "Save recording"
+msgstr ""
+
+#: PortfolioActivity.py:1158
+#, python-format
+msgid "audio note for %s"
+msgstr ""
+
+#: PortfolioActivity.py:1409
+msgid "Please wait."
+msgstr ""
+
+#: exportpdf.py:65
+msgid "untitled"
+msgstr ""

@@ -26,8 +26,6 @@ from gettext import gettext as _
 from utils import get_pixbuf_from_journal
 
 
-HEAD = 32
-BODY = 12
 PAGE_WIDTH = 504
 PAGE_HEIGHT = 648
 LEFT_MARGIN = 10
@@ -40,6 +38,9 @@ def save_pdf(activity, nick, description=None):
     if len(activity.dsobjects) == 0:
         return None
 
+    head = activity.title_size
+    body = activity.desc_size / 2
+
     tmp_file = os.path.join(activity.datapath, 'output.pdf')
     pdf_surface = cairo.PDFSurface(tmp_file, 504, 648)
 
@@ -47,22 +48,22 @@ def save_pdf(activity, nick, description=None):
     cr = cairo.Context(pdf_surface)
     cr.set_source_rgb(0, 0, 0)
 
-    show_text(cr, fd, nick, HEAD, LEFT_MARGIN, TOP_MARGIN)
+    show_text(cr, fd, nick, head, LEFT_MARGIN, TOP_MARGIN)
     show_text(cr, fd, time.strftime('%x', time.localtime()),
-              BODY, LEFT_MARGIN, TOP_MARGIN + 3 * HEAD)
+              body, LEFT_MARGIN, TOP_MARGIN + 3 * head)
     if description is not None:
         show_text(cr, fd, description,
-                  BODY, LEFT_MARGIN, TOP_MARGIN + 4 * HEAD)
+                  body, LEFT_MARGIN, TOP_MARGIN + 4 * head)
     cr.show_page()
 
     for i, dsobj in enumerate(activity.dsobjects):
         if dsobj.metadata['keep'] == '0':
             continue
         if 'title' in dsobj.metadata:
-            show_text(cr, fd, dsobj.metadata['title'], HEAD, LEFT_MARGIN,
+            show_text(cr, fd, dsobj.metadata['title'], head, LEFT_MARGIN,
                       TOP_MARGIN)
         else:
-            show_text(cr, fd, _('untitled'), HEAD, LEFT_MARGIN,
+            show_text(cr, fd, _('untitled'), head, LEFT_MARGIN,
                       TOP_MARGIN)
 
         w = 0
@@ -92,7 +93,7 @@ def save_pdf(activity, nick, description=None):
             cr.restore()
 
         if 'description' in dsobj.metadata:
-            show_text(cr, fd, dsobj.metadata['description'], BODY,
+            show_text(cr, fd, dsobj.metadata['description'], body,
                       LEFT_MARGIN, h + 175)
         cr.show_page()
 

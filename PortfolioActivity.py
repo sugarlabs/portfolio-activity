@@ -91,10 +91,6 @@ UNIT_DICTIONARY = {TWO: (UNITS[TWO], 2),
                    TEN: (UNITS[TEN], 10),
                    THIRTY: (UNITS[THIRTY], 30),
                    SIXTY: (UNITS[SIXTY], 60)}
-XO1 = 'xo1'
-XO15 = 'xo1.5'
-XO175 = 'xo1.75'
-UNKNOWN = 'unknown'
 
 # sprite layers
 DRAG = 6
@@ -282,11 +278,11 @@ class PortfolioActivity(activity.Activity):
             self._colors[1] = tmp
 
         if self._hw[0:2] == 'xo':
-            self._titlef = 18
-            self._descriptionf = 12
+            self.title_size = 18
+            self.desc_size = 12
         else:
-            self._titlef = 36
-            self._descriptionf = 24
+            self.title_size = 36
+            self.desc_size = 24
 
         # Generate the sprites we'll need...
         self._sprites = Sprites(self._canvas)
@@ -387,7 +383,7 @@ class PortfolioActivity(activity.Activity):
                              int(self._titlexy[1]),
                              svg_str_to_pixbuf(
                 genblank(self._titlewh[0], self._titlewh[1], self._colors)))
-        self._title.set_label_attributes(int(self._titlef * self._scale),
+        self._title.set_label_attributes(int(self.title_size * self._scale),
                                          rescale=False)
         self._title.type = 'title'
 
@@ -399,7 +395,7 @@ class PortfolioActivity(activity.Activity):
                          int(self._descriptionwh[1]),
                          self._colors)))
         self._description.set_label_attributes(
-            int(self._descriptionf * self._scale), vert_align="top")
+            int(self.desc_size * self._scale), vert_align="top")
         self._description.type = 'description'
 
         self._my_canvas = Sprite(
@@ -911,7 +907,7 @@ class PortfolioActivity(activity.Activity):
                     self.desc_entry.override_background_color(
                         Gtk.StateFlags.NORMAL, rgba)
                     font_desc = Pango.font_description_from_string(
-                        str(int(self._descriptionf * self._scale)))
+                        str(int(self.desc_size * self._scale)))
                     self.desc_entry.modify_font(font_desc)
                     self.desc_buffer = self.desc_entry.get_buffer()
                     self.fixed.put(self.desc_entry, 0, 0)
@@ -934,7 +930,7 @@ class PortfolioActivity(activity.Activity):
                     self.title_entry.override_background_color(
                         Gtk.StateFlags.NORMAL, rgba)
                     font_desc = Pango.font_description_from_string(
-                        str(self._titlef * self._scale))
+                        str(self.title_size * self._scale))
                     self.title_entry.modify_font(font_desc)
                     self.title_buffer = self.title_entry.get_buffer()
                     self.fixed.put(self.title_entry, 0, 0)

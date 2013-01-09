@@ -20,6 +20,7 @@ from gettext import gettext as _
 XO1 = 'xo1'
 XO15 = 'xo1.5'
 XO175 = 'xo1.75'
+XO4 = 'xo4'
 UNKNOWN = 'unknown'
 
 
@@ -32,25 +33,24 @@ def play_audio_from_file(file_path):
 
 
 def get_hardware():
-    """ Determine whether we are using XO 1.0, 1.5, or "unknown" hardware """
-    product = _get_dmi('product_name')
-    if product is None:
-        if os.path.exists('/sys/devices/platform/lis3lv02d/position'):
-            return XO175  # FIXME: temporary check for XO 1.75
-        elif os.path.exists('/etc/olpc-release') or \
-           os.path.exists('/sys/power/olpc-pm'):
-            return XO1
-        else:
-            return UNKNOWN
-    if product != 'XO':
-        return UNKNOWN
+    ''' Determine whether we are using XO 1.0, 1.5, ... or 'unknown'
+    hardware '''
     version = _get_dmi('product_version')
+    if version is None:
+        hwinfo_path = '/bin/olpc-hwinfo'
+        if os.path.exists(hwinfo_path) and os.access(hwinfo_path, os.X_OK):
+            model = check_output([hwinfo_path, 'model'], 'unknown hardware')
+            version = model.strip()
     if version == '1':
         return XO1
     elif version == '1.5':
-        return XO15
-    else:
+         return XO15
+    elif version == '1.75':
         return XO175
+    elif version == '4':
+        return XO4
+    else:
+         return UNKNOWN
 
 
 def _get_dmi(node):

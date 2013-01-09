@@ -63,6 +63,28 @@ def _get_dmi(node):
         return None
 
 
+def check_output(command, warning):
+    ''' Workaround for old systems without subprocess.check_output'''
+    if hasattr(subprocess, 'check_output'):
+        try:
+            output = subprocess.check_output(command)
+        except subprocess.CalledProcessError:
+            print(warning)
+            return None
+    else:
+        import commands
+
+        cmd = ''
+        for c in command:
+            cmd += c
+            cmd += ' '
+        (status, output) = commands.getstatusoutput(cmd)
+        if status != 0:
+            print(warning)
+            return None
+    return output
+
+
 def get_path(activity, subpath):
     """ Find a Rainbow-approved place for temporary files. """
     try:

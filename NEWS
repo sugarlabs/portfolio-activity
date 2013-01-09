@@ -1,7 +1,10 @@
-36
+37
 
 ENHANCEMENT:
-* Add support for XO4
+* Add hardware support for XO4
+
+BUG FIX:
+* Properly scale fonts for PDF output
 
 35
 

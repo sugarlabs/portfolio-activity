@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#Copyright (c) 2011, 2012 Walter Bender
+#Copyright (c) 2011-2013 Walter Bender
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,13 +40,14 @@ from sugar3.graphics.alert import Alert
 from sprites import Sprites, Sprite
 #from exportpdf import save_pdf
 from utils import get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle, \
-    play_audio_from_file, get_pixbuf_from_journal, genblank, get_hardware, \
+    get_pixbuf_from_journal, genblank, get_hardware, \
     pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file, rgb
 
 from exportpdf import save_pdf
 from toolbar_utils import radio_factory, button_factory, separator_factory, \
     combo_factory, label_factory
 from grecord import Grecord
+from gplay import play_audio_from_file
 
 from gettext import gettext as _
 

@@ -1,5 +1,5 @@
 #Copyright (c) 2008, Media Modifications Ltd.
-#Copyright (c) 2011-12, Walter Bender
+#Copyright (c) 2011-13, Walter Bender
 
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -126,8 +126,7 @@ class Grecord:
         return self._playing
 
     def _get_state(self):
-        return Gst.State.NULL
-        # return self._pipeline.get_state()[1]
+        return self._pipeline.get_state(0)[1]
 
     def stop_recording_audio(self):
         # We should be able to simply pause and remove the audiobin, but

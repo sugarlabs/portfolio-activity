@@ -24,14 +24,6 @@ XO4 = 'xo4'
 UNKNOWN = 'unknown'
 
 
-def play_audio_from_file(file_path):
-    """ Audio media """
-    command_line = ['gst-launch', 'filesrc', 'location=' + file_path,
-                    '! oggdemux', '! vorbisdec', '! audioconvert',
-                    '! alsasink']
-    subprocess.call(command_line)
-
-
 def get_hardware():
     ''' Determine whether we are using XO 1.0, 1.5, ... or 'unknown'
     hardware '''

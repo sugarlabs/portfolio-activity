@@ -77,11 +77,10 @@ IFACE = SERVICE
 PATH = '/org/sugarlabs/PortfolioActivity'
 
 # Size and position of title, preview image, and description
-PREVIEWW = 600
-PREVIEWH = 450
-PREVIEWY = 80
-TITLEH = 60
-DESCRIPTIONY = 550
+TITLE = [[10, 10, 1180, 100], [10, 10, 880, 145]]
+PREVIEW = [[10, 110, 560, 420], [180, 145, 560, 420]]
+DESC = [[630, 110, 560, 420], [10, 565, 800, 420]]
+COMMENT = [[10, 530, 1180, 100], [10, 985, 880, 200]]
 
 TWO = 0
 TEN = 1
@@ -153,17 +152,10 @@ class PortfolioActivity(activity.Activity):
         self._width = Gdk.Screen.width()
         self._height = Gdk.Screen.height()
         self._scale = Gdk.Screen.height() / 900.
+        self._orientation = 0
 
         self._set_screen_dpi()
-
-        self._titlewh = [self._width, TITLEH * self._scale]
-        self._titlexy = [0, 0]
-        self._previewwh = [PREVIEWW * self._scale, PREVIEWH * self._scale]
-        self._previewxy = [(self._width - self._previewwh[0]) / 2,
-                           PREVIEWY * self._scale]
-        self._descriptionwh = [self._width,
-                               self._height - DESCRIPTIONY * self._scale - 55]
-        self._descriptionxy = [0, DESCRIPTIONY * self._scale]
+        self._set_xy_wh()
 
         if hasattr(self, 'get_window') and \
            hasattr(self.get_window(), 'get_cursor'):
@@ -195,6 +187,25 @@ class PortfolioActivity(activity.Activity):
         self._dragpos = [0, 0]
 
         self._setup_presence_service()
+
+    def _set_xy_wh(self):
+        orientation = self._orientation
+        self._title_xy = [TITLE[orientation][0] * self._scale,
+                          TITLE[orientation][1] * self._scale]
+        self._title_wh = [TITLE[orientation][2] * self._scale,
+                          TITLE[orientation][3] * self._scale]
+        self._preview_xy = [PREVIEW[orientation][0] * self._scale,
+                            PREVIEW[orientation][1] * self._scale]
+        self._preview_wh = [PREVIEW[orientation][2] * self._scale,
+                            PREVIEW[orientation][3] * self._scale]
+        self._desc_xy = [DESC[orientation][0] * self._scale,
+                         DESC[orientation][1] * self._scale]
+        self._desc_wh = [DESC[orientation][2] * self._scale,
+                         DESC[orientation][3] * self._scale]
+        self._comment_xy = [COMMENT[orientation][0] * self._scale,
+                         COMMENT[orientation][1] * self._scale]
+        self._comment_wh = [COMMENT[orientation][2] * self._scale,
+                         COMMENT[orientation][3] * self._scale]
 
     def _set_screen_dpi(self):
         dpi = _get_screen_dpi()
@@ -247,20 +258,15 @@ class PortfolioActivity(activity.Activity):
         self._height = Gdk.Screen.height()
         if self._width > self._height:
             self._scale = Gdk.Screen.height() / 900.
+            self._orientation = 0
         else:
             self._scale = Gdk.Screen.width() / 1200.
+            self._orientation = 1
+        self._set_xy_wh()
 
         self._my_canvas.hide()
         self._title.hide()
         self._description.hide()
-        self._titlewh = [self._width, TITLEH * self._scale]
-        self._titlexy = [0, 0]
-        self._previewwh = [PREVIEWW * self._scale, PREVIEWH * self._scale]
-        self._previewxy = [(self._width - self._previewwh[0]) / 2,
-                           PREVIEWY * self._scale]
-        self._descriptionwh = [self._width,
-                               self._height - DESCRIPTIONY * self._scale - 55]
-        self._descriptionxy = [0, DESCRIPTIONY * self._scale]
 
         self._configured_sprites()  # Some sprites are sized to screen
         self._clear_screen()
@@ -346,15 +352,15 @@ class PortfolioActivity(activity.Activity):
                             0, 0,
                             GdkPixbuf.Pixbuf.new_from_file_at_size(
                 os.path.join(activity.get_bundle_path(), 'help.png'),
-                int(self._previewwh[0]),
-                int(self._previewwh[1])))
+                int(self._preview_wh[0]),
+                int(self._preview_wh[1])))
         self._help.hide()
 
         self._preview = Sprite(self._sprites,
                                0, 0,
                                svg_str_to_pixbuf(genblank(
-                        int(self._previewwh[0]),
-                        int(self._previewwh[1]),
+                        int(self._preview_wh[0]),
+                        int(self._preview_wh[1]),
                         self._colors)))
 
         self._configured_sprites()  # Some sprites are sized to screen
@@ -371,33 +377,44 @@ class PortfolioActivity(activity.Activity):
         ''' Some sprites are sized or positioned based on screen
         configuration '''
 
-        self._preview.move((int(self._previewxy[0]),
-                            int(self._previewxy[1])))
-        self._help.move((int(self._previewxy[0]),
-                         int(self._previewxy[1])))
-        self._record_button.move((self._width - 55, self._titlewh[1]))
-        self._playback_button.move((self._width - 55, self._titlewh[1] + 55))
+        self._preview.move((int(self._preview_xy[0]),
+                            int(self._preview_xy[1])))
+        self._help.move((int(self._preview_xy[0]),
+                         int(self._preview_xy[1])))
+        self._record_button.move((self._width - 55, self._title_wh[1]))
+        self._playback_button.move((self._width - 55, self._title_wh[1] + 55))
         self._prev.move((0, int((self._height - 55) / 2)))
         self._next.move((self._width - 55, int((self._height - 55) / 2)))
         self._title = Sprite(self._sprites,
-                             int(self._titlexy[0]),
-                             int(self._titlexy[1]),
+                             int(self._title_xy[0]),
+                             int(self._title_xy[1]),
                              svg_str_to_pixbuf(
-                genblank(self._titlewh[0], self._titlewh[1], self._colors)))
+                genblank(self._title_wh[0], self._title_wh[1], self._colors)))
         self._title.set_label_attributes(int(self.title_size * self._scale),
                                          rescale=False)
         self._title.type = 'title'
 
         self._description = Sprite(self._sprites,
-                                   int(self._descriptionxy[0]),
-                                   int(self._descriptionxy[1]),
+                                   int(self._desc_xy[0]),
+                                   int(self._desc_xy[1]),
                                    svg_str_to_pixbuf(
-                genblank(int(self._descriptionwh[0]),
-                         int(self._descriptionwh[1]),
+                genblank(int(self._desc_wh[0]),
+                         int(self._desc_wh[1]),
                          self._colors)))
         self._description.set_label_attributes(
             int(self.desc_size * self._scale), vert_align="top")
         self._description.type = 'description'
+
+        self._comments = Sprite(self._sprites,
+                                   int(self._comment_xy[0]),
+                                   int(self._comment_xy[1]),
+                                   svg_str_to_pixbuf(
+                genblank(int(self._comment_wh[0]),
+                         int(self._comment_wh[1]),
+                         self._colors)))
+        self._comments.set_label_attributes(
+            int(self.desc_size * self._scale), vert_align="top")
+        self._comments.type = 'comments'
 
         self._my_canvas = Sprite(
             self._sprites, 0, 0, svg_str_to_pixbuf(genblank(
@@ -539,9 +556,10 @@ class PortfolioActivity(activity.Activity):
                     desc = dsobj.metadata['description']
                 if 'mime_type' in dsobj.metadata and \
                    dsobj.metadata['mime_type'][0:5] == 'image':
-                    preview = get_pixbuf_from_file(dsobj.file_path,
-                                                   int(PREVIEWW * self._scale),
-                                                   int(PREVIEWH * self._scale))
+                    preview = get_pixbuf_from_file(
+                        dsobj.file_path,
+                        int(PREVIEW[self._orientation][2] * self._scale),
+                        int(PREVIEW[self._orientation][3] * self._scale))
                 elif 'preview' in dsobj.metadata:
                     preview = get_pixbuf_from_journal(dsobj, 300, 225)
             else:
@@ -662,6 +680,7 @@ class PortfolioActivity(activity.Activity):
         self._title.hide()
         self._preview.hide()
         self._description.hide()
+        self._comments.hide()
 
         # Reset drag settings
         self._press = None
@@ -714,8 +733,8 @@ class PortfolioActivity(activity.Activity):
 
         if pixbuf is not None:
             self._preview.set_shape(pixbuf.scale_simple(
-                    int(PREVIEWW * self._scale),
-                    int(PREVIEWH * self._scale),
+                    int(PREVIEW[self._orientation][2] * self._scale),
+                    int(PREVIEW[self._orientation][3] * self._scale),
                     GdkPixbuf.InterpType.NEAREST))
             self._preview.set_layer(MIDDLE)
         else:
@@ -1494,12 +1513,12 @@ class PortfolioActivity(activity.Activity):
                                                      self._colors[0]])))
             self._description.set_image(svg_str_to_pixbuf(
                     genblank(
-                        int(self._descriptionwh[0]),
-                        int(self._descriptionwh[1]),
+                        int(self._desc_wh[0]),
+                        int(self._desc_wh[1]),
                         self._colors)))
             self._title.set_image(svg_str_to_pixbuf(
-                        genblank(int(self._titlewh[0]),
-                                 int(self._titlewh[1]),
+                        genblank(int(self._title_wh[0]),
+                                 int(self._title_wh[1]),
                                  self._colors)))
 
     def _update_description(self, data):

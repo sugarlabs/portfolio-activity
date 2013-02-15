@@ -10,20 +10,25 @@
 # along with this library; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 
+import os.path
+import time
+import json
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from glib import GError
-import os.path
-import time
-import cairo
 from gi.repository import Pango
 from gi.repository import PangoCairo
+import cairo
+
 from gettext import gettext as _
 
-from utils import get_pixbuf_from_journal
+from utils import get_pixbuf_from_journal, parse_comments
+
+import logging
+_logger = logging.getLogger("portfolio-activity")
 
 
 PAGE_WIDTH = 504
@@ -92,9 +97,14 @@ def save_pdf(activity, nick, description=None):
             cr.fill()
             cr.restore()
 
+        text = ''
         if 'description' in dsobj.metadata:
-            show_text(cr, fd, dsobj.metadata['description'], body,
-                      LEFT_MARGIN, h + 175)
+            text += dsobj.metadata['description']
+        if 'comments' in dsobj.metadata:
+            text += '\n'
+            text += parse_comments(json.loads(dsobj.metadata['comments']))
+        show_text(cr, fd, text, body, LEFT_MARGIN, h + 175)
+
         cr.show_page()
 
     return tmp_file

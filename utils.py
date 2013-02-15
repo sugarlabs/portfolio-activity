@@ -72,6 +72,17 @@ def check_output(command, warning):
     return output
 
 
+def parse_comments(comments):
+    label = ''
+    for comment in comments:
+        if 'from' in comment:
+            label += '[%s] ' % (comment['from'])
+        if 'message' in comment:
+            label += comment['message']
+        label += '\n'
+    return label
+
+
 def get_path(activity, subpath):
     """ Find a Rainbow-approved place for temporary files. """
     try:

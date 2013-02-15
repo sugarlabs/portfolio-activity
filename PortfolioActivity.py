@@ -40,7 +40,8 @@ from sugar3.graphics.alert import Alert
 from sprites import (Sprites, Sprite)
 from utils import (get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle,
                    get_pixbuf_from_journal, genblank, get_hardware, rgb,
-                   pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file)
+                   pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file,
+                   parse_comments)
 from exportpdf import save_pdf
 from toolbar_utils import (radio_factory, button_factory, separator_factory,
                            combo_factory, label_factory)
@@ -786,7 +787,7 @@ class PortfolioActivity(activity.Activity):
         self._description.set_label(slide.description)
         self._description.set_layer(MIDDLE)
 
-        self._comment.set_label(self._parse_comments(slide.comment))
+        self._comment.set_label(parse_comments(slide.comment))
         self._comment.set_layer(MIDDLE)
 
         self._new_comment.set_layer(MIDDLE)
@@ -809,16 +810,6 @@ class PortfolioActivity(activity.Activity):
         else:
             self._record_button.hide()
             self._playback_button.hide()
-
-    def _parse_comments(self, comments):
-        label = ''
-        for comment in comments:
-            if 'from' in comment:
-                label += '[%s] ' % (comment['from'])
-            if 'message' in comment:
-                label += comment['message']
-            label += '\n'
-        return label
 
     def _slides_cb(self, button=None):
         if self._thumbnail_mode:
@@ -1376,7 +1367,7 @@ class PortfolioActivity(activity.Activity):
                 if self.initiating is not None:
                     self._send_event('c:%s' % (self._data_dumper(
                                 [slide.uid, slide.comment])))
-                self._comment.set_label(self._parse_comments(slide.comment))
+                self._comment.set_label(parse_comments(slide.comment))
                 self._selected_spr.set_label('')
             else:
                 _logger.debug('unselect: %s' % (self._selected_spr.type))
@@ -1635,7 +1626,7 @@ class PortfolioActivity(activity.Activity):
         _logger.debug('FIXME: add dictionary entry')
         slide.comment = json.loads(text)
         if self.i == self._slides.index(slide):
-            self._comment.set_label(self._parse_comments(slide.comment))
+            self._comment.set_label(parse_comments(slide.comment))
         if self.initiating:
             slide.dirty = True
 

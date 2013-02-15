@@ -768,6 +768,8 @@ class PortfolioActivity(activity.Activity):
             self._next.set_image(self.next_off_pixbuf)
         else:
             self._next.set_image(self.next_pixbuf)
+        self._prev.set_layer(DRAG)
+        self._next.set_layer(DRAG)
 
         pixbuf = slide.preview
 
@@ -814,9 +816,7 @@ class PortfolioActivity(activity.Activity):
     def _slides_cb(self, button=None):
         if self._thumbnail_mode:
             self._thumbnail_mode = False
-        self.i = self._current_slide
-        self._prev.set_layer(DRAG)
-        self._next.set_layer(DRAG)
+        self.i = self._current_slide 
         self._record_button.set_layer(DRAG)
         self._playback_button.set_layer(DRAG)
         self._show_slide()

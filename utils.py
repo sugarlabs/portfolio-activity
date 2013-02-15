@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#Copyright (c) 2011 Walter Bender
+#Copyright (c) 2011-13 Walter Bender
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ def get_hardware():
     ''' Determine whether we are using XO 1.0, 1.5, ... or 'unknown'
     hardware '''
     version = _get_dmi('product_version')
+    # product = _get_dmi('product_name')
     if version is None:
         hwinfo_path = '/bin/olpc-hwinfo'
         if os.path.exists(hwinfo_path) and os.access(hwinfo_path, os.X_OK):
@@ -42,7 +43,13 @@ def get_hardware():
     elif version == '4':
         return XO4
     else:
-         return UNKNOWN
+        # Some systems (e.g. ARM) don't have dmi info
+        if os.path.exists('/sys/devices/platform/lis3lv02d/position'):
+            return XO175        
+        elif os.path.exists('/etc/olpc-release'):
+            return XO1
+        else:
+            return UNKNOWN
 
 
 def _get_dmi(node):
@@ -57,23 +64,11 @@ def _get_dmi(node):
 
 def check_output(command, warning):
     ''' Workaround for old systems without subprocess.check_output'''
-    if hasattr(subprocess, 'check_output'):
-        try:
-            output = subprocess.check_output(command)
-        except subprocess.CalledProcessError:
-            print(warning)
-            return None
-    else:
-        import commands
-
-        cmd = ''
-        for c in command:
-            cmd += c
-            cmd += ' '
-        (status, output) = commands.getstatusoutput(cmd)
-        if status != 0:
-            print(warning)
-            return None
+    output = None
+    try:
+        output = subprocess.check_output(command)
+    except subprocess.CalledProcessError:
+        print(warning)
     return output
 
 

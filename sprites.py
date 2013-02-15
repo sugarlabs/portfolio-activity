@@ -364,6 +364,8 @@ class Sprite:
         my_height = self.rect[3] - self._margins[1] - self._margins[3]
         for i in range(len(self.labels)):
             pl = PangoCairo.create_layout(cr)
+            pl.set_wrap(Pango.WrapMode.WORD)
+            pl.set_width(my_width * Pango.SCALE)
             pl.set_text(str(self.labels[i]), -1)
             self._fd.set_size(int(self._scale[i] * Pango.SCALE))
             pl.set_font_description(self._fd)
@@ -375,14 +377,10 @@ class Sprite:
                     pl.set_font_description(self._fd)
                     w = pl.get_size()[0] / Pango.SCALE
                 else:
-                    j = len(self.labels[i]) - 1
-                    while(w > my_width and j > 0):
-                        pl.set_text(
-                            "…" + self.labels[i][len(self.labels[i]) - j:], -1)
-                        self._fd.set_size(int(self._scale[i] * Pango.SCALE))
-                        pl.set_font_description(self._fd)
-                        w = pl.get_size()[0] / Pango.SCALE
-                        j -= 1
+                    pl.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
+                    self._fd.set_size(int(self._scale[i] * Pango.SCALE))
+                    pl.set_font_description(self._fd)
+                    w = pl.get_size()[0] / Pango.SCALE
             if self._x_pos[i] is not None:
                 x = int(self.rect[0] + self._x_pos[i])
             elif self._horiz_align[i] == "center":

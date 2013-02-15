@@ -37,15 +37,13 @@ from sugar3.graphics.toolbarbox import ToolbarButton
 from sugar3.datastore import datastore
 from sugar3.graphics.alert import Alert
 
-from sprites import Sprites, Sprite
-#from exportpdf import save_pdf
-from utils import get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle, \
-    get_pixbuf_from_journal, genblank, get_hardware, \
-    pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file, rgb
-
+from sprites import (Sprites, Sprite)
+from utils import (get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle,
+                   get_pixbuf_from_journal, genblank, get_hardware, rgb,
+                   pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file)
 from exportpdf import save_pdf
-from toolbar_utils import radio_factory, button_factory, separator_factory, \
-    combo_factory, label_factory
+from toolbar_utils import (radio_factory, button_factory, separator_factory,
+                           combo_factory, label_factory)
 from grecord import Grecord
 from gplay import play_audio_from_file
 
@@ -54,11 +52,8 @@ from gettext import gettext as _
 import logging
 _logger = logging.getLogger("portfolio-activity")
 
-try:
-    from sugar3.graphics import style
-    GRID_CELL_SIZE = style.GRID_CELL_SIZE
-except ImportError:
-    GRID_CELL_SIZE = 0
+from sugar3.graphics import style
+GRID_CELL_SIZE = style.GRID_CELL_SIZE
 
 import json
 from json import load as jload
@@ -77,10 +72,14 @@ IFACE = SERVICE
 PATH = '/org/sugarlabs/PortfolioActivity'
 
 # Size and position of title, preview image, and description
-TITLE = [[10, 10, 1180, 100], [10, 10, 880, 145]]
-PREVIEW = [[10, 110, 560, 420], [180, 145, 560, 420]]
-DESC = [[630, 110, 560, 420], [10, 565, 800, 420]]
-COMMENT = [[10, 530, 1180, 100], [10, 985, 880, 200]]
+TITLE = [[GRID_CELL_SIZE, 10, 1200 - GRID_CELL_SIZE * 2, 100],
+         [GRID_CELL_SIZE, 10, 900 - GRID_CELL_SIZE * 2, 145]]
+PREVIEW = [[GRID_CELL_SIZE, 110, 560, 420], [180, 145, 560, 420]]
+DESC = [[560 + GRID_CELL_SIZE, 110, 560, 420], [GRID_CELL_SIZE, 565, 800, 420]]
+COMMENTS = [[GRID_CELL_SIZE, 530, 1200 - GRID_CELL_SIZE * 2, 260],
+            [GRID_CELL_SIZE, 985, 900 - GRID_CELL_SIZE * 2, 200]]
+NEW_COMMENT = [[GRID_CELL_SIZE, 800, 1200 - GRID_CELL_SIZE * 2, 100],
+               [GRID_CELL_SIZE, 985, 900 - GRID_CELL_SIZE * 2, 200]]
 
 TWO = 0
 TEN = 1
@@ -112,7 +111,7 @@ def _get_screen_dpi():
 class Slide():
     ''' A container for a slide '''
 
-    def __init__(self, owner, uid, colors, title, preview, desc):
+    def __init__(self, owner, uid, colors, title, preview, desc, comment):
         self.active = True
         self.owner = owner
         self.uid = uid
@@ -121,6 +120,7 @@ class Slide():
         self.preview = preview
         self.preview2 = None  # larger version for fullscreen mode
         self.description = desc
+        self.comment = comment  # A list of dictionaries
         self.sound = None
         self.dirty = False
         self.fav = True
@@ -144,6 +144,7 @@ class PortfolioActivity(activity.Activity):
         self.datapath = get_path(activity, 'instance')
         self._buddies = [profile.get_nick_name()]
         self._colors = profile.get_color().to_string().split(',')
+        self._my_colors = self._colors[:]  # Save original colors
         self.initiating = None  # sharing (True) or joining (False)
 
         self._playing = False
@@ -190,22 +191,38 @@ class PortfolioActivity(activity.Activity):
 
     def _set_xy_wh(self):
         orientation = self._orientation
-        self._title_xy = [TITLE[orientation][0] * self._scale,
-                          TITLE[orientation][1] * self._scale]
         self._title_wh = [TITLE[orientation][2] * self._scale,
                           TITLE[orientation][3] * self._scale]
-        self._preview_xy = [PREVIEW[orientation][0] * self._scale,
-                            PREVIEW[orientation][1] * self._scale]
+        self._title_xy = [TITLE[orientation][0] * self._scale,
+                          TITLE[orientation][1] * self._scale]
+        self._title_xy[0] = int((self._width - self._title_wh[0]) / 2.)
+
         self._preview_wh = [PREVIEW[orientation][2] * self._scale,
                             PREVIEW[orientation][3] * self._scale]
-        self._desc_xy = [DESC[orientation][0] * self._scale,
-                         DESC[orientation][1] * self._scale]
+        self._preview_xy = [PREVIEW[orientation][0] * self._scale,
+                            PREVIEW[orientation][1] * self._scale]
+        self._preview_xy[0] = self._title_xy[0]
+
         self._desc_wh = [DESC[orientation][2] * self._scale,
                          DESC[orientation][3] * self._scale]
-        self._comment_xy = [COMMENT[orientation][0] * self._scale,
-                         COMMENT[orientation][1] * self._scale]
-        self._comment_wh = [COMMENT[orientation][2] * self._scale,
-                         COMMENT[orientation][3] * self._scale]
+        self._desc_wh[0] = \
+            self._width - self._preview_wh[0] - 2 * self._title_xy[0]
+        self._desc_xy = [DESC[orientation][0] * self._scale,
+                         DESC[orientation][1] * self._scale]
+        self._desc_xy[0] = self._preview_wh[0] + self._title_xy[0]
+
+        self._comment_wh = [COMMENTS[orientation][2] * self._scale,
+                            COMMENTS[orientation][3] * self._scale]
+        self._comment_xy = [COMMENTS[orientation][0] * self._scale,
+                            COMMENTS[orientation][1] * self._scale]
+        self._comment_xy[0] = self._title_xy[0]
+
+        self._new_comment_wh = [NEW_COMMENT[orientation][2] * self._scale,
+                                NEW_COMMENT[orientation][3] * self._scale]
+        self._new_comment_xy = [NEW_COMMENT[orientation][0] * self._scale,
+                                NEW_COMMENT[orientation][1] * self._scale]
+        self._new_comment_xy[0] = self._title_xy[0]
+        self._new_comment_xy[1] = self._comment_xy[1] + self._comment_wh[1]
 
     def _set_screen_dpi(self):
         dpi = _get_screen_dpi()
@@ -242,7 +259,7 @@ class PortfolioActivity(activity.Activity):
         self._canvas.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self._canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
         self._canvas.add_events(Gdk.EventMask.KEY_PRESS_MASK)
-        #self._canvas.add_events(Gdk.CONFIGURE)
+        # self._canvas.add_events(Gdk.CONFIGURE)
         self._canvas.connect('draw', self._draw_cb)
         self._canvas.connect('button-press-event', self._button_press_cb)
         self._canvas.connect('button-release-event', self._button_release_cb)
@@ -288,8 +305,8 @@ class PortfolioActivity(activity.Activity):
             self.title_size = 18
             self.desc_size = 12
         else:
-            self.title_size = 36
-            self.desc_size = 24
+            self.title_size = int(36 * self._scale)
+            self.desc_size = int(24 * self._scale)
 
         # Generate the sprites we'll need...
         self._sprites = Sprites(self._canvas)
@@ -390,8 +407,7 @@ class PortfolioActivity(activity.Activity):
                              int(self._title_xy[1]),
                              svg_str_to_pixbuf(
                 genblank(self._title_wh[0], self._title_wh[1], self._colors)))
-        self._title.set_label_attributes(int(self.title_size * self._scale),
-                                         rescale=False)
+        self._title.set_label_attributes(self.title_size, rescale=False)
         self._title.type = 'title'
 
         self._description = Sprite(self._sprites,
@@ -401,20 +417,33 @@ class PortfolioActivity(activity.Activity):
                 genblank(int(self._desc_wh[0]),
                          int(self._desc_wh[1]),
                          self._colors)))
-        self._description.set_label_attributes(
-            int(self.desc_size * self._scale), vert_align="top")
+        self._description.set_label_attributes(self.desc_size,
+                                               horiz_align="left",
+                                               rescale=False, vert_align="top")
         self._description.type = 'description'
 
-        self._comments = Sprite(self._sprites,
-                                   int(self._comment_xy[0]),
-                                   int(self._comment_xy[1]),
-                                   svg_str_to_pixbuf(
+        self._comment = Sprite(self._sprites,
+                               int(self._comment_xy[0]),
+                               int(self._comment_xy[1]),
+                               svg_str_to_pixbuf(
                 genblank(int(self._comment_wh[0]),
                          int(self._comment_wh[1]),
                          self._colors)))
-        self._comments.set_label_attributes(
-            int(self.desc_size * self._scale), vert_align="top")
-        self._comments.type = 'comments'
+        self._comment.set_label_attributes(self.desc_size, vert_align="top",
+                                           horiz_align="left",
+                                           rescale=False)
+
+        self._new_comment = Sprite(self._sprites,
+                                   int(self._new_comment_xy[0]),
+                                   int(self._new_comment_xy[1]),
+                                   svg_str_to_pixbuf(
+                genblank(int(self._new_comment_wh[0]),
+                         int(self._new_comment_wh[1]),
+                         self._colors)))
+        self._new_comment.set_label_attributes(self.desc_size,
+                                               horiz_align="left",
+                                               vert_align="top", rescale=False)
+        self._new_comment.type = 'comment'
 
         self._my_canvas = Sprite(
             self._sprites, 0, 0, svg_str_to_pixbuf(genblank(
@@ -548,12 +577,19 @@ class PortfolioActivity(activity.Activity):
             owner = self._buddies[0]
             title = ''
             desc = ''
+            comment = []
             preview = None
             if hasattr(dsobj, 'metadata'):
                 if 'title' in dsobj.metadata:
                     title = dsobj.metadata['title']
                 if 'description' in dsobj.metadata:
                     desc = dsobj.metadata['description']
+                if 'comments' in dsobj.metadata:
+                    try:
+                        comment = json.loads(dsobj.metadata['comments'])
+                        _logger.debug(comment)
+                    except:
+                        comment = []
                 if 'mime_type' in dsobj.metadata and \
                    dsobj.metadata['mime_type'][0:5] == 'image':
                     preview = get_pixbuf_from_file(
@@ -567,15 +603,17 @@ class PortfolioActivity(activity.Activity):
 
             if slide is None:
                 self._slides.append(Slide(owner,
-                                         dsobj.object_id,
-                                         self._colors,
-                                         title,
-                                         preview,
-                                         desc))
+                                          dsobj.object_id,
+                                          self._colors,
+                                          title,
+                                          preview,
+                                          desc,
+                                          comment))
             else:
                 slide.title = title
                 slide.preview = preview
                 slide.description = desc
+                slide.comment = comment
                 slide.active = True
                 slide.fav = True
                 if slide.star is not None:
@@ -680,7 +718,8 @@ class PortfolioActivity(activity.Activity):
         self._title.hide()
         self._preview.hide()
         self._description.hide()
-        self._comments.hide()
+        self._comment.hide()
+        self._new_comment.hide()
 
         # Reset drag settings
         self._press = None
@@ -747,6 +786,11 @@ class PortfolioActivity(activity.Activity):
         self._description.set_label(slide.description)
         self._description.set_layer(MIDDLE)
 
+        self._comment.set_label(self._parse_comments(slide.comment))
+        self._comment.set_layer(MIDDLE)
+
+        self._new_comment.set_layer(MIDDLE)
+
         if self.initiating is None or self.initiating:
             if slide.sound is None:
                 slide.sound = self._search_for_audio_note(slide.uid)
@@ -765,6 +809,16 @@ class PortfolioActivity(activity.Activity):
         else:
             self._record_button.hide()
             self._playback_button.hide()
+
+    def _parse_comments(self, comments):
+        label = ''
+        for comment in comments:
+            if 'from' in comment:
+                label += '[%s] ' % (comment['from'])
+            if 'message' in comment:
+                label += comment['message']
+            label += '\n'
+        return label
 
     def _slides_cb(self, button=None):
         if self._thumbnail_mode:
@@ -833,8 +887,8 @@ class PortfolioActivity(activity.Activity):
                 slide.thumb = None
         if slide.thumb is None:
             if slide.preview is not None:
-                pixbuf_thumb = slide.preview.scale_simple(int(w), int(h),
-                                                          GdkPixbuf.InterpType.TILES)
+                pixbuf_thumb = slide.preview.scale_simple(
+                    int(w), int(h), GdkPixbuf.InterpType.TILES)
             else:
                 pixbuf_thumb = svg_str_to_pixbuf(genblank(int(w), int(h),
                                                           self._colors))
@@ -902,8 +956,8 @@ class PortfolioActivity(activity.Activity):
         self._press = None
         self._release = None
 
-        # Are we clicking on a title or description?
-        if spr.type == 'title' or spr.type == 'description':
+        # Are we clicking on a title or description or comment?
+        if spr.type in ['title', 'description', 'comment']:
             if spr == self._selected_spr:
                 return True
             elif self._selected_spr is not None:
@@ -911,25 +965,27 @@ class PortfolioActivity(activity.Activity):
             self._selected_spr = spr
             self._saved_string = spr.labels[0]
             if spr.type == 'description':
-                if self.initiating is not None and not self.initiating:
-                    label = '%s\n[%s] ' % (self._selected_spr.labels[0],
-                                             profile.get_nick_name())
-                else:
+                if self.initiating is None or self.initiating:
                     label = self._selected_spr.labels[0]
+                    self._selected_spr.set_label(label)
+                else:
+                    self._selected_spr = None
+                    return True
                 self._selected_spr.set_label(label)
                 if not hasattr(self, 'desc_entry'):
                     self.desc_entry = Gtk.TextView()
-                    self.desc_entry.set_justification(Gtk.Justification.CENTER)
+                    self.desc_entry.set_wrap_mode(Gtk.WrapMode.WORD)
                     self.desc_entry.set_pixels_above_lines(0)
+                    self.desc_entry.set_size_request(self._desc_wh[0],
+                                                     self._desc_wh[1])
                     rgba = Gdk.RGBA()
                     rgba.red, rgba.green, rgba.blue = rgb(self._colors[1])
                     rgba.alpha = 1.
                     self.desc_entry.override_background_color(
                         Gtk.StateFlags.NORMAL, rgba)
                     font_desc = Pango.font_description_from_string(
-                        str(int(self.desc_size * self._scale)))
+                        str(self.desc_size))
                     self.desc_entry.modify_font(font_desc)
-                    self.desc_buffer = self.desc_entry.get_buffer()
                     self.fixed.put(self.desc_entry, 0, 0)
                 self.text_entry = self.desc_entry
                 self.text_buffer = self.desc_entry.get_buffer()
@@ -940,6 +996,7 @@ class PortfolioActivity(activity.Activity):
                     self._selected_spr.set_label(label)
                 else:
                     self._selected_spr = None
+                    return True
                 if not hasattr(self, 'title_entry'):
                     self.title_entry = Gtk.TextView()
                     self.title_entry.set_justification(Gtk.Justification.CENTER)
@@ -950,14 +1007,35 @@ class PortfolioActivity(activity.Activity):
                     self.title_entry.override_background_color(
                         Gtk.StateFlags.NORMAL, rgba)
                     font_desc = Pango.font_description_from_string(
-                        str(self.title_size * self._scale))
+                        str(self.title_size))
                     self.title_entry.modify_font(font_desc)
-                    self.title_buffer = self.title_entry.get_buffer()
                     self.fixed.put(self.title_entry, 0, 0)
                 self.text_entry = self.title_entry
                 self.text_buffer = self.title_entry.get_buffer()
                 self.title_entry.show()
-            self.text_buffer.set_text('')
+            elif spr.type == 'comment':
+                label = '[%s] ' % (profile.get_nick_name())
+                _logger.debug(label)
+                self._selected_spr.set_label(label)
+                self._saved_string = spr.labels[0]
+                if not hasattr(self, 'comment_entry'):
+                    self.comment_entry = Gtk.TextView()
+                    self.comment_entry.set_wrap_mode(Gtk.WrapMode.WORD)
+                    self.comment_entry.set_pixels_above_lines(0)
+                    self.comment_entry.set_size_request(
+                        self._new_comment_wh[0], self._new_comment_wh[1])
+                    rgba = Gdk.RGBA()
+                    rgba.red, rgba.green, rgba.blue = rgb(self._colors[1])
+                    rgba.alpha = 1.
+                    self.comment_entry.override_background_color(
+                        Gtk.StateFlags.NORMAL, rgba)
+                    font_desc = Pango.font_description_from_string(
+                        str(self.desc_size))
+                    self.comment_entry.modify_font(font_desc)
+                    self.fixed.put(self.comment_entry, 0, 0)
+                self.text_entry = self.comment_entry
+                self.text_buffer = self.comment_entry.get_buffer()
+                self.comment_entry.show()
             self.text_buffer.set_text(self._saved_string)
 
             spr.set_label('')  # Clear the label while the text_entry is visible
@@ -1015,7 +1093,7 @@ class PortfolioActivity(activity.Activity):
         self.last_spr_moved = spr
         self._press = spr
         self._press.set_layer(DRAG)
-        slide.star.set_layer(DRAG+1)
+        slide.star.set_layer(DRAG + 1)
         return False
 
     def _mouse_move_cb(self, win, event):
@@ -1220,6 +1298,7 @@ class PortfolioActivity(activity.Activity):
                     self._slides.index(slide)))
             jobject = datastore.get(slide.uid)
             jobject.metadata['description'] = slide.description
+            jobject.metadata['comments'] = json.dumps(slide.comment)
             jobject.metadata['title'] = slide.title
             datastore.write(jobject,
                             update_mtime=False,
@@ -1227,7 +1306,7 @@ class PortfolioActivity(activity.Activity):
                             error_handler=self.datastore_write_error_cb)
 
     def datastore_write_cb(self):
-        pass
+        self._unselect()
 
     def datastore_write_error_cb(self, error):
         _logger.error('datastore_write_error_cb: %r' % error)
@@ -1282,11 +1361,25 @@ class PortfolioActivity(activity.Activity):
                 if self.initiating is not None and self.initiating:
                     self._send_event('t:%s' % (self._data_dumper(
                                 [slide.uid, slide.title])))
-            else:
+            elif self._selected_spr.type == 'description':
                 slide.description = self._selected_spr.labels[0]
                 if self.initiating is not None:
                     self._send_event('d:%s' % (self._data_dumper(
                                 [slide.uid, slide.description])))
+            elif self._selected_spr.type == 'comment':
+                message = self._selected_spr.labels[0].split('] ')[1].rstrip()
+                slide.comment.append({'from':profile.get_nick_name(),
+                                      'message':message,
+                                      # Use my colors in case of sharing
+                                      'icon':[self._my_colors[0],
+                                              self._my_colors[1]]})
+                if self.initiating is not None:
+                    self._send_event('c:%s' % (self._data_dumper(
+                                [slide.uid, slide.comment])))
+                self._comment.set_label(self._parse_comments(slide.comment))
+                self._selected_spr.set_label('')
+            else:
+                _logger.debug('unselect: %s' % (self._selected_spr.type))
             _logger.debug('marking %d as dirty' % (self.i))
             slide.dirty = True
         self._selected_spr = None
@@ -1299,7 +1392,8 @@ class PortfolioActivity(activity.Activity):
         if hasattr(self.get_window(), 'get_cursor'):
             self.get_window().set_cursor(self.old_cursor)
         else:
-            self.get_window().set_cursor(Gdk.Cursor.new(Gdk.CursorType.LEFT_PTR))
+            self.get_window().set_cursor(
+                Gdk.Cursor.new(Gdk.CursorType.LEFT_PTR))
 
     def _waiting_cursor(self):
         ''' Waiting, so set watch cursor. '''
@@ -1315,12 +1409,13 @@ class PortfolioActivity(activity.Activity):
         ''' Dump data for sharing.'''
         _logger.debug('dumping %s' % (slide.uid))
         if slide.preview is None:
-            data = [slide.uid, slide.title, None, slide.description]
+            data = [slide.uid, slide.title, None, slide.description,
+                    slide.comment]
         else:
             data = [slide.uid, slide.title,
                     pixbuf_to_base64(activity, slide.preview,
                                      width=300, height=225),
-                    slide.description]
+                    slide.description, slide.comment]
         return self._data_dumper(data)
 
     def _data_dumper(self, data):
@@ -1329,7 +1424,7 @@ class PortfolioActivity(activity.Activity):
     def _load(self, data):
         ''' Load slide data from a sharer. '''
         self._restore_cursor()
-        uid, title, base64, description = self._data_loader(data)
+        uid, title, base64, description, comment = self._data_loader(data)
         if self._uid_to_slide(uid) is None:
             _logger.debug('loading %s' % (uid))
             if base64 is None:
@@ -1341,7 +1436,8 @@ class PortfolioActivity(activity.Activity):
                                       self._colors,
                                       title,
                                       preview,
-                                      description))
+                                      description,
+                                      comment))
         else:
             _logger.debug('updating description for %s' % (uid))
             slide = self._uid_to_slide(uid)
@@ -1351,6 +1447,7 @@ class PortfolioActivity(activity.Activity):
             else:
                 slide.preview = base64_to_pixbuf(activity, base64)
             slide.description = description
+            slide.comment = comment
             slide.active = True
             if not slide.fav:
                 slide.fav = True
@@ -1466,8 +1563,9 @@ class PortfolioActivity(activity.Activity):
     def event_received_cb(self, text):
         ''' Data is passed as tuples: cmd:text '''
         dispatch_table = {'s': self._load,
-                          'c': self._update_colors,
+                          'C': self._update_colors,
                           'd': self._update_description,
+                          'c': self._update_comment,
                           't': self._update_title,
                           'S': self._update_star,
                           'R': self._reset,
@@ -1516,21 +1614,28 @@ class PortfolioActivity(activity.Activity):
                         int(self._desc_wh[0]),
                         int(self._desc_wh[1]),
                         self._colors)))
+            # Don't update new_comment colors
+            self._comment.set_image(svg_str_to_pixbuf(
+                    genblank(
+                        int(self._comment_wh[0]),
+                        int(self._comment_wh[1]),
+                        self._colors)))
             self._title.set_image(svg_str_to_pixbuf(
                         genblank(int(self._title_wh[0]),
                                  int(self._title_wh[1]),
                                  self._colors)))
 
-    def _update_description(self, data):
+    def _update_comment(self, data):
         uid, text = self._data_loader(data)
         slide = self._uid_to_slide(uid)
         if slide is None:
             _logger.debug('slide %s not found' % (uid))
             return
-        _logger.debug('updating description %s' % (uid))
-        slide.description = text
+        _logger.debug('updating comment %s' % (uid))
+        _logger.debug('FIXME: add dictionary entry')
+        slide.comment = json.loads(text)
         if self.i == self._slides.index(slide):
-            self._description.set_label(text)
+            self._comment.set_label(self._parse_comments(slide.comment))
         if self.initiating:
             slide.dirty = True
 
@@ -1553,7 +1658,7 @@ class PortfolioActivity(activity.Activity):
 
     def _share_colors(self):
         _logger.debug('sharing colors')
-        self._send_event('c:%s' % (self._data_dumper(self._colors)))
+        self._send_event('C:%s' % (self._data_dumper(self._colors)))
 
     def _share_slides(self):
         for slide in self._slides:

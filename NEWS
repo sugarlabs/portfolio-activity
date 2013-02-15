@@ -3,6 +3,10 @@
 ENHANCEMENT:
 * Use separate comments field instead of adding comments to description
 
+BUG FIXES:
+* Fix problem with updating slide controls
+* Fix problem indentifying hardware on some systems
+
 39
 
 ENHANCEMENT:

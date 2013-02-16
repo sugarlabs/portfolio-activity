@@ -421,6 +421,8 @@ class PortfolioActivity(activity.Activity):
         self._description.set_label_attributes(self.desc_size,
                                                horiz_align="left",
                                                rescale=False, vert_align="top")
+        m = int(self.desc_size / 2)
+        self._description.set_margins(l=m, t=m, r=m, b=m)
         self._description.type = 'description'
 
         self._comment = Sprite(self._sprites,
@@ -430,10 +432,11 @@ class PortfolioActivity(activity.Activity):
                 genblank(int(self._comment_wh[0]),
                          int(self._comment_wh[1]),
                          self._colors)))
-        self._comment.set_label_attributes(self.desc_size, vert_align="top",
+        self._comment.set_label_attributes(int(self.desc_size * 0.67),
+                                           vert_align="top",
                                            horiz_align="left",
                                            rescale=False)
-
+        self._comment.set_margins(l=m, t=m, r=m, b=m)
         self._new_comment = Sprite(self._sprites,
                                    int(self._new_comment_xy[0]),
                                    int(self._new_comment_xy[1]),

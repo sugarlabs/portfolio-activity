@@ -71,13 +71,15 @@ PATH = '/org/sugarlabs/PortfolioActivity'
 
 # Size and position of title, preview image, and description
 TITLE = [[GRID_CELL_SIZE, 10, 1200 - GRID_CELL_SIZE * 2, 100],
-         [GRID_CELL_SIZE, 10, 900 - GRID_CELL_SIZE * 2, 145]]
-PREVIEW = [[GRID_CELL_SIZE, 110, 560, 420], [180, 145, 560, 420]]
-DESC = [[560 + GRID_CELL_SIZE, 110, 560, 420], [GRID_CELL_SIZE, 565, 800, 420]]
+         [GRID_CELL_SIZE, 10, 900 - GRID_CELL_SIZE * 2, 100]]
+PREVIEW = [[GRID_CELL_SIZE, 110, 560, 420],
+           [180, 110, 560, 420]]
+DESC = [[560 + GRID_CELL_SIZE, 110, 560, 420],
+        [GRID_CELL_SIZE, 530, 900 - GRID_CELL_SIZE * 2, 300]]
 COMMENTS = [[GRID_CELL_SIZE, 530, 1200 - GRID_CELL_SIZE * 2, 260],
-            [GRID_CELL_SIZE, 985, 900 - GRID_CELL_SIZE * 2, 200]]
+            [GRID_CELL_SIZE, 840, 900 - GRID_CELL_SIZE * 2, 200]]
 NEW_COMMENT = [[GRID_CELL_SIZE, 800, 1200 - GRID_CELL_SIZE * 2, 100],
-               [GRID_CELL_SIZE, 985, 900 - GRID_CELL_SIZE * 2, 200]]
+               [GRID_CELL_SIZE, 1050, 900 - GRID_CELL_SIZE * 2, 100]]
 
 TWO = 0
 TEN = 1
@@ -102,7 +104,6 @@ HIDE = 0
 def _get_screen_dpi():
     xft_dpi = Gtk.Settings.get_default().get_property('gtk-xft-dpi')
     dpi = float(xft_dpi / 1024)
-    logging.error('Setting dpi to: %f', dpi)
     return dpi
 
 
@@ -194,27 +195,32 @@ class PortfolioActivity(activity.Activity):
         self._title_xy = [TITLE[orientation][0] * self._scale,
                           TITLE[orientation][1] * self._scale]
         self._title_xy[0] = int((self._width - self._title_wh[0]) / 2.)
-
         self._preview_wh = [PREVIEW[orientation][2] * self._scale,
                             PREVIEW[orientation][3] * self._scale]
         self._preview_xy = [PREVIEW[orientation][0] * self._scale,
                             PREVIEW[orientation][1] * self._scale]
-        self._preview_xy[0] = self._title_xy[0]
-
+        if orientation == 0:
+            self._preview_xy[0] = self._title_xy[0]
+        else:
+            self._preview_xy[0] = int((self._width - self._preview_wh[0]) / 2.)
         self._desc_wh = [DESC[orientation][2] * self._scale,
                          DESC[orientation][3] * self._scale]
-        self._desc_wh[0] = \
-            self._width - self._preview_wh[0] - 2 * self._title_xy[0]
+        if orientation == 0:
+            self._desc_wh[0] = \
+                self._width - self._preview_wh[0] - 2 * self._title_xy[0]
+        else:
+            self._desc_wh[0] = self._title_wh[0]
         self._desc_xy = [DESC[orientation][0] * self._scale,
                          DESC[orientation][1] * self._scale]
-        self._desc_xy[0] = self._preview_wh[0] + self._title_xy[0]
-
+        if orientation == 0:
+            self._desc_xy[0] = self._preview_wh[0] + self._title_xy[0]
+        else:
+            self._desc_xy[0] = self._title_xy[0]
         self._comment_wh = [COMMENTS[orientation][2] * self._scale,
                             COMMENTS[orientation][3] * self._scale]
         self._comment_xy = [COMMENTS[orientation][0] * self._scale,
                             COMMENTS[orientation][1] * self._scale]
         self._comment_xy[0] = self._title_xy[0]
-
         self._new_comment_wh = [NEW_COMMENT[orientation][2] * self._scale,
                                 NEW_COMMENT[orientation][3] * self._scale]
         self._new_comment_xy = [NEW_COMMENT[orientation][0] * self._scale,
@@ -234,14 +240,14 @@ class PortfolioActivity(activity.Activity):
 
     def _setup_canvas(self):
         ''' Create a canvas '''
+
         self.fixed = Gtk.Fixed()
         self.fixed.connect('size-allocate', self._fixed_resize_cb)
         self.fixed.show()
         self.set_canvas(self.fixed)
 
         self.vbox = Gtk.VBox(False, 0)
-        self.vbox.set_size_request(
-            Gdk.Screen.width(), Gdk.Screen.height() - style.GRID_CELL_SIZE)
+        self.vbox.set_size_request(Gdk.Screen.width(), Gdk.Screen.height())
         self.fixed.put(self.vbox, 0, 0)
         self.vbox.show()
 
@@ -257,33 +263,39 @@ class PortfolioActivity(activity.Activity):
         self._canvas.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self._canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
         self._canvas.add_events(Gdk.EventMask.KEY_PRESS_MASK)
-        # self._canvas.add_events(Gdk.CONFIGURE)
         self._canvas.connect('draw', self._draw_cb)
         self._canvas.connect('button-press-event', self._button_press_cb)
         self._canvas.connect('button-release-event', self._button_release_cb)
         self._canvas.connect('motion-notify-event', self._mouse_move_cb)
         self._canvas.connect('key-press-event', self._keypress_cb)
-        # self._canvas.connect('configure-event', self._configure_cb)
+        Gdk.Screen.get_default().connect('size-changed', self._configure_cb)
 
         self._canvas.grab_focus()
 
-    def _configure_cb(self, win, event):
-        # landscape or portrait?
+    def _configure_cb(self, event):
+        self._my_canvas.hide()
+        self._title.hide()
+        self._description.hide()
+        self._comment.hide()
+        self._new_comment.hide()
+
         self._width = Gdk.Screen.width()
         self._height = Gdk.Screen.height()
+        self.vbox.set_size_request(Gdk.Screen.width(), Gdk.Screen.height())
+        self.vbox.show()
+        self._canvas.set_size_request(int(Gdk.Screen.width()),
+                                      int(Gdk.Screen.height()))
+        self._canvas.show()
         if self._width > self._height:
             self._scale = Gdk.Screen.height() / 900.
             self._orientation = 0
         else:
-            self._scale = Gdk.Screen.width() / 1200.
+            self._scale = Gdk.Screen.height() / 1200.
             self._orientation = 1
         self._set_xy_wh()
 
-        self._my_canvas.hide()
-        self._title.hide()
-        self._description.hide()
-
         self._configured_sprites()  # Some sprites are sized to screen
+        self._my_canvas.set_layer(BOTTOM)
         self._clear_screen()
         if self._thumbnail_mode:
             self._thumbs_cb()
@@ -572,7 +584,6 @@ class PortfolioActivity(activity.Activity):
         for slide in self._slides:
             slide.active = False
         self.dsobjects, self._nobjects = datastore.find({'keep': '1'})
-        _logger.debug('found %d starred items', self._nobjects)
         for dsobj in self.dsobjects:
             slide = self._uid_to_slide(dsobj.object_id)
             owner = self._buddies[0]
@@ -760,12 +771,11 @@ class PortfolioActivity(activity.Activity):
                     return
                 slide = self._slides[self.i]
 
-        _logger.debug('i: %d, n: %d, l: %d' % (self.i, self._nobjects, len(self._slides)))
         if self.i == 0:
             self._prev.set_image(self.prev_off_pixbuf)
         else:
             self._prev.set_image(self.prev_pixbuf)
-        if self.i == self._nobjects - 1:
+        if self.i > self._nobjects - 2:
             self._next.set_image(self.next_off_pixbuf)
         else:
             self._next.set_image(self.next_pixbuf)
@@ -1007,7 +1017,6 @@ class PortfolioActivity(activity.Activity):
                 self.title_entry.show()
             elif spr.type == 'comment':
                 label = '[%s] ' % (profile.get_nick_name())
-                _logger.debug(label)
                 self._selected_spr.set_label(label)
                 self._saved_string = spr.labels[0]
                 if not hasattr(self, 'comment_entry'):
@@ -1521,6 +1530,7 @@ class PortfolioActivity(activity.Activity):
             slide.active = False
         self._clear_screen()
         self.i = 0
+        self._current_slide = 0
         self._nobjects = 0
         self._help.hide()
         self._description.set_layer(TOP)

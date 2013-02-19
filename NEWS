@@ -1,11 +1,13 @@
 41
 
 ENHANCEMENT:
-* Use separate comments field instead of adding comments to description
+* Using separate comments field instead of adding comments to description
 
 BUG FIXES:
-* Fix problem with updating slide controls
-* Fix problem indentifying hardware on some systems
+* Fixed problem with updating slide controls
+* Fixed problem indentifying hardware on some systems
+* Fixed problem with screen rotation
+* Fixed problems with sharing introduced during GTK-3 port
 
 39
 

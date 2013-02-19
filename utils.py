@@ -169,7 +169,7 @@ def pixbuf_to_base64(activity, pixbuf, width=100, height=75):
     png_file = os.path.join(get_path(activity, 'instance'), 'imagetmp.png')
     if pixbuf != None:
         pixbuf = pixbuf.scale_simple(width, height, GdkPixbuf.InterpType.NEAREST)
-        pixbuf.save(png_file, "png")
+        pixbuf.savev(png_file, "png", [], [])
     data = file_to_base64(activity, png_file)
     os.remove(png_file)
     return data

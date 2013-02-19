@@ -57,9 +57,6 @@ from sugar3.graphics import style
 GRID_CELL_SIZE = style.GRID_CELL_SIZE
 
 import json
-from json import load as jload
-from json import dump as jdump
-from StringIO import StringIO
 
 import telepathy
 from dbus.service import signal
@@ -738,7 +735,7 @@ class PortfolioActivity(activity.Activity):
         object. '''
         self._clear_screen()
 
-        if len(self._slides) == 0:
+        if self._nobjects == 0:
             self._prev.set_image(self.prev_off_pixbuf)
             self._next.set_image(self.next_off_pixbuf)
             self._description.set_label(
@@ -763,11 +760,12 @@ class PortfolioActivity(activity.Activity):
                     return
                 slide = self._slides[self.i]
 
+        _logger.debug('i: %d, n: %d, l: %d' % (self.i, self._nobjects, len(self._slides)))
         if self.i == 0:
             self._prev.set_image(self.prev_off_pixbuf)
         else:
             self._prev.set_image(self.prev_pixbuf)
-        if self.i == len(self._slides) - 1:
+        if self.i == self._nobjects - 1:
             self._next.set_image(self.next_off_pixbuf)
         else:
             self._next.set_image(self.next_pixbuf)
@@ -1413,7 +1411,7 @@ class PortfolioActivity(activity.Activity):
         return self._data_dumper(data)
 
     def _data_dumper(self, data):
-        return json.write(data)
+        return json.dumps(data)
 
     def _load(self, data):
         ''' Load slide data from a sharer. '''
@@ -1448,13 +1446,16 @@ class PortfolioActivity(activity.Activity):
                 if slide.star is not None:
                     slide.star.set_shape(self._fav_pixbuf)
                     slide.star.type = 'star'
+
+        self._nobjects += 1
+
         if not self._thumbnail_mode:
             self._thumb_button.set_active(True)
         else:
             self._show_thumbs()
 
     def _data_loader(self, data):
-        return json.read(data)
+        return json.loads(data)
 
     # When portfolio is shared, only sharer sends out slides, joiners
     # send back comments.
@@ -1472,18 +1473,18 @@ class PortfolioActivity(activity.Activity):
 
     def _shared_cb(self, activity):
         ''' Either set up initial share...'''
-        if self._shared_activity is None:
+        if self.get_shared_activity() is None:
             _logger.error('Failed to share or join activity ... \
-                _shared_activity is null in _shared_cb()')
+                shared_activity is null in _shared_cb()')
             return
 
         self.initiating = True
         self.waiting = False
         _logger.debug('I am sharing...')
 
-        self.conn = self._shared_activity.telepathy_conn
-        self.tubes_chan = self._shared_activity.telepathy_tubes_chan
-        self.text_chan = self._shared_activity.telepathy_text_chan
+        self.conn = self.shared_activity.telepathy_conn
+        self.tubes_chan = self.shared_activity.telepathy_tubes_chan
+        self.text_chan = self.shared_activity.telepathy_text_chan
 
         self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].connect_to_signal(
             'NewTube', self._new_tube_cb)
@@ -1494,17 +1495,17 @@ class PortfolioActivity(activity.Activity):
 
     def _joined_cb(self, activity):
         ''' ...or join an exisiting share. '''
-        if self._shared_activity is None:
+        if self.get_shared_activity() is None:
             _logger.error('Failed to share or join activity ... \
-                _shared_activity is null in _shared_cb()')
+                shared_activity is null in _shared_cb()')
             return
 
         self.initiating = False
         _logger.debug('I joined a shared activity.')
 
-        self.conn = self._shared_activity.telepathy_conn
-        self.tubes_chan = self._shared_activity.telepathy_tubes_chan
-        self.text_chan = self._shared_activity.telepathy_text_chan
+        self.conn = self.shared_activity.telepathy_conn
+        self.tubes_chan = self.shared_activity.telepathy_tubes_chan
+        self.text_chan = self.shared_activity.telepathy_text_chan
 
         self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].connect_to_signal(\
             'NewTube', self._new_tube_cb)
@@ -1519,6 +1520,8 @@ class PortfolioActivity(activity.Activity):
         for slide in self._slides:
             slide.active = False
         self._clear_screen()
+        self.i = 0
+        self._nobjects = 0
         self._help.hide()
         self._description.set_layer(TOP)
         self._description.set_label(_('Please wait.'))
@@ -1597,37 +1600,30 @@ class PortfolioActivity(activity.Activity):
 
     def _update_colors(self, data):
         colors = self._data_loader(data)
-        if colors[0] != self._colors[0] or \
-           colors[1] != self._colors[1]:
-            self._colors = colors[:]
-            self._my_canvas.set_image(svg_str_to_pixbuf(
-                genblank(self._width, self._height, [self._colors[0],
-                                                     self._colors[0]])))
-            self._description.set_image(svg_str_to_pixbuf(
-                    genblank(
-                        int(self._desc_wh[0]),
-                        int(self._desc_wh[1]),
-                        self._colors)))
-            # Don't update new_comment colors
-            self._comment.set_image(svg_str_to_pixbuf(
-                    genblank(
-                        int(self._comment_wh[0]),
-                        int(self._comment_wh[1]),
-                        self._colors)))
-            self._title.set_image(svg_str_to_pixbuf(
-                        genblank(int(self._title_wh[0]),
-                                 int(self._title_wh[1]),
-                                 self._colors)))
+        colors[0] = str(colors[0])
+        colors[1] = str(colors[1])
+        self._my_canvas.set_image(svg_str_to_pixbuf(
+                genblank(self._width, self._height, [colors[0], colors[0]])))
+        self._title.set_image(
+            svg_str_to_pixbuf(genblank(
+                    int(self._title_wh[0]), int(self._title_wh[1]), colors)))
+        self._description.set_image(
+            svg_str_to_pixbuf(genblank(
+                    int(self._desc_wh[0]), int(self._desc_wh[1]), colors)))
+        self._comment.set_image(
+            svg_str_to_pixbuf(genblank(
+                    int(self._comment_wh[0]), int(self._comment_wh[1]),
+                    colors)))
+        # Don't update new_comment colors
 
     def _update_comment(self, data):
-        uid, text = self._data_loader(data)
+        uid, comment = self._data_loader(data)
         slide = self._uid_to_slide(uid)
         if slide is None:
             _logger.debug('slide %s not found' % (uid))
             return
         _logger.debug('updating comment %s' % (uid))
-        _logger.debug('FIXME: add dictionary entry')
-        slide.comment = json.loads(text)
+        slide.comment = comment
         if self.i == self._slides.index(slide):
             self._comment.set_label(parse_comments(slide.comment))
         if self.initiating:
@@ -1643,6 +1639,19 @@ class PortfolioActivity(activity.Activity):
         slide.title = text
         if self.i == self._slides.index(slide):
             self._title.set_label(text)
+        if self.initiating:
+            slide.dirty = True
+
+    def _update_description(self, data):
+        uid, text = self._data_loader(data)
+        slide = self._uid_to_slide(uid)
+        if slide is None:
+            _logger.debug('slide %s not found' % (uid))
+            return
+        _logger.debug('updating title %s' % (uid))
+        slide.description = text
+        if self.i == self._slides.index(slide):
+            self._description.set_label(text)
         if self.initiating:
             slide.dirty = True
 

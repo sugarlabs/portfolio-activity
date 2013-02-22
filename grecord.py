@@ -52,6 +52,7 @@ class Grecord:
         bus = self._pipeline.get_bus()
         bus.add_signal_watch()
         bus.connect('message', self._bus_message_handler)
+        _logger.debug('Grecord.__init__ complete')
 
     def _create_audiobin(self):
         src = Gst.ElementFactory.make('alsasrc', None)
@@ -69,7 +70,7 @@ class Grecord:
         src.set_property('device', 'default')
 
         srccaps = Gst.caps_from_string(
-            'audio/x-raw,rate=(int)16000,channels=(int)1,depth=(int)16')
+            'audio/x-raw,rate=(int)48000,channels=(int)1,depth=(int)16')
 
         # Guarantee perfect stream, important for A/V sync
         rate = Gst.ElementFactory.make('audiorate', None)
@@ -87,6 +88,7 @@ class Grecord:
         enc = Gst.ElementFactory.make('wavenc', None)
 
         sink = Gst.ElementFactory.make('filesink', None)
+        _logger.debug(os.path.join(self._activity.datapath, 'output.wav'))
         sink.set_property('location',
             os.path.join(self._activity.datapath, 'output.wav'))
 
@@ -101,6 +103,7 @@ class Grecord:
         rate.link(queue)
         queue.link(enc)
         enc.link(sink)
+        _logger.debug('audio_bin complete')
 
     def _log_queue_overrun(self, queue):
         cbuffers = queue.get_property('current-level-buffers')
@@ -143,6 +146,8 @@ class Grecord:
             _logger.error('output.wav does not exist or is empty')
             return
 
+        _logger.debug('stop_recording_audio')
+
         line = 'filesrc location=' + audio_path + ' name=audioFilesrc ! \
 wavparse name=audioWavparse ! audioconvert name=audioAudioconvert ! \
 vorbisenc name=audioVorbisenc ! oggmux name=audioOggmux ! \
@@ -167,6 +172,7 @@ filesink name=audioFilesink'
     def transcoding_complete(self):
         # The EOS message is sometimes either not sent or not received.
         # So if the position in the stream is not advancing, assume EOS.
+        _logger.debug('transcoding complete')
         if self._transcode_id is None:
             _logger.debug('EOS.... transcoding finished')
             return True
@@ -193,6 +199,7 @@ filesink name=audioFilesink'
         # this results in several seconds of silence being added at the start
         # of the recording. So we stop the whole pipeline while adjusting it.
         # SL#2040
+        _logger.debug('record audio')
         self._pipeline.set_state(Gst.State.NULL)
         self._pipeline.add(self._audiobin)
         self.play()
@@ -234,7 +241,8 @@ filesink name=audioFilesink'
         pipe.get_bus().disable_sync_message_emission()
 
         wavFilepath = os.path.join(self._activity.datapath, 'output.wav')
-        os.remove(wavFilepath)
+        _logger.debug('skip clean up of output.wav')
+        # os.remove(wavFilepath)
         return
 
     def _bus_message_handler(self, bus, message):

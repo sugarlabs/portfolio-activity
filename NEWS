@@ -8,6 +8,8 @@ BUG FIXES:
 * Fixed problem indentifying hardware on some systems
 * Fixed problem with screen rotation
 * Fixed problems with sharing introduced during GTK-3 port
+* Record audio at 48000 instead of 16000 so as to make it more
+  reliable (on some hardware)
 
 39
 

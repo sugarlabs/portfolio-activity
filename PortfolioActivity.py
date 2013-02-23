@@ -157,11 +157,7 @@ class PortfolioActivity(activity.Activity):
         self._set_screen_dpi()
         self._set_xy_wh()
 
-        if hasattr(self, 'get_window') and \
-           hasattr(self.get_window(), 'get_cursor'):
-            self.old_cursor = self.get_window().get_cursor()
-        else:
-            self.old_cursor = None
+        self.old_cursor = self.get_window().get_cursor()
 
         self._hw = get_hardware()
 
@@ -1390,18 +1386,13 @@ class PortfolioActivity(activity.Activity):
         ''' No longer waiting, so restore standard cursor. '''
         if not hasattr(self, 'get_window'):
             return
-        if hasattr(self.get_window(), 'get_cursor'):
-            self.get_window().set_cursor(self.old_cursor)
-        else:
-            self.get_window().set_cursor(
-                Gdk.Cursor.new(Gdk.CursorType.LEFT_PTR))
+        self.get_window().set_cursor(self.old_cursor)
 
     def _waiting_cursor(self):
         ''' Waiting, so set watch cursor. '''
         if not hasattr(self, 'get_window'):
             return
-        if hasattr(self.get_window(), 'get_cursor'):
-            self.old_cursor = self.get_window().get_cursor()
+        self.old_cursor = self.get_window().get_cursor()
         self.get_window().set_cursor(Gdk.Cursor.new(Gdk.CursorType.WATCH))
 
     # Serialize

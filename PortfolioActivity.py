@@ -1010,10 +1010,10 @@ class PortfolioActivity(activity.Activity):
                     self.fixed.put(self.title_entry, 0, 0)
                 self.text_entry = self.title_entry
                 self.text_buffer = self.title_entry.get_buffer()
+                self.text_buffer.connect('insert-text', self._insert_text_cb)
                 self.title_entry.show()
             elif spr.type == 'comment':
-                label = '[%s] ' % (profile.get_nick_name())
-                self._selected_spr.set_label(label)
+                self._selected_spr.set_label('')
                 self._saved_string = spr.labels[0]
                 if not hasattr(self, 'comment_entry'):
                     self.comment_entry = Gtk.TextView()
@@ -1032,6 +1032,7 @@ class PortfolioActivity(activity.Activity):
                     self.fixed.put(self.comment_entry, 0, 0)
                 self.text_entry = self.comment_entry
                 self.text_buffer = self.comment_entry.get_buffer()
+                self.text_buffer.connect('insert-text', self._insert_text_cb)
                 self.comment_entry.show()
             self.text_buffer.set_text(self._saved_string)
 
@@ -1169,6 +1170,10 @@ class PortfolioActivity(activity.Activity):
         self._press = None
         self._release = None
         return False
+
+    def _insert_text_cb(self, textbuffer, textiter, text, length):
+        if '\12' in text:
+            self._unselect()
 
     def _swap_slides(self, i, j):
         ''' Swap order and x, y position of two slides '''
@@ -1361,10 +1366,10 @@ class PortfolioActivity(activity.Activity):
             elif self._selected_spr.type == 'description':
                 slide.description = self._selected_spr.labels[0]
                 if self.initiating is not None:
-                    self._send_event('d:%s' % (self._data_dumper(
-                                [slide.uid, slide.description])))
+                    self._send_event('d:%s' % (
+                            self._data_dumper([slide.uid, slide.description])))
             elif self._selected_spr.type == 'comment':
-                message = self._selected_spr.labels[0].split('] ')[1].rstrip()
+                message = self._selected_spr.labels[0]
                 slide.comment.append({'from':profile.get_nick_name(),
                                       'message':message,
                                       # Use my colors in case of sharing

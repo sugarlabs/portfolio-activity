@@ -453,6 +453,7 @@ class PortfolioActivity(activity.Activity):
                                                horiz_align="left",
                                                vert_align="top", rescale=False)
         self._new_comment.type = 'comment'
+        self._new_comment.set_label(_('Enter comments here.'))
 
         self._my_canvas = Sprite(
             self._sprites, 0, 0, svg_str_to_pixbuf(genblank(
@@ -793,7 +794,10 @@ class PortfolioActivity(activity.Activity):
         self._title.set_label(slide.title)
         self._title.set_layer(MIDDLE)
 
-        self._description.set_label(slide.description)
+        if len(slide.description) == 0:
+            self._description.set_label(_('This project is about...'))
+        else:
+            self._description.set_label(slide.description)
         self._description.set_layer(MIDDLE)
 
         self._comment.set_label(parse_comments(slide.comment))

@@ -750,6 +750,10 @@ class PortfolioActivity(activity.Activity):
                 _('Do you have any items in your Journal starred?'))
             self._help.set_layer(TOP)
             self._description.set_layer(MIDDLE)
+            self._prev.hide()
+            self._next.hide()
+            self._record_button.hide()
+            self._playback_button.hide()
             return
 
         slide = self._slides[self.i]

@@ -1227,7 +1227,7 @@ class PortfolioActivity(activity.Activity):
             # Autosave if there was not already a recording
             _logger.debug('Autosaving recording')
             self._notify_successful_save(title=_('Save recording'))
-            self.wait_counter = 0
+            self._transcoding_wait_counter = 0
             GObject.timeout_add(100, self._wait_for_transcoding_to_finish)
         else:  # Wasn't recording, so start
             _logger.debug('recording...False. Start recording.')
@@ -1238,15 +1238,16 @@ class PortfolioActivity(activity.Activity):
             self._recording = True
 
     def _wait_for_transcoding_to_finish(self, button=None):
-        self.wait_counter += 1
-        if self.wait_count < 60 and not self._grecord.transcoding_complete():
+        self._transcoding_wait_counter += 1
+        if self._transcoding_wait_counter < 60 and \
+           not self._grecord.transcoding_complete():
             GObject.timeout_add(1000, self._wait_for_transcoding_to_finish)
         else:
             if self._alert is not None:
                 self.remove_alert(self._alert)
                 self._alert = None
             self._save_recording()
-        return True
+        return False
 
     def _playback_recording_cb(self, button=None):
         ''' Play back current recording '''

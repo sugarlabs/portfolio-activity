@@ -1205,6 +1205,11 @@ class PortfolioActivity(activity.Activity):
         if self._grecord is None:
             _logger.debug('setting up grecord')
             self._grecord = Grecord(self)
+        if self.i < 0 or self.i > len(self._slides) - 1:
+            _logger.debug('bad slide index %d' % (self.i))
+            return
+        else:
+            _logger.debug('slide #%d' % (self.i))
         if self._recording:  # Was recording, so stop (and save?)
             _logger.debug('recording...True. Preparing to save.')
             self._grecord.stop_recording_audio()
@@ -1216,7 +1221,6 @@ class PortfolioActivity(activity.Activity):
             self._playback_button.type = 'play'
             self._playback_button.set_layer(DRAG)
             # Autosave if there was not already a recording
-            slide = self._slides[self.i]
             _logger.debug('Autosaving recording')
             self._notify_successful_save(title=_('Save recording'))
             GObject.timeout_add(100, self._wait_for_transcoding_to_finish)
@@ -1239,6 +1243,12 @@ class PortfolioActivity(activity.Activity):
     def _playback_recording_cb(self, button=None):
         ''' Play back current recording '''
         _logger.debug('Playback current recording from output.ogg...')
+        if self.i < 0 or self.i > len(self._slides) - 1:
+            _logger.debug('bad slide index %d' % (self.i))
+            return
+        if self._slides[self.i].sound is None:
+            _logger.debug('slide %d has no sound' % (self.i))
+            return
         self._playback_button.set_image(self.playing_pixbuf)
         self._playback_button.set_layer(DRAG)
         self._playback_button.type = 'playing'

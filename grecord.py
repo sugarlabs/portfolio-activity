@@ -70,7 +70,7 @@ class Grecord:
         src.set_property('device', 'default')
 
         srccaps = Gst.caps_from_string(
-            'audio/x-raw,rate=(int)48000,channels=(int)1,depth=(int)16')
+            'audio/x-raw,rate=(int)16000,channels=(int)1,depth=(int)16')
 
         # Guarantee perfect stream, important for A/V sync
         rate = Gst.ElementFactory.make('audiorate', None)
@@ -163,7 +163,7 @@ filesink name=audioFilesink'
         audioBus = self._audioline.get_bus()
         audioBus.add_signal_watch()
         self._audio_transcode_handler = audioBus.connect(
-            'message', self._onMuxedAudioMessageCb, self._audioline)
+            'message::eos', self._onMuxedAudioMessageCb, self._audioline)
         self._transcode_id = GObject.timeout_add(200, self._transcodeUpdateCb,
                                                  self._audioline)
         self._audiopos = 0

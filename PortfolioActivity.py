@@ -750,6 +750,10 @@ class PortfolioActivity(activity.Activity):
                 _('Do you have any items in your Journal starred?'))
             self._help.set_layer(TOP)
             self._description.set_layer(MIDDLE)
+            self._prev.hide()
+            self._next.hide()
+            self._record_button.hide()
+            self._playback_button.hide()
             return
 
         slide = self._slides[self.i]
@@ -1205,6 +1209,11 @@ class PortfolioActivity(activity.Activity):
         if self._grecord is None:
             _logger.debug('setting up grecord')
             self._grecord = Grecord(self)
+        if self.i < 0 or self.i > len(self._slides) - 1:
+            _logger.debug('bad slide index %d' % (self.i))
+            return
+        else:
+            _logger.debug('slide #%d' % (self.i))
         if self._recording:  # Was recording, so stop (and save?)
             _logger.debug('recording...True. Preparing to save.')
             self._grecord.stop_recording_audio()
@@ -1216,9 +1225,9 @@ class PortfolioActivity(activity.Activity):
             self._playback_button.type = 'play'
             self._playback_button.set_layer(DRAG)
             # Autosave if there was not already a recording
-            slide = self._slides[self.i]
             _logger.debug('Autosaving recording')
             self._notify_successful_save(title=_('Save recording'))
+            self._transcoding_wait_counter = 0
             GObject.timeout_add(100, self._wait_for_transcoding_to_finish)
         else:  # Wasn't recording, so start
             _logger.debug('recording...False. Start recording.')
@@ -1229,16 +1238,26 @@ class PortfolioActivity(activity.Activity):
             self._recording = True
 
     def _wait_for_transcoding_to_finish(self, button=None):
-        while not self._grecord.transcoding_complete():
-            time.sleep(1)
-        if self._alert is not None:
-            self.remove_alert(self._alert)
-            self._alert = None
-        self._save_recording()
+        self._transcoding_wait_counter += 1
+        if self._transcoding_wait_counter < 60 and \
+           not self._grecord.transcoding_complete():
+            GObject.timeout_add(1000, self._wait_for_transcoding_to_finish)
+        else:
+            if self._alert is not None:
+                self.remove_alert(self._alert)
+                self._alert = None
+            self._save_recording()
+        return False
 
     def _playback_recording_cb(self, button=None):
         ''' Play back current recording '''
         _logger.debug('Playback current recording from output.ogg...')
+        if self.i < 0 or self.i > len(self._slides) - 1:
+            _logger.debug('bad slide index %d' % (self.i))
+            return
+        if self._slides[self.i].sound is None:
+            _logger.debug('slide %d has no sound' % (self.i))
+            return
         self._playback_button.set_image(self.playing_pixbuf)
         self._playback_button.set_layer(DRAG)
         self._playback_button.type = 'playing'

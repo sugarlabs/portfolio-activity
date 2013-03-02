@@ -24,6 +24,20 @@ XO4 = 'xo4'
 UNKNOWN = 'unknown'
 
 
+def get_tablet_mode():
+    if not os.path.exists('/dev/input/event4'):
+        return False
+    try:
+        output = subprocess.call(
+            ['evtest', '--query', '/dev/input/event4', 'EV_SW',
+             'SW_TABLET_MODE'])
+    except (OSError, subprocess.CalledProcessError):
+        return False
+    if str(output) == '10':
+        return True
+    return False
+
+
 def get_hardware():
     ''' Determine whether we are using XO 1.0, 1.5, ... or 'unknown'
     hardware '''

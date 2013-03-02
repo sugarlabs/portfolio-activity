@@ -41,7 +41,7 @@ from sprites import (Sprites, Sprite)
 from utils import (get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle,
                    get_pixbuf_from_journal, genblank, get_hardware, rgb,
                    pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file,
-                   parse_comments)
+                   parse_comments, get_tablet_mode)
 from exportpdf import save_pdf
 from toolbar_utils import (radio_factory, button_factory, separator_factory,
                            combo_factory, label_factory)
@@ -76,10 +76,10 @@ PREVIEW = [[GRID_CELL_SIZE, 110, 560, 420],
            [180, 110, 560, 420]]
 DESC = [[560 + GRID_CELL_SIZE, 110, 560, 420],
         [GRID_CELL_SIZE, 530, 900 - GRID_CELL_SIZE * 2, 300]]
-COMMENTS = [[GRID_CELL_SIZE, 530, 1200 - GRID_CELL_SIZE * 2, 260],
-            [GRID_CELL_SIZE, 840, 900 - GRID_CELL_SIZE * 2, 200]]
-NEW_COMMENT = [[GRID_CELL_SIZE, 800, 1200 - GRID_CELL_SIZE * 2, 100],
-               [GRID_CELL_SIZE, 1050, 900 - GRID_CELL_SIZE * 2, 100]]
+NEW_COMMENT = [[GRID_CELL_SIZE, 530, 1200 - GRID_CELL_SIZE * 2, 100],
+            [GRID_CELL_SIZE, 840, 900 - GRID_CELL_SIZE * 2, 100]]
+COMMENTS = [[GRID_CELL_SIZE, 640, 1200 - GRID_CELL_SIZE * 2, 250],
+               [GRID_CELL_SIZE, 950, 900 - GRID_CELL_SIZE * 2, 240]]
 
 TWO = 0
 TEN = 1
@@ -145,6 +145,7 @@ class PortfolioActivity(activity.Activity):
         self._colors = profile.get_color().to_string().split(',')
         self._my_colors = self._colors[:]  # Save original colors
         self.initiating = None  # sharing (True) or joining (False)
+        self._tablet_mode = get_tablet_mode()
 
         self._playing = False
         self._first_time = True
@@ -212,17 +213,18 @@ class PortfolioActivity(activity.Activity):
             self._desc_xy[0] = self._preview_wh[0] + self._title_xy[0]
         else:
             self._desc_xy[0] = self._title_xy[0]
-        self._comment_wh = [COMMENTS[orientation][2] * self._scale,
-                            COMMENTS[orientation][3] * self._scale]
-        self._comment_xy = [COMMENTS[orientation][0] * self._scale,
-                            COMMENTS[orientation][1] * self._scale]
-        self._comment_xy[0] = self._title_xy[0]
         self._new_comment_wh = [NEW_COMMENT[orientation][2] * self._scale,
                                 NEW_COMMENT[orientation][3] * self._scale]
         self._new_comment_xy = [NEW_COMMENT[orientation][0] * self._scale,
                                 NEW_COMMENT[orientation][1] * self._scale]
         self._new_comment_xy[0] = self._title_xy[0]
-        self._new_comment_xy[1] = self._comment_xy[1] + self._comment_wh[1]
+        self._new_comment_xy[1] = self._preview_xy[1] + self._preview_wh[1]
+        self._comment_wh = [COMMENTS[orientation][2] * self._scale,
+                            COMMENTS[orientation][3] * self._scale]
+        self._comment_xy = [COMMENTS[orientation][0] * self._scale,
+                            COMMENTS[orientation][1] * self._scale]
+        self._comment_xy[0] = self._title_xy[0]
+        self._comment_xy[1] = self._new_comment_xy[1] + self._new_comment_wh[1]
 
     def _set_screen_dpi(self):
         dpi = _get_screen_dpi()
@@ -1047,6 +1049,9 @@ class PortfolioActivity(activity.Activity):
             spr.set_label('')  # Clear the label while the text_entry is visible
             w = spr.label_safe_width()
             h = spr.label_safe_height()
+
+            if spr.type == 'comment' and self._tablet_mode:
+                spr.move_relative((0, -150))
             bx, by = spr.get_xy()
             mx, my = spr.label_left_top()
             self.text_entry.set_size_request(w, h)
@@ -1377,6 +1382,8 @@ class PortfolioActivity(activity.Activity):
 
     def _unselect(self):
         if hasattr(self, 'text_entry'):
+            if self._selected_spr.type == 'comment' and self._tablet_mode:
+                self._selected_spr.move_relative((0, 150))
             self.text_entry.hide()
 
         if self._selected_spr is not None:
@@ -1386,27 +1393,27 @@ class PortfolioActivity(activity.Activity):
                 if self.initiating is not None and self.initiating:
                     self._send_event('t:%s' % (self._data_dumper(
                                 [slide.uid, slide.title])))
+                slide.dirty = True
             elif self._selected_spr.type == 'description':
                 slide.description = self._selected_spr.labels[0]
                 if self.initiating is not None:
                     self._send_event('d:%s' % (
                             self._data_dumper([slide.uid, slide.description])))
+                slide.dirty = True
             elif self._selected_spr.type == 'comment':
                 message = self._selected_spr.labels[0]
-                slide.comment.append({'from':profile.get_nick_name(),
-                                      'message':message,
-                                      # Use my colors in case of sharing
-                                      'icon':[self._my_colors[0],
-                                              self._my_colors[1]]})
-                if self.initiating is not None:
-                    self._send_event('c:%s' % (self._data_dumper(
-                                [slide.uid, slide.comment])))
-                self._comment.set_label(parse_comments(slide.comment))
-                self._selected_spr.set_label('')
-            else:
-                _logger.debug('unselect: %s' % (self._selected_spr.type))
-            _logger.debug('marking %d as dirty' % (self.i))
-            slide.dirty = True
+                if message != '':
+                    slide.comment.append({'from':profile.get_nick_name(),
+                                          'message':message,
+                                          # Use my colors in case of sharing
+                                          'icon':[self._my_colors[0],
+                                                  self._my_colors[1]]})
+                    if self.initiating is not None:
+                        self._send_event('c:%s' % (self._data_dumper(
+                                    [slide.uid, slide.comment])))
+                    self._comment.set_label(parse_comments(slide.comment))
+                    self._selected_spr.set_label('')
+                    slide.dirty = True
         self._selected_spr = None
         self._saved_string = ''
 

@@ -100,6 +100,8 @@ MIDDLE = 2
 BOTTOM = 1
 HIDE = 0
 
+OSK_SHIFT = 200
+
 
 def _get_screen_dpi():
     xft_dpi = Gtk.Settings.get_default().get_property('gtk-xft-dpi')
@@ -150,10 +152,7 @@ class PortfolioActivity(activity.Activity):
         self._playing = False
         self._first_time = True
 
-        self._width = Gdk.Screen.width()
-        self._height = Gdk.Screen.height()
-        self._scale = Gdk.Screen.height() / 900.
-        self._orientation = 0
+        self._set_scale_and_orientation()
 
         self._set_screen_dpi()
         self._set_xy_wh()
@@ -218,7 +217,7 @@ class PortfolioActivity(activity.Activity):
         self._new_comment_xy = [NEW_COMMENT[orientation][0] * self._scale,
                                 NEW_COMMENT[orientation][1] * self._scale]
         self._new_comment_xy[0] = self._title_xy[0]
-        self._new_comment_xy[1] = self._preview_xy[1] + self._preview_wh[1]
+        self._new_comment_xy[1] = self._desc_xy[1] + self._desc_wh[1]
         self._comment_wh = [COMMENTS[orientation][2] * self._scale,
                             COMMENTS[orientation][3] * self._scale]
         self._comment_xy = [COMMENTS[orientation][0] * self._scale,
@@ -270,6 +269,16 @@ class PortfolioActivity(activity.Activity):
 
         self._canvas.grab_focus()
 
+    def _set_scale_and_orientation(self):
+        self._width = Gdk.Screen.width()
+        self._height = Gdk.Screen.height()
+        if self._width > self._height:
+            self._scale = Gdk.Screen.height() / 900.
+            self._orientation = 0
+        else:
+            self._scale = Gdk.Screen.height() / 1200.
+            self._orientation = 1
+
     def _configure_cb(self, event):
         self._my_canvas.hide()
         self._title.hide()
@@ -277,19 +286,13 @@ class PortfolioActivity(activity.Activity):
         self._comment.hide()
         self._new_comment.hide()
 
-        self._width = Gdk.Screen.width()
-        self._height = Gdk.Screen.height()
+        self._set_scale_and_orientation()
+
         self.vbox.set_size_request(Gdk.Screen.width(), Gdk.Screen.height())
         self.vbox.show()
         self._canvas.set_size_request(int(Gdk.Screen.width()),
                                       int(Gdk.Screen.height()))
         self._canvas.show()
-        if self._width > self._height:
-            self._scale = Gdk.Screen.height() / 900.
-            self._orientation = 0
-        else:
-            self._scale = Gdk.Screen.height() / 1200.
-            self._orientation = 1
         self._set_xy_wh()
 
         self._configured_sprites()  # Some sprites are sized to screen
@@ -320,7 +323,7 @@ class PortfolioActivity(activity.Activity):
         self._sprites = Sprites(self._canvas)
 
         if self._nobjects == 0:
-            star_size = 55
+            star_size = GRID_CELL_SIZE
         else:
             star_size = int(150. / int(ceil(sqrt(self._nobjects))))
         self._fav_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
@@ -332,16 +335,16 @@ class PortfolioActivity(activity.Activity):
 
         self.record_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
-                         'media-audio.svg'), 55, 55)
+                         'media-audio.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
         self.recording_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
-                         'media-audio-recording.svg'), 55, 55)
+                         'media-audio-recording.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
         self.playback_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
-                         'speaker-100.svg'), 55, 55)
+                         'speaker-100.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
         self.playing_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
-                         'speaker-0.svg'), 55, 55)
+                         'speaker-0.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
 
         self._record_button = Sprite(self._sprites, 0, 0, self.record_pixbuf)
         self._record_button.set_layer(DRAG)
@@ -354,16 +357,16 @@ class PortfolioActivity(activity.Activity):
 
         self.prev_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
-                         'go-previous.svg'), 55, 55)
+                         'go-previous.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
         self.next_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
-                         'go-next.svg'), 55, 55)
+                         'go-next.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
         self.prev_off_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
-                         'go-previous-inactive.svg'), 55, 55)
+                         'go-previous-inactive.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
         self.next_off_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
-                         'go-next-inactive.svg'), 55, 55)
+                         'go-next-inactive.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
 
         self._prev = Sprite(self._sprites, 0, 0, self.prev_off_pixbuf)
         self._prev.set_layer(DRAG)
@@ -406,10 +409,13 @@ class PortfolioActivity(activity.Activity):
                             int(self._preview_xy[1])))
         self._help.move((int(self._preview_xy[0]),
                          int(self._preview_xy[1])))
-        self._record_button.move((self._width - 55, self._title_wh[1]))
-        self._playback_button.move((self._width - 55, self._title_wh[1] + 55))
-        self._prev.move((0, int((self._height - 55) / 2)))
-        self._next.move((self._width - 55, int((self._height - 55) / 2)))
+        self._record_button.move((self._width - GRID_CELL_SIZE,
+                                  self._title_wh[1]))
+        self._playback_button.move((self._width - GRID_CELL_SIZE,
+                                    self._title_wh[1] + GRID_CELL_SIZE))
+        self._prev.move((0, int((self._height - GRID_CELL_SIZE) / 2)))
+        self._next.move((self._width - GRID_CELL_SIZE,
+                         int((self._height - GRID_CELL_SIZE) / 2)))
         self._title = Sprite(self._sprites,
                              int(self._title_xy[0]),
                              int(self._title_xy[1]),
@@ -545,6 +551,8 @@ class PortfolioActivity(activity.Activity):
         stop_button.props.accelerator = '<Ctrl>q'
         toolbox.toolbar.insert(stop_button, -1)
         stop_button.show()
+
+        toolbox.toolbar.show_all()
 
     def _destroy_cb(self, win, event):
         ''' Clean up on the way out. '''
@@ -1046,12 +1054,14 @@ class PortfolioActivity(activity.Activity):
                 self.comment_entry.show()
             self.text_buffer.set_text(self._saved_string)
 
-            spr.set_label('')  # Clear the label while the text_entry is visible
+            # Clear the label while the text_entry is visible
+            spr.set_label('')
             w = spr.label_safe_width()
             h = spr.label_safe_height()
 
-            if spr.type == 'comment' and self._tablet_mode:
-                spr.move_relative((0, -150))
+            if spr.type == 'comment':
+                if self._tablet_mode:
+                    self._OSK_shift(spr, -OSK_SHIFT)
             bx, by = spr.get_xy()
             mx, my = spr.label_left_top()
             self.text_entry.set_size_request(w, h)
@@ -1106,6 +1116,14 @@ class PortfolioActivity(activity.Activity):
         self._press.set_layer(DRAG)
         slide.star.set_layer(DRAG + 1)
         return False
+
+    def _OSK_shift(self, spr, dy):
+        ''' Move some sprites when OSK appears/disappears '''
+        dy *= self._scale
+        spr.move_relative((0, dy))
+        self._title.move_relative((0, dy))
+        self._preview.move_relative((0, dy))
+        self._description.move_relative((0, dy))
 
     def _mouse_move_cb(self, win, event):
         ''' Drag a thumbnail with the mouse. '''
@@ -1382,8 +1400,10 @@ class PortfolioActivity(activity.Activity):
 
     def _unselect(self):
         if hasattr(self, 'text_entry'):
-            if self._selected_spr.type == 'comment' and self._tablet_mode:
-                self._selected_spr.move_relative((0, 150))
+            if self._selected_spr is not None:
+                if self._selected_spr.type == 'comment':
+                    if self._tablet_mode:
+                        self._OSK_shift(self._selected_spr, OSK_SHIFT)
             self.text_entry.hide()
 
         if self._selected_spr is not None:

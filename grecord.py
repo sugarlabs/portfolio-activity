@@ -70,7 +70,7 @@ class Grecord:
         src.set_property('device', 'default')
 
         srccaps = Gst.caps_from_string(
-            'audio/x-raw,rate=(int)16000,channels=(int)1,depth=(int)16')
+            'audio/x-raw,rate=(int)48000,channels=(int)1,depth=(int)16')
 
         # Guarantee perfect stream, important for A/V sync
         rate = Gst.ElementFactory.make('audiorate', None)

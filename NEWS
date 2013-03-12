@@ -2,6 +2,8 @@
 
 ENHANCEMENT:
 * Using separate comments field instead of adding comments to description
+* Prompt user to enter comments and a project description
+* New translations
 
 BUG FIXES:
 * Fixed problem with updating slide controls
@@ -10,6 +12,7 @@ BUG FIXES:
 * Fixed problems with sharing introduced during GTK-3 port
 * Record audio at 48000 instead of 16000 so as to make it more
   reliable (on some hardware)
+* Hide record button if no slides are available
 
 39
 

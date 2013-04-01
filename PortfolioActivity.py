@@ -1426,8 +1426,8 @@ class PortfolioActivity(activity.Activity):
                     slide.comment.append({'from':profile.get_nick_name(),
                                           'message':message,
                                           # Use my colors in case of sharing
-                                          'icon':[self._my_colors[0],
-                                                  self._my_colors[1]]})
+                                          'icon-color':'[%s,%s]' % (
+                                self._my_colors[0], self._my_colors[1])})
                     if self.initiating is not None:
                         self._send_event('c:%s' % (self._data_dumper(
                                     [slide.uid, slide.comment])))

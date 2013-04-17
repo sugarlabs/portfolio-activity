@@ -1,8 +1,17 @@
-<?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd' [
-	<!ENTITY stroke_color "#000">
-	<!ENTITY fill_color "#eee">
-]><svg height="55px" viewBox="0 0 55 55" width="55px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" stroke="&stroke_color;" fill="&fill_color;">
-`  <g
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+  <!ENTITY fill_color "#FFFFFF">
+  <!ENTITY stroke_color "#010101">
+]>
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   width="55"
+   height="55"
+   viewBox="0 0 55 55"
+   id="svg3059"
+   style="fill:&fill_color;;stroke:&stroke_color;;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round">
+  <g
    transform="matrix(0.8501594,0,0,0.8501594,4.1206165,2.9055499)"
    id="g3041">
   <rect
@@ -11,7 +20,7 @@
      x="7.5"
      y="5.8274999"
      id="rect2996"
-     style="fill:&fill_color;;stroke:&stroke_color;;stroke-width:2.34500003;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+     style="stroke-width:4.11687517;stroke-miterlimit:4;stroke-dasharray:none" />
   <g
      transform="translate(-1.0846148,0)"
      id="g3793">
@@ -21,17 +30,17 @@
        y1="36.358479"
        x2="23.419287"
        x1="27.69433"
-       style="fill:none;stroke:&stroke_color;;stroke-width:1.78056884;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+       style="fill:none;stroke-width:4.11687517;stroke-miterlimit:4;stroke-dasharray:none" />
     <line
        id="line2460-2"
        y2="52.313156"
        y1="36.358479"
        x2="33.749943"
        x1="29.474899"
-       style="fill:none;stroke:&stroke_color;;stroke-width:1.78056884;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+       style="fill:none;stroke-width:4.11687517;stroke-miterlimit:4;stroke-dasharray:none" />
   </g>
   <line
-     style="fill:none;stroke:&stroke_color;;stroke-width:2.66399026;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+     style="fill:none"
      x1="9.0131855"
      x2="45.986813"
      y1="8.168005"

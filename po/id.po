@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-30 00:30-0400\n"
-"PO-Revision-Date: 2012-12-03 05:45+0200\n"
+"POT-Creation-Date: 2013-02-27 00:32-0500\n"
+"PO-Revision-Date: 2013-04-06 08:33+0200\n"
 "Last-Translator: andika <andika@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: id\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: Pootle 2.0.5\n"
 
 #. TRANS: "name" option from activity.info file
-#: PortfolioActivity.py:650
+#: PortfolioActivity.py:714
 msgid "Portfolio"
 msgstr "Portfolio"
 
@@ -43,56 +43,64 @@ msgstr "30 detik"
 msgid "1 minute"
 msgstr "1 menit"
 
-#: PortfolioActivity.py:430
+#: PortfolioActivity.py:456
+msgid "Enter comments here."
+msgstr "Masukkan komentar di sini."
+
+#: PortfolioActivity.py:484
 msgid "Adjust"
 msgstr "Sesuaikan"
 
-#: PortfolioActivity.py:439
+#: PortfolioActivity.py:493
 msgid "Fullscreen"
 msgstr "Layar penuh"
 
-#: PortfolioActivity.py:444
+#: PortfolioActivity.py:498
 msgid "Autoplay"
 msgstr "Putar otomatis"
 
-#: PortfolioActivity.py:446 PortfolioActivity.py:455
+#: PortfolioActivity.py:500 PortfolioActivity.py:510
 msgid "Adjust playback speed"
 msgstr "Atur kecepatan putar"
 
-#: PortfolioActivity.py:463
+#: PortfolioActivity.py:518
 msgid "Refresh"
 msgstr "Segarkan"
 
-#: PortfolioActivity.py:471
+#: PortfolioActivity.py:526
 msgid "Slide view"
 msgstr "Tilikan slide"
 
-#: PortfolioActivity.py:476
+#: PortfolioActivity.py:531
 msgid "Thumbnail view"
 msgstr "Tilikan gambar mini"
 
-#: PortfolioActivity.py:483
+#: PortfolioActivity.py:538
 msgid "Save as PDF"
 msgstr "Simpan sebagai PDF"
 
-#: PortfolioActivity.py:684
+#: PortfolioActivity.py:750
 msgid "Do you have any items in your Journal starred?"
 msgstr "Apakah ada butir pada Jurnal Anda yang dibintangi?"
 
-#: PortfolioActivity.py:1113
+#: PortfolioActivity.py:798
+msgid "This project is about..."
+msgstr "Projek ini tentang..."
+
+#: PortfolioActivity.py:1221
 msgid "Save recording"
 msgstr "Simpan rekaman"
 
-#: PortfolioActivity.py:1158
+#: PortfolioActivity.py:1266
 #, python-format
 msgid "audio note for %s"
 msgstr "catatan audio bagi %s"
 
-#: PortfolioActivity.py:1409
+#: PortfolioActivity.py:1537
 msgid "Please wait."
 msgstr "Harap tunggu."
 
-#: exportpdf.py:65
+#: exportpdf.py:71
 msgid "untitled"
 msgstr "nirjudul"
 

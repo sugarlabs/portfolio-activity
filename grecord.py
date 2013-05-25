@@ -212,20 +212,18 @@ filesink name=audioFilesink'
         return True
 
     def _query_position(self, pipe):
-        try:
-            position, format = pipe.query_position(Gst.Format.TIME)
-        except:
+        result, position = pipe.query_position(Gst.Format.TIME)
+        if not result:
             position = Gst.CLOCK_TIME_NONE
 
-        try:
-            duration, format = pipe.query_duration(Gst.Format.TIME)
-        except:
+        result, duration = pipe.query_duration(Gst.Format.TIME)
+        if not result:
             duration = Gst.CLOCK_TIME_NONE
 
         return (position, duration)
 
     def _onMuxedAudioMessageCb(self, bus, message, pipe):
-        _logger.debug(message.type)
+        # _logger.debug(message.type)
         if message.type != Gst.MessageType.EOS:
             return True
         self._clean_up_transcoding_pipeline(pipe)

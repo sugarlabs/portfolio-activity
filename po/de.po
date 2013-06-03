@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-30 00:30-0400\n"
-"PO-Revision-Date: 2012-11-03 00:13+0200\n"
+"POT-Creation-Date: 2013-02-27 00:32-0500\n"
+"PO-Revision-Date: 2013-06-03 21:24+0200\n"
 "Last-Translator: Markus <m.slg@gmx.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: de\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: Pootle 2.0.5\n"
 
 #. TRANS: "name" option from activity.info file
-#: PortfolioActivity.py:650
+#: PortfolioActivity.py:714
 msgid "Portfolio"
 msgstr "Portfolio"
 
@@ -43,56 +43,64 @@ msgstr "30 Sekunden"
 msgid "1 minute"
 msgstr "1 Minute"
 
-#: PortfolioActivity.py:430
+#: PortfolioActivity.py:456
+msgid "Enter comments here."
+msgstr "Trage Anmerkungen hier ein."
+
+#: PortfolioActivity.py:484
 msgid "Adjust"
 msgstr "Anpassen"
 
-#: PortfolioActivity.py:439
+#: PortfolioActivity.py:493
 msgid "Fullscreen"
 msgstr "Vollbild"
 
-#: PortfolioActivity.py:444
+#: PortfolioActivity.py:498
 msgid "Autoplay"
 msgstr "Abspielen"
 
-#: PortfolioActivity.py:446 PortfolioActivity.py:455
+#: PortfolioActivity.py:500 PortfolioActivity.py:510
 msgid "Adjust playback speed"
 msgstr "Abspielgeschwindigkeit anpassen"
 
-#: PortfolioActivity.py:463
+#: PortfolioActivity.py:518
 msgid "Refresh"
 msgstr "Aktualisieren"
 
-#: PortfolioActivity.py:471
+#: PortfolioActivity.py:526
 msgid "Slide view"
 msgstr "Diaschau"
 
-#: PortfolioActivity.py:476
+#: PortfolioActivity.py:531
 msgid "Thumbnail view"
 msgstr "Miniaturansicht"
 
-#: PortfolioActivity.py:483
+#: PortfolioActivity.py:538
 msgid "Save as PDF"
-msgstr "Speichern als PDF"
+msgstr "Als PDF speichern"
 
-#: PortfolioActivity.py:684
+#: PortfolioActivity.py:750
 msgid "Do you have any items in your Journal starred?"
 msgstr "Hast du in deinem Tagebuch Einträge mit einem Stern versehen?"
 
-#: PortfolioActivity.py:1113
+#: PortfolioActivity.py:798
+msgid "This project is about..."
+msgstr "Dieses Projekt ist über..."
+
+#: PortfolioActivity.py:1221
 msgid "Save recording"
 msgstr "Aufzeichnung speichern"
 
-#: PortfolioActivity.py:1158
+#: PortfolioActivity.py:1266
 #, python-format
 msgid "audio note for %s"
 msgstr "Sprachnotiz zu %s"
 
-#: PortfolioActivity.py:1409
+#: PortfolioActivity.py:1537
 msgid "Please wait."
 msgstr "Bitte warten."
 
-#: exportpdf.py:65
+#: exportpdf.py:71
 msgid "untitled"
 msgstr "Unbenannt"
 

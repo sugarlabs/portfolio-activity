@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-30 00:30-0400\n"
+"POT-Creation-Date: 2013-02-27 00:32-0500\n"
 "PO-Revision-Date: 2012-11-15 06:47+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Voluntarios quechuas Sugar Camp Lima\n"
@@ -16,7 +16,7 @@ msgstr ""
 
 #  "Obras"
 #. TRANS: "name" option from activity.info file
-#: PortfolioActivity.py:650
+#: PortfolioActivity.py:714
 msgid "Portfolio"
 msgstr "Llamk'aykuna"
 
@@ -49,69 +49,77 @@ msgstr "30 segundukuna"
 msgid "1 minute"
 msgstr "1 chinini"
 
+#: PortfolioActivity.py:456
+msgid "Enter comments here."
+msgstr ""
+
 #  "Ajustar"
-#: PortfolioActivity.py:430
+#: PortfolioActivity.py:484
 msgid "Adjust"
 msgstr "mat´iy"
 
 #  "Pantalla completa"
-#: PortfolioActivity.py:439
+#: PortfolioActivity.py:493
 msgid "Fullscreen"
 msgstr "Hunt'asqa pantalla"
 
 #  "Reproducción automática"
-#: PortfolioActivity.py:444
+#: PortfolioActivity.py:498
 msgid "Autoplay"
 msgstr "Sapan puriq"
 
 #  "Ajustar velocidad de reproducción"
-#: PortfolioActivity.py:446 PortfolioActivity.py:455
+#: PortfolioActivity.py:500 PortfolioActivity.py:510
 msgid "Adjust playback speed"
 msgstr "Puriqpa phawayninta mat'iy"
 
 #  "Actualizar"
-#: PortfolioActivity.py:463
+#: PortfolioActivity.py:518
 msgid "Refresh"
 msgstr "Kunanyachiy"
 
 #  "Ver diapositivas"
-#: PortfolioActivity.py:471
+#: PortfolioActivity.py:526
 msgid "Slide view"
 msgstr "Diapositiwakunata qhaway"
 
 #  "Vistas en miniatura"
-#: PortfolioActivity.py:476
+#: PortfolioActivity.py:531
 msgid "Thumbnail view"
 msgstr "Huch´uy qhawanakuna"
 
 #  [ES] "Guardar como PDF"
-#: PortfolioActivity.py:483
+#: PortfolioActivity.py:538
 msgid "Save as PDF"
 msgstr "PDF khiputahina waqaychay"
 
 #  "Tienes entradas en tu diario marcadas como favoritas?"
-#: PortfolioActivity.py:684
+#: PortfolioActivity.py:750
 msgid "Do you have any items in your Journal starred?"
 msgstr "Kachkanchu p'anqaykipi ancha munasqa ch'ikusqakuna?"
 
+#: PortfolioActivity.py:798
+msgid "This project is about..."
+msgstr ""
+
 #  [ES] "Guardar grabación"
-#: PortfolioActivity.py:1113
+#: PortfolioActivity.py:1221
 msgid "Save recording"
 msgstr "Grabasqata waqaychay"
 
 #  [ES] "nota de audio para %s"
-#: PortfolioActivity.py:1158
+#: PortfolioActivity.py:1266
 #, python-format
 msgid "audio note for %s"
 msgstr "%s kaypaq uyarinamanta willakuy"
 
 #  [ES] "Por favor espera."
-#: PortfolioActivity.py:1409
+#: PortfolioActivity.py:1537
 msgid "Please wait."
 msgstr "Suyariy."
 
 #  [ES] "sin_titulo"
-#: exportpdf.py:65
+#: exportpdf.py:71
 msgid "untitled"
 msgstr "Mana sutiyuq"
 

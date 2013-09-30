@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-02-27 00:32-0500\n"
-"PO-Revision-Date: 2012-04-03 00:25+0200\n"
+"PO-Revision-Date: 2013-09-30 22:56+0200\n"
 "Last-Translator: Eduardo H. <hoboprimate@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pt\n"
@@ -26,6 +26,8 @@ msgstr "Portefólio"
 #. TRANS: "description" option from activity.info file
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
 msgstr ""
+"Cria uma apresentação visual a partir das entradas marcadas como \"favoritas\" "
+"no Diário do Sugar"
 
 #: PortfolioActivity.py:88
 msgid "2 seconds"
@@ -45,7 +47,7 @@ msgstr "1 minuto"
 
 #: PortfolioActivity.py:456
 msgid "Enter comments here."
-msgstr ""
+msgstr "Introduz comentários aqui."
 
 #: PortfolioActivity.py:484
 msgid "Adjust"
@@ -85,7 +87,7 @@ msgstr "Tens alguma entrada no teu Diário marcada com uma estrela?"
 
 #: PortfolioActivity.py:798
 msgid "This project is about..."
-msgstr ""
+msgstr "Este projeto é sobre..."
 
 #: PortfolioActivity.py:1221
 msgid "Save recording"
@@ -98,7 +100,7 @@ msgstr "nota de som para %s"
 
 #: PortfolioActivity.py:1537
 msgid "Please wait."
-msgstr ""
+msgstr "Por favor espera."
 
 #: exportpdf.py:71
 msgid "untitled"

@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-02-27 00:32-0500\n"
-"PO-Revision-Date: 2012-10-08 12:46+0200\n"
-"Last-Translator: Prabhat <prabhat.bhattarai@olenepal.org>\n"
+"PO-Revision-Date: 2013-11-20 06:53+0200\n"
+"Last-Translator: Ganesh <ganesh.ghimire@olenepal.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ne\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +25,7 @@ msgstr "पोर्टफोलियो"
 #. TRANS: "summary" option from activity.info file
 #. TRANS: "description" option from activity.info file
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
-msgstr ""
+msgstr "create a slide show from Sugar Journal entries that have been 'starred'"
 
 #: PortfolioActivity.py:88
 msgid "2 seconds"
@@ -45,7 +45,7 @@ msgstr "एक मिनट"
 
 #: PortfolioActivity.py:456
 msgid "Enter comments here."
-msgstr ""
+msgstr "टिप्पणीहरू यहाँ लेख्नुहोस्।"
 
 #: PortfolioActivity.py:484
 msgid "Adjust"
@@ -53,11 +53,11 @@ msgstr "समायोजन"
 
 #: PortfolioActivity.py:493
 msgid "Fullscreen"
-msgstr "पुरै पर्दा"
+msgstr "पुरा स्क्रिन"
 
 #: PortfolioActivity.py:498
 msgid "Autoplay"
-msgstr "अटोप्ले"
+msgstr "आफै सुरु गर"
 
 #: PortfolioActivity.py:500 PortfolioActivity.py:510
 msgid "Adjust playback speed"
@@ -85,7 +85,7 @@ msgstr "के तिम्रो पंजिकामा कुनै सा�
 
 #: PortfolioActivity.py:798
 msgid "This project is about..."
-msgstr ""
+msgstr "This project is about..."
 
 #: PortfolioActivity.py:1221
 msgid "Save recording"
@@ -102,7 +102,7 @@ msgstr "कृपया पर्खिनुहोला"
 
 #: exportpdf.py:71
 msgid "untitled"
-msgstr "शीर्षकहीन"
+msgstr "शीर्षकरहित"
 
 #~ msgid "Page"
 #~ msgstr "पाना"

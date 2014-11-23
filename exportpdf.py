@@ -18,7 +18,6 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
-from glib import GError
 from gi.repository import Pango
 from gi.repository import PangoCairo
 import cairo
@@ -81,12 +80,12 @@ def save_pdf(activity, nick, description=None):
                 h = int(w * 3 / 4)
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
                     dsobj.file_path, w, h)
-            except: # (GError, IOError):
+            except:
                 try:
                     w = 300
                     h = 225
                     pixbuf = get_pixbuf_from_journal(dsobj, w, h)
-                except: # (GError, IOError):
+                except:
                     pass
 
         if pixbuf is not None:

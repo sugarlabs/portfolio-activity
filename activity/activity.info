@@ -1,9 +1,10 @@
 [Activity]
 name = Portfolio
-activity_version = 44
+activity_version = 45
 license = GPLv3
 bundle_id = org.sugarlabs.PortfolioActivity
 exec = sugar-activity PortfolioActivity.PortfolioActivity
 icon = activity-portfolio
 show_launcher = yes
+max_participants = 4
 summary = create a slide show from Sugar Journal entries that have been 'starred'

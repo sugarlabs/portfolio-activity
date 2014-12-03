@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#Copyright (c) 2011-13 Walter Bender
+# Copyright (c) 2011-13 Walter Bender
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ def get_hardware():
     if version == '1':
         return XO1
     elif version == '1.5':
-         return XO15
+        return XO15
     elif version == '1.75':
         return XO175
     elif version == '4':
@@ -59,7 +59,7 @@ def get_hardware():
     else:
         # Some systems (e.g. ARM) don't have dmi info
         if os.path.exists('/sys/devices/platform/lis3lv02d/position'):
-            return XO175        
+            return XO175
         elif os.path.exists('/etc/olpc-release'):
             return XO1
         else:
@@ -109,13 +109,14 @@ def get_path(activity, subpath):
 
 def rgb(color):
     return float(int(color[1:3], 16) / 255.), \
-           float(int(color[3:5], 16) / 255.), \
-           float(int(color[5:7], 16) / 255.)
+        float(int(color[3:5], 16) / 255.), \
+        float(int(color[5:7], 16) / 255.)
+
 
 def _luminance(color):
     ''' Calculate luminance value '''
     return int(color[1:3], 16) * 0.3 + int(color[3:5], 16) * 0.6 + \
-           int(color[5:7], 16) * 0.1
+        int(color[5:7], 16) * 0.1
 
 
 def lighter_color(colors):
@@ -137,7 +138,7 @@ def svg_str_to_pixbuf(svg_string):
 def svg_rectangle(width, height, colors):
     ''' Generate a rectangle frame in two colors '''
     return \
-'<?xml version="1.0" encoding="UTF-8" standalone="no"?>\
+        '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\
 <svg\
    version="1.1"\
    width="%f"\
@@ -181,8 +182,11 @@ def file_to_base64(activity, path):
 def pixbuf_to_base64(activity, pixbuf, width=100, height=75):
     ''' Convert pixbuf to base64-encoded data '''
     png_file = os.path.join(get_path(activity, 'instance'), 'imagetmp.png')
-    if pixbuf != None:
-        pixbuf = pixbuf.scale_simple(width, height, GdkPixbuf.InterpType.NEAREST)
+    if pixbuf is not None:
+        pixbuf = pixbuf.scale_simple(
+            width,
+            height,
+            GdkPixbuf.InterpType.NEAREST)
         pixbuf.savev(png_file, "png", [], [])
     data = file_to_base64(activity, png_file)
     os.remove(png_file)
@@ -238,6 +242,7 @@ def genblank(w, h, colors, stroke_width=1.0):
 
 
 class SVG:
+
     ''' SVG generators '''
 
     def __init__(self):

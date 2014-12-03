@@ -30,6 +30,7 @@ import logging
 import time
 _logger = logging.getLogger('lettermatch-activity')
 
+
 def play_audio_from_file(file_path, queue=False):
     """ Audio media """
     if hasattr(play_audio_from_file, 'player') and \
@@ -42,13 +43,14 @@ def play_audio_from_file(file_path, queue=False):
                     # we'll just update the timer.
                     if hasattr(play_audio_from_file, 'queue_timeout'):
                         time.sleep(0.01)
-                        GObject.source_remove(play_audio_from_file.queue_timeout)
+                        GObject.source_remove(
+                            play_audio_from_file.queue_timeout)
                         f = Gst.Format(Gst.Format.TIME)
-                        duration = play_audio_from_file.player.query_duration(f)[0]
+                        duration = play_audio_from_file.player.query_duration(
+                            f)[0]
                         timeout = duration / 1000000000.
-                        play_audio_from_file.queue_timeout = \
-                            GObject.timeout_add(int(timeout * 1000), \
-                                            play_audio_from_file, file_path)
+                        play_audio_from_file.queue_timeout = GObject.timeout_add(
+                            int(timeout * 1000), play_audio_from_file, file_path)
                         return
             else:
                 play_audio_from_file.queue = []
@@ -57,8 +59,8 @@ def play_audio_from_file(file_path, queue=False):
             f = Gst.Format(Gst.Format.TIME)
             duration = play_audio_from_file.player.query_duration(f)[0]
             timeout = duration / 1000000000.
-            play_audio_from_file.queue_timeout = GObject.timeout_add( \
-                        int(timeout * 1000), play_audio_from_file, file_path)
+            play_audio_from_file.queue_timeout = GObject.timeout_add(
+                int(timeout * 1000), play_audio_from_file, file_path)
             play_audio_from_file.queue.append(file_path)
             return
         else:
@@ -67,9 +69,9 @@ def play_audio_from_file(file_path, queue=False):
     else:
         Gst.init(None)
 
-    play_audio_from_file.player = Gst.parse_launch (
-                    'filesrc location=%s ! oggdemux ! vorbisdec ! ' \
-                    'audioconvert ! alsasink' % (file_path))
+    play_audio_from_file.player = Gst.parse_launch(
+        'filesrc location=%s ! oggdemux ! vorbisdec ! '
+        'audioconvert ! alsasink' % (file_path))
 
     if not play_audio_from_file.player:
         _logger.warning('unable to play audio file %s' % (file_path))

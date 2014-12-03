@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#Copyright (c) 2011 Walter Bender
+# Copyright (c) 2011 Walter Bender
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ def show_text(cr, fd, label, size, x, y):
     pl = PangoCairo.create_layout(cr)
     fd.set_size(int(size * Pango.SCALE))
     pl.set_font_description(fd)
-    if type(label) == str or type(label) == unicode:
+    if isinstance(label, str) or isinstance(label, unicode):
         pl.set_text(label.replace('\0', ' '), -1)
     else:
         pl.set_text(str(label), -1)

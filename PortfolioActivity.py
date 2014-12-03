@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#Copyright (c) 2011-2013 Walter Bender
+# Copyright (c) 2011-2013 Walter Bender
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,10 +18,7 @@ from gi.repository import GObject
 from gi.repository import Pango
 from gi.repository import PangoCairo
 
-import subprocess
 import os
-import time
-import string
 from shutil import copyfile
 
 from math import sqrt, ceil
@@ -42,6 +39,7 @@ from utils import (get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle,
                    get_pixbuf_from_journal, genblank, get_hardware, rgb,
                    pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file,
                    parse_comments, get_tablet_mode)
+from odp import TurtleODP
 from exportpdf import save_pdf
 from toolbar_utils import (radio_factory, button_factory, separator_factory,
                            combo_factory, label_factory)
@@ -77,9 +75,9 @@ PREVIEW = [[GRID_CELL_SIZE, 110, 560, 420],
 DESC = [[560 + GRID_CELL_SIZE, 110, 560, 420],
         [GRID_CELL_SIZE, 530, 900 - GRID_CELL_SIZE * 2, 300]]
 NEW_COMMENT = [[GRID_CELL_SIZE, 530, 1200 - GRID_CELL_SIZE * 2, 100],
-            [GRID_CELL_SIZE, 840, 900 - GRID_CELL_SIZE * 2, 100]]
+               [GRID_CELL_SIZE, 840, 900 - GRID_CELL_SIZE * 2, 100]]
 COMMENTS = [[GRID_CELL_SIZE, 640, 1200 - GRID_CELL_SIZE * 2, 250],
-               [GRID_CELL_SIZE, 950, 900 - GRID_CELL_SIZE * 2, 240]]
+            [GRID_CELL_SIZE, 950, 900 - GRID_CELL_SIZE * 2, 240]]
 
 TWO = 0
 TEN = 1
@@ -110,6 +108,7 @@ def _get_screen_dpi():
 
 
 class Slide():
+
     ''' A container for a slide '''
 
     def __init__(self, owner, uid, colors, title, preview, desc, comment):
@@ -136,6 +135,7 @@ class Slide():
 
 
 class PortfolioActivity(activity.Activity):
+
     ''' Make a slideshow from starred Journal entries. '''
 
     def __init__(self, handle):
@@ -337,8 +337,12 @@ class PortfolioActivity(activity.Activity):
             os.path.join(activity.get_bundle_path(), 'icons',
                          'media-audio.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
         self.recording_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            os.path.join(activity.get_bundle_path(), 'icons',
-                         'media-audio-recording.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
+            os.path.join(
+                activity.get_bundle_path(),
+                'icons',
+                'media-audio-recording.svg'),
+            GRID_CELL_SIZE,
+            GRID_CELL_SIZE)
         self.playback_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(activity.get_bundle_path(), 'icons',
                          'speaker-100.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
@@ -362,11 +366,19 @@ class PortfolioActivity(activity.Activity):
             os.path.join(activity.get_bundle_path(), 'icons',
                          'go-next.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
         self.prev_off_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            os.path.join(activity.get_bundle_path(), 'icons',
-                         'go-previous-inactive.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
+            os.path.join(
+                activity.get_bundle_path(),
+                'icons',
+                'go-previous-inactive.svg'),
+            GRID_CELL_SIZE,
+            GRID_CELL_SIZE)
         self.next_off_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            os.path.join(activity.get_bundle_path(), 'icons',
-                         'go-next-inactive.svg'), GRID_CELL_SIZE, GRID_CELL_SIZE)
+            os.path.join(
+                activity.get_bundle_path(),
+                'icons',
+                'go-next-inactive.svg'),
+            GRID_CELL_SIZE,
+            GRID_CELL_SIZE)
 
         self._prev = Sprite(self._sprites, 0, 0, self.prev_off_pixbuf)
         self._prev.set_layer(DRAG)
@@ -376,20 +388,20 @@ class PortfolioActivity(activity.Activity):
         self._next.set_layer(DRAG)
         self._next.type = 'next'
 
-        self._help = Sprite(self._sprites,
-                            0, 0,
-                            GdkPixbuf.Pixbuf.new_from_file_at_size(
-                os.path.join(activity.get_bundle_path(), 'help.png'),
-                int(self._preview_wh[0]),
-                int(self._preview_wh[1])))
+        self._help = Sprite(
+            self._sprites, 0, 0, GdkPixbuf.Pixbuf.new_from_file_at_size(
+                os.path.join(
+                    activity.get_bundle_path(), 'help.png'), int(
+                    self._preview_wh[0]), int(
+                    self._preview_wh[1])))
         self._help.hide()
 
         self._preview = Sprite(self._sprites,
                                0, 0,
                                svg_str_to_pixbuf(genblank(
-                        int(self._preview_wh[0]),
-                        int(self._preview_wh[1]),
-                        self._colors)))
+                                   int(self._preview_wh[0]),
+                                   int(self._preview_wh[1]),
+                                   self._colors)))
 
         self._configured_sprites()  # Some sprites are sized to screen
 
@@ -416,11 +428,12 @@ class PortfolioActivity(activity.Activity):
         self._prev.move((0, int((self._height - GRID_CELL_SIZE) / 2)))
         self._next.move((self._width - GRID_CELL_SIZE,
                          int((self._height - GRID_CELL_SIZE) / 2)))
-        self._title = Sprite(self._sprites,
-                             int(self._title_xy[0]),
-                             int(self._title_xy[1]),
-                             svg_str_to_pixbuf(
-                genblank(self._title_wh[0], self._title_wh[1], self._colors)))
+        self._title = Sprite(
+            self._sprites, int(
+                self._title_xy[0]), int(
+                self._title_xy[1]), svg_str_to_pixbuf(
+                genblank(
+                    self._title_wh[0], self._title_wh[1], self._colors)))
         self._title.set_label_attributes(self.title_size, rescale=False)
         self._title.type = 'title'
 
@@ -428,9 +441,9 @@ class PortfolioActivity(activity.Activity):
                                    int(self._desc_xy[0]),
                                    int(self._desc_xy[1]),
                                    svg_str_to_pixbuf(
-                genblank(int(self._desc_wh[0]),
-                         int(self._desc_wh[1]),
-                         self._colors)))
+                                       genblank(int(self._desc_wh[0]),
+                                                int(self._desc_wh[1]),
+                                                self._colors)))
         self._description.set_label_attributes(self.desc_size,
                                                horiz_align="left",
                                                rescale=False, vert_align="top")
@@ -442,9 +455,9 @@ class PortfolioActivity(activity.Activity):
                                int(self._comment_xy[0]),
                                int(self._comment_xy[1]),
                                svg_str_to_pixbuf(
-                genblank(int(self._comment_wh[0]),
-                         int(self._comment_wh[1]),
-                         self._colors)))
+                                   genblank(int(self._comment_wh[0]),
+                                            int(self._comment_wh[1]),
+                                            self._colors)))
         self._comment.set_label_attributes(int(self.desc_size * 0.67),
                                            vert_align="top",
                                            horiz_align="left",
@@ -454,9 +467,9 @@ class PortfolioActivity(activity.Activity):
                                    int(self._new_comment_xy[0]),
                                    int(self._new_comment_xy[1]),
                                    svg_str_to_pixbuf(
-                genblank(int(self._new_comment_wh[0]),
-                         int(self._new_comment_wh[1]),
-                         self._colors)))
+                                       genblank(int(self._new_comment_wh[0]),
+                                                int(self._new_comment_wh[1]),
+                                                self._colors)))
         self._new_comment.set_label_attributes(self.desc_size,
                                                horiz_align="left",
                                                vert_align="top", rescale=False)
@@ -465,8 +478,8 @@ class PortfolioActivity(activity.Activity):
 
         self._my_canvas = Sprite(
             self._sprites, 0, 0, svg_str_to_pixbuf(genblank(
-                    self._width, self._height, (self._colors[0],
-                                                self._colors[0]))))
+                self._width, self._height, (self._colors[0],
+                                            self._colors[0]))))
         self._my_canvas.set_layer(BOTTOM)
         self._my_canvas.type = 'background'
 
@@ -544,6 +557,11 @@ class PortfolioActivity(activity.Activity):
                                         self.toolbar,
                                         self._save_as_pdf_cb,
                                         tooltip=_('Save as PDF'))
+
+        self._save_odp = button_factory('save-as-odp',
+                                        self.toolbar,
+                                        self._save_as_odp_cb,
+                                        tooltip=_('Save as presentation'))
 
         separator_factory(toolbox.toolbar, True, False)
 
@@ -797,9 +815,9 @@ class PortfolioActivity(activity.Activity):
 
         if pixbuf is not None:
             self._preview.set_shape(pixbuf.scale_simple(
-                    int(PREVIEW[self._orientation][2] * self._scale),
-                    int(PREVIEW[self._orientation][3] * self._scale),
-                    GdkPixbuf.InterpType.NEAREST))
+                int(PREVIEW[self._orientation][2] * self._scale),
+                int(PREVIEW[self._orientation][3] * self._scale),
+                GdkPixbuf.InterpType.NEAREST))
             self._preview.set_layer(MIDDLE)
         else:
             if self._preview is not None:
@@ -841,7 +859,7 @@ class PortfolioActivity(activity.Activity):
     def _slides_cb(self, button=None):
         if self._thumbnail_mode:
             self._thumbnail_mode = False
-        self.i = self._current_slide 
+        self.i = self._current_slide
         self._record_button.set_layer(DRAG)
         self._playback_button.set_layer(DRAG)
         self._show_slide()
@@ -911,7 +929,7 @@ class PortfolioActivity(activity.Activity):
             slide.thumb = Sprite(self._sprites, x, y, pixbuf_thumb)
             # Add a border
             slide.thumb.set_image(svg_str_to_pixbuf(
-                    svg_rectangle(int(w), int(h), slide.colors)), i=1)
+                svg_rectangle(int(w), int(h), slide.colors)), i=1)
         slide.thumb.set_layer(TOP)
         if slide.star is None:
             self._make_star(slide)
@@ -933,7 +951,7 @@ class PortfolioActivity(activity.Activity):
 
         # Restrict Cairo to the drawn area; avoid extra work
         cr.rectangle(allocation.x, allocation.y,
-                allocation.width, allocation.height)
+                     allocation.width, allocation.height)
         cr.clip()
 
         # Refresh sprite list
@@ -1015,7 +1033,8 @@ class PortfolioActivity(activity.Activity):
                     return True
                 if not hasattr(self, 'title_entry'):
                     self.title_entry = Gtk.TextView()
-                    self.title_entry.set_justification(Gtk.Justification.CENTER)
+                    self.title_entry.set_justification(
+                        Gtk.Justification.CENTER)
                     self.title_entry.set_pixels_above_lines(1)
                     rgba = Gdk.RGBA()
                     rgba.red, rgba.green, rgba.blue = rgb(self._colors[1])
@@ -1343,7 +1362,7 @@ class PortfolioActivity(activity.Activity):
             if not slide.dirty:
                 continue
             _logger.debug('%d is dirty... writing' % (
-                    self._slides.index(slide)))
+                self._slides.index(slide)))
             jobject = datastore.get(slide.uid)
             jobject.metadata['description'] = slide.description
             jobject.metadata['comments'] = json.dumps(slide.comment)
@@ -1373,10 +1392,8 @@ class PortfolioActivity(activity.Activity):
         keyunicode = Gdk.keyval_to_unicode(event.keyval)
         if event.get_state() & Gdk.ModifierType.MOD1_MASK:
             alt_mask = True
-            alt_flag = 'T'
         else:
             alt_mask = False
-            alt_flag = 'F'
         self._key_press(alt_mask, keyname, keyunicode)
         return keyname
 
@@ -1412,25 +1429,25 @@ class PortfolioActivity(activity.Activity):
                 slide.title = self._selected_spr.labels[0]
                 if self.initiating is not None and self.initiating:
                     self._send_event('t:%s' % (self._data_dumper(
-                                [slide.uid, slide.title])))
+                        [slide.uid, slide.title])))
                 slide.dirty = True
             elif self._selected_spr.type == 'description':
                 slide.description = self._selected_spr.labels[0]
                 if self.initiating is not None:
                     self._send_event('d:%s' % (
-                            self._data_dumper([slide.uid, slide.description])))
+                        self._data_dumper([slide.uid, slide.description])))
                 slide.dirty = True
             elif self._selected_spr.type == 'comment':
                 message = self._selected_spr.labels[0]
                 if message != '':
-                    slide.comment.append({'from':profile.get_nick_name(),
-                                          'message':message,
+                    slide.comment.append({'from': profile.get_nick_name(),
+                                          'message': message,
                                           # Use my colors in case of sharing
-                                          'icon-color':'[%s,%s]' % (
-                                self._my_colors[0], self._my_colors[1])})
+                                          'icon-color': '[%s,%s]' % (
+                        self._my_colors[0], self._my_colors[1])})
                     if self.initiating is not None:
                         self._send_event('c:%s' % (self._data_dumper(
-                                    [slide.uid, slide.comment])))
+                            [slide.uid, slide.comment])))
                     self._comment.set_label(parse_comments(slide.comment))
                     self._selected_spr.set_label('')
                     slide.dirty = True
@@ -1545,7 +1562,7 @@ class PortfolioActivity(activity.Activity):
             'NewTube', self._new_tube_cb)
 
         _logger.debug('This is my activity: making a tube...')
-        id = self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].OfferDBusTube(
+        self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].OfferDBusTube(
             SERVICE, {})
 
     def _joined_cb(self, activity):
@@ -1562,7 +1579,7 @@ class PortfolioActivity(activity.Activity):
         self.tubes_chan = self.shared_activity.telepathy_tubes_chan
         self.text_chan = self.shared_activity.telepathy_text_chan
 
-        self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].connect_to_signal(\
+        self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].connect_to_signal(
             'NewTube', self._new_tube_cb)
 
         _logger.debug('I am joining an activity: waiting for a tube...')
@@ -1595,20 +1612,21 @@ class PortfolioActivity(activity.Activity):
     def _new_tube_cb(self, id, initiator, type, service, params, state):
         ''' Create a new tube. '''
         _logger.debug('New tube: ID=%d initator=%d type=%d service=%s '
-                     'params=%r state=%d', id, initiator, type, service,
-                     params, state)
+                      'params=%r state=%d', id, initiator, type, service,
+                      params, state)
 
         if (type == telepathy.TUBE_TYPE_DBUS and service == SERVICE):
             if state == telepathy.TUBE_STATE_LOCAL_PENDING:
-                self.tubes_chan[ \
-                              telepathy.CHANNEL_TYPE_TUBES].AcceptDBusTube(id)
+                self.tubes_chan[
+                    telepathy.CHANNEL_TYPE_TUBES].AcceptDBusTube(id)
 
-            tube_conn = TubeConnection(self.conn,
-                self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES], id, \
+            tube_conn = TubeConnection(
+                self.conn, self.tubes_chan[
+                    telepathy.CHANNEL_TYPE_TUBES], id,
                 group_iface=self.text_chan[telepathy.CHANNEL_INTERFACE_GROUP])
 
-            self.chattube = ChatTube(tube_conn, self.initiating, \
-                self.event_received_cb)
+            self.chattube = ChatTube(tube_conn, self.initiating,
+                                     self.event_received_cb)
 
             if self.waiting:
                 self._share_nick()
@@ -1659,17 +1677,17 @@ class PortfolioActivity(activity.Activity):
         colors[0] = str(colors[0])
         colors[1] = str(colors[1])
         self._my_canvas.set_image(svg_str_to_pixbuf(
-                genblank(self._width, self._height, [colors[0], colors[0]])))
+            genblank(self._width, self._height, [colors[0], colors[0]])))
         self._title.set_image(
             svg_str_to_pixbuf(genblank(
-                    int(self._title_wh[0]), int(self._title_wh[1]), colors)))
+                int(self._title_wh[0]), int(self._title_wh[1]), colors)))
         self._description.set_image(
             svg_str_to_pixbuf(genblank(
-                    int(self._desc_wh[0]), int(self._desc_wh[1]), colors)))
+                int(self._desc_wh[0]), int(self._desc_wh[1]), colors)))
         self._comment.set_image(
             svg_str_to_pixbuf(genblank(
-                    int(self._comment_wh[0]), int(self._comment_wh[1]),
-                    colors)))
+                int(self._comment_wh[0]), int(self._comment_wh[1]),
+                colors)))
         # Don't update new_comment colors
 
     def _update_comment(self, data):
@@ -1724,7 +1742,7 @@ class PortfolioActivity(activity.Activity):
             if slide.active and slide.fav:
                 _logger.debug('sharing %s' % (slide.uid))
                 GObject.idle_add(self._send_event, 's:%s' % (
-                        str(self._dump(slide))))
+                    str(self._dump(slide))))
 
     def _send_star(self, uid, status):
         _logger.debug('sharing star for %s (%s)' % (uid, str(status)))
@@ -1736,9 +1754,60 @@ class PortfolioActivity(activity.Activity):
             _logger.debug('>>> %s' % (text[0]))
             self.chattube.SendText(text)
 
+    def _save_as_odp_cb(self, button=None):
+        self._get_image_list()
+
+    def _next_image(self, x, image_list):
+        if x < len(self._slides):
+            self.i = x
+            self._show_slide()
+            window = self._canvas.get_window()
+            pixbuf = Gdk.pixbuf_get_from_window(window, 0, 0,
+                                                Gdk.Screen.width(),
+                                                Gdk.Screen.height())
+
+            pixbuf.savev('/tmp/slide_%d.png' % x, 'png', [], [])
+            image_list.append('/tmp/slide_%d.png' % x)
+            self._next_cb()
+            GObject.idle_add(self._next_image, x + 1, image_list)
+        else:
+            pres = TurtleODP()
+            pres.create_presentation('/tmp/Portfolio.odp', 1024, 768)
+            for file_path in image_list:
+                pres.add_image(file_path)
+
+            pres.save_presentation()
+            dsobject = datastore.create()
+            dsobject.metadata['title'] = '%s.odp' % (
+                self.metadata['title'])
+            dsobject.metadata['icon-color'] = \
+                profile.get_color().to_string()
+            dsobject.metadata['mime_type'] = \
+                'application/vnd.oasis.opendocument.presentation'
+            dsobject.set_file_path('/tmp/Portfolio.odp')
+            datastore.write(dsobject)
+            dsobject.destroy()
+            os.remove('/tmp/Portfolio.odp')
+            self.i = start_slide
+
+    def _get_image_list(self):
+        image_list = []
+        tmp_dir = os.listdir("/tmp")
+
+        for x in tmp_dir:
+            if x.startswith("slide_"):
+                try:
+                    os.remove("/tmp/" + x)
+                except:
+                    pass
+
+        self._next_image(0, image_list)
+
 
 class ChatTube(ExportedGObject):
+
     ''' Class for setting up tube for sharing '''
+
     def __init__(self, tube, is_initiator, stack_received_cb):
         super(ChatTube, self).__init__(tube, PATH)
         self.tube = tube

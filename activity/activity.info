@@ -8,3 +8,4 @@ icon = activity-portfolio
 show_launcher = yes
 max_participants = 4
 summary = create a slide show from Sugar Journal entries that have been 'starred'
+category = language teacher

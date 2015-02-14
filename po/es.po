@@ -82,6 +82,9 @@ msgstr "Vistas en miniatura"
 msgid "Save as PDF"
 msgstr "Guardar como PDF"
 
+msgid "Save as presentation"
+msgstr "Guardar como presentación"
+
 #: PortfolioActivity.py:750
 msgid "Do you have any items in your Journal starred?"
 msgstr "Tienes entradas en tu diario marcadas como favoritas?"

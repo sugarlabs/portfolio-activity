@@ -1788,7 +1788,8 @@ class PortfolioActivity(activity.Activity):
             datastore.write(dsobject)
             dsobject.destroy()
             os.remove('/tmp/Portfolio.odp')
-            self.i = start_slide
+            self.i = 0
+            self._show_slide()
 
     def _get_image_list(self):
         image_list = []

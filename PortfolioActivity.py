@@ -60,7 +60,11 @@ import telepathy
 from dbus.service import signal
 from dbus.gobject_service import ExportedGObject
 from sugar3.presence import presenceservice
-from sugar3.presence.tubeconn import TubeConnection
+
+try:
+    from sugar3.presence.wrapper import CollabWrapper
+except ImportError:
+    from collabwrapper import CollabWrapper
 
 
 SERVICE = 'org.sugarlabs.PortfolioActivity'
@@ -663,7 +667,7 @@ class PortfolioActivity(activity.Activity):
         if self.initiating is not None and not self.initiating:
             return
         if self.initiating:
-            self._send_event('R:rescanning')
+            self._send_event('R', {"data": 'rescanning'})
         self._help.hide()
         self._find_starred()
         self.i = 0
@@ -1428,14 +1432,14 @@ class PortfolioActivity(activity.Activity):
             if self._selected_spr.type == 'title':
                 slide.title = self._selected_spr.labels[0]
                 if self.initiating is not None and self.initiating:
-                    self._send_event('t:%s' % (self._data_dumper(
-                        [slide.uid, slide.title])))
+                    self._send_event('t', {"data": (self._data_dumper(
+                        [slide.uid, slide.title]))})
                 slide.dirty = True
             elif self._selected_spr.type == 'description':
                 slide.description = self._selected_spr.labels[0]
                 if self.initiating is not None:
-                    self._send_event('d:%s' % (
-                        self._data_dumper([slide.uid, slide.description])))
+                    self._send_event('d', {"data": (
+                        self._data_dumper([slide.uid, slide.description]))})
                 slide.dirty = True
             elif self._selected_spr.type == 'comment':
                 message = self._selected_spr.labels[0]
@@ -1446,8 +1450,8 @@ class PortfolioActivity(activity.Activity):
                                           'icon-color': '[%s,%s]' % (
                         self._my_colors[0], self._my_colors[1])})
                     if self.initiating is not None:
-                        self._send_event('c:%s' % (self._data_dumper(
-                            [slide.uid, slide.comment])))
+                        self._send_event('c', {"data": (self._data_dumper(
+                            [slide.uid, slide.comment]))})
                     self._comment.set_label(parse_comments(slide.comment))
                     self._selected_spr.set_label('')
                     slide.dirty = True
@@ -1620,19 +1624,17 @@ class PortfolioActivity(activity.Activity):
                 self.tubes_chan[
                     telepathy.CHANNEL_TYPE_TUBES].AcceptDBusTube(id)
 
-            tube_conn = TubeConnection(
-                self.conn, self.tubes_chan[
-                    telepathy.CHANNEL_TYPE_TUBES], id,
-                group_iface=self.text_chan[telepathy.CHANNEL_INTERFACE_GROUP])
-
-            self.chattube = ChatTube(tube_conn, self.initiating,
-                                     self.event_received_cb)
+            self.collab = CollabWrapper(self)
+            self.collab.message.connect(self.event_received_cb)
+            self.collab.setup()
 
             if self.waiting:
                 self._share_nick()
 
-    def event_received_cb(self, text):
+    def event_received_cb(self, collab, buddy, msg):
         ''' Data is passed as tuples: cmd:text '''
+        command = msg.get("command")
+        payload = msg.get("payload")
         dispatch_table = {'s': self._load,
                           'C': self._update_colors,
                           'd': self._update_description,
@@ -1642,8 +1644,8 @@ class PortfolioActivity(activity.Activity):
                           'R': self._reset,
                           'j': self._new_join,
                           }
-        _logger.debug('<<< %s' % (text[0]))
-        dispatch_table[text[0]](text[2:])
+        _logger.debug('<<< %s' % command)
+        dispatch_table[command](payload)
 
     def _reset(self, data):
         for slide in self._slides:
@@ -1731,28 +1733,29 @@ class PortfolioActivity(activity.Activity):
 
     def _share_nick(self):
         _logger.debug('sharing nick')
-        self._send_event('j:%s' % (profile.get_nick_name()))
+        self._send_event('j', {"data": (profile.get_nick_name())})
 
     def _share_colors(self):
         _logger.debug('sharing colors')
-        self._send_event('C:%s' % (self._data_dumper(self._colors)))
+        self._send_event('C', {"data": (self._data_dumper(self._colors))})
 
     def _share_slides(self):
         for slide in self._slides:
             if slide.active and slide.fav:
                 _logger.debug('sharing %s' % (slide.uid))
-                GObject.idle_add(self._send_event, 's:%s' % (
-                    str(self._dump(slide))))
+                GObject.idle_add(self._send_event, 's', {"data": (
+                    str(self._dump(slide)))})
 
     def _send_star(self, uid, status):
         _logger.debug('sharing star for %s (%s)' % (uid, str(status)))
-        self._send_event('S:%s' % (self._data_dumper([uid, status])))
+        self._send_event('S', {"data": (self._data_dumper([uid, status]))})
 
-    def _send_event(self, text):
+    def _send_event(self, command, data):
         ''' Send event through the tube. '''
-        if hasattr(self, 'chattube') and self.chattube is not None:
-            _logger.debug('>>> %s' % (text[0]))
-            self.chattube.SendText(text)
+        if hasattr(self, 'collab') and self.collab is not None:
+            _logger.debug('>>> %s' % command)
+            data["command"] = command
+            self.collab.post(data)
 
     def _save_as_odp_cb(self, button=None):
         self._get_image_list()

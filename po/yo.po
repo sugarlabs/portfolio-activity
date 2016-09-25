@@ -2,147 +2,106 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-02-27 00:32-0500\n"
-"PO-Revision-Date: 2015-02-19 20:45+0000\n"
-"Last-Translator: Tymon <dwgipk@gmail.com>\n"
+"PO-Revision-Date: 2016-09-23 23:36+0000\n"
+"Last-Translator: Chris <cjl@sugarlabs.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: pl\n"
+"Language: yo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.5.1.1\n"
-"X-POOTLE-MTIME: 1424378755.000000\n"
+"X-POOTLE-MTIME: 1474673819.000000\n"
 
 #. TRANS: "name" option from activity.info file
 #: PortfolioActivity.py:714
 msgid "Portfolio"
-msgstr "Portfolio"
+msgstr "Apo owo"
 
 #. TRANS: "summary" option from activity.info file
 #. TRANS: "description" option from activity.info file
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
-msgstr ""
-"utwórz pokaz slajdów z wpisów Dziennika Sugar, które zostały oznaczone "
-"gwiazdką"
+msgstr "ṣẹda ifaworanhan lati Sugar Journal titẹ sii ti ti ti 'oṣere'"
 
 #: PortfolioActivity.py:88
 msgid "2 seconds"
-msgstr "2 sekundy"
+msgstr "meji aaya"
 
 #: PortfolioActivity.py:88
 msgid "10 seconds"
-msgstr "10 sekund"
+msgstr "mẹwa aaya"
 
 #: PortfolioActivity.py:88
 msgid "30 seconds"
-msgstr "30 sekund"
+msgstr "ọgbọn aaya"
 
 #: PortfolioActivity.py:88
 msgid "1 minute"
-msgstr "1 minuta"
+msgstr "ẹyọkan iseju"
 
 #: PortfolioActivity.py:456
 msgid "Enter comments here."
-msgstr "Wpisz komentarze tutaj."
+msgstr "Tẹ comments nibi."
 
 #: PortfolioActivity.py:484
 msgid "Adjust"
-msgstr "Dopasuj"
+msgstr "Satunṣe"
 
 #: PortfolioActivity.py:493
 msgid "Fullscreen"
-msgstr "Pełny ekran"
+msgstr "Gbogbo sikirini"
 
 #: PortfolioActivity.py:498
 msgid "Autoplay"
-msgstr "Autoodtwarzanie"
+msgstr "Àdáseeré"
 
 #: PortfolioActivity.py:500 PortfolioActivity.py:510
 msgid "Adjust playback speed"
-msgstr "Dopasuj prędkość odtwarzania"
+msgstr "Satunṣe sẹhin iyara"
 
 #: PortfolioActivity.py:518
 msgid "Refresh"
-msgstr "Odśwież"
+msgstr "Sọ"
 
 #: PortfolioActivity.py:526
 msgid "Slide view"
-msgstr "Widok slajdów"
+msgstr "Ifaworanhan wo"
 
 #: PortfolioActivity.py:531
 msgid "Thumbnail view"
-msgstr "Podgląd miniatur"
+msgstr "Eekanna wo"
 
 #: PortfolioActivity.py:538
 msgid "Save as PDF"
-msgstr "Zapisz jako PDF"
+msgstr "Fi bi šee iwe kika"
 
 #: PortfolioActivity.py:750
 msgid "Do you have any items in your Journal starred?"
-msgstr "Czy zaznaczyłeś jakieś elementy w swoim dzienniku gwiazdką?"
+msgstr "Ṣe o ni eyikeyi awọn ohun kan ninu rẹ Akosile oṣere?"
 
 #: PortfolioActivity.py:798
 msgid "This project is about..."
-msgstr "Ten projekt jest o...."
+msgstr "Yi ise agbese jẹ nipa..."
 
 #: PortfolioActivity.py:1221
 msgid "Save recording"
-msgstr "Zapisz nagranie"
+msgstr "Fi gbigbasilẹ"
 
 #: PortfolioActivity.py:1266
 #, python-format
 msgid "audio note for %s"
-msgstr "notka audio dla %s"
+msgstr "iwe akọsilẹ fun %s"
 
 #: PortfolioActivity.py:1537
 msgid "Please wait."
-msgstr "Proszę czekać."
+msgstr "Jọwọ duro."
 
 #: exportpdf.py:71
 msgid "untitled"
-msgstr "Bez nazwy"
-
-#~ msgid "Page"
-#~ msgstr "Strona"
-
-#~ msgid "Record a sound"
-#~ msgstr "Nagraj dźwięk"
-
-#~ msgid "Record"
-#~ msgstr "Nagraj"
-
-#~ msgid "Start recording"
-#~ msgstr "Rozpocznij nagrywanie"
-
-#~ msgid "Nothing to play"
-#~ msgstr "Nie ma nic do odtworzenia"
-
-#~ msgid "Nothing to save"
-#~ msgstr "Nie ma nic do zapisania"
-
-#~ msgid "Play recording"
-#~ msgstr "Odtwórz nagranie"
-
-#~ msgid "Stop recording"
-#~ msgstr "Zatrzymaj nagrywanie"
-
-#~ msgid "Prev slide"
-#~ msgstr "Poprzedni slajd"
-
-#~ msgid "Next slide"
-#~ msgstr "Następny slajd"
-
-#~ msgid "Update description"
-#~ msgstr "Aktualizuj opis"
-
-#~ msgid "Save descriptions"
-#~ msgstr "Zapisz opisy"
-
-#~ msgid "Save as HTML"
-#~ msgstr "Zapisz jako HTML"
+msgstr "ko si orukọ"

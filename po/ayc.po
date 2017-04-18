@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-27 00:32-0500\n"
+"POT-Creation-Date: 2017-03-24 17:39+1100\n"
 "PO-Revision-Date: 2013-05-22 00:34+0200\n"
 "Last-Translator: EdgarQuispeChambi <quispedgar@yahoo.es>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,96 +17,106 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#. TRANS: "name" option from activity.info file
-#: PortfolioActivity.py:714
+#: activity/activity.info:2 PortfolioActivity.py:746
 msgid "Portfolio"
 msgstr "Wakichatanaka"
 
-#. TRANS: "summary" option from activity.info file
-#. TRANS: "description" option from activity.info file
+#: activity/activity.info:3
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
 msgstr ""
 "Uñjaña laphinaka uka Sugar sapa uru luräwinakata taypina \"wali munata\" "
 "ch'ikuni wakichatanaka wakichma"
 
-#: PortfolioActivity.py:88
+#: collabwrapper.py:178
+msgid "Joining activity..."
+msgstr ""
+
+#: collabwrapper.py:179 collabwrapper.py:191
+msgid "Please wait for the connection..."
+msgstr ""
+
+#: collabwrapper.py:190
+msgid "Resuming shared activity..."
+msgstr ""
+
+#: PortfolioActivity.py:90
 msgid "2 seconds"
 msgstr "2 t'ijta"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "10 seconds"
 msgstr "10 t'ijta"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "30 seconds"
 msgstr "30 t'ijta"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "1 minute"
 msgstr "1 t'ijtäwi"
 
-#: PortfolioActivity.py:456
+#: PortfolioActivity.py:481
 msgid "Enter comments here."
 msgstr "Akaru amuyunaka qillqantma."
 
-#: PortfolioActivity.py:484
+#: PortfolioActivity.py:509
 msgid "Adjust"
 msgstr "Wakichthapiña"
 
 #  "Pantalla completa"
-#: PortfolioActivity.py:493
+#: PortfolioActivity.py:518
 msgid "Fullscreen"
 msgstr "Maypacha uñtawi"
 
-#: PortfolioActivity.py:498
+#: PortfolioActivity.py:523
 msgid "Autoplay"
 msgstr "Jani khitina qhantayirina qhantayaña"
 
-#: PortfolioActivity.py:500 PortfolioActivity.py:510
+#: PortfolioActivity.py:525 PortfolioActivity.py:535
 msgid "Adjust playback speed"
 msgstr "Qhantayaña wakichata k'atakiptayaña wakichthapiña"
 
-#: PortfolioActivity.py:518
+#: PortfolioActivity.py:543
 msgid "Refresh"
 msgstr "Machaqachaña"
 
-#: PortfolioActivity.py:526
+#: PortfolioActivity.py:551
 msgid "Slide view"
 msgstr "Rixitanaka wakichata uñaña"
 
-#: PortfolioActivity.py:531
+#: PortfolioActivity.py:556
 msgid "Thumbnail view"
 msgstr "Jisk'a rixitanaka wakichatanaka"
 
-#: PortfolioActivity.py:538
+#: PortfolioActivity.py:563
 msgid "Save as PDF"
 msgstr "PDF wakichatjama imaña"
 
-#: PortfolioActivity.py:750
+#: PortfolioActivity.py:568
+msgid "Save as presentation"
+msgstr ""
+
+#: PortfolioActivity.py:782
 msgid "Do you have any items in your Journal starred?"
 msgstr "Sapa uru luratanakama wakichatama machaqa luräwinakama utjiti?"
 
-#: PortfolioActivity.py:798
+#: PortfolioActivity.py:834
 msgid "This project is about..."
 msgstr "Aka amtäwixa akïri tuqitawa..."
 
-#: PortfolioActivity.py:1221
+#: PortfolioActivity.py:1275
 msgid "Save recording"
 msgstr "Katuqatanaka imaña"
 
-#: PortfolioActivity.py:1266
+#: PortfolioActivity.py:1331
 #, python-format
 msgid "audio note for %s"
 msgstr "ist'añanaka tuqita qillqata wakisiri %s"
 
-#: PortfolioActivity.py:1537
+#: PortfolioActivity.py:1604
 msgid "Please wait."
 msgstr "Mira suma suyt'asikmalla."
 
-#: exportpdf.py:71
+#: exportpdf.py:70
 msgid "untitled"
 msgstr "jani_sutini"
-
-#  "Página"
-#~ msgid "Page"
-#~ msgstr "Laphi"

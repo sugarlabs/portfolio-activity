@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-27 00:32-0500\n"
+"POT-Creation-Date: 2017-03-24 17:39+1100\n"
 "PO-Revision-Date: 2013-02-27 19:00+0200\n"
 "Last-Translator: Aputsiaq Niels <aj@isit.gl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,129 +17,104 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#. TRANS: "name" option from activity.info file
-#: PortfolioActivity.py:714
+#: activity/activity.info:2 PortfolioActivity.py:746
 msgid "Portfolio"
 msgstr "Portefølje"
 
-#. TRANS: "summary" option from activity.info file
-#. TRANS: "description" option from activity.info file
+#: activity/activity.info:3
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
 msgstr ""
 "opret et diasshow fra poster i Sugar Journal, der har fået tildelt stjerne"
 
-#: PortfolioActivity.py:88
+#: collabwrapper.py:178
+msgid "Joining activity..."
+msgstr ""
+
+#: collabwrapper.py:179 collabwrapper.py:191
+msgid "Please wait for the connection..."
+msgstr ""
+
+#: collabwrapper.py:190
+msgid "Resuming shared activity..."
+msgstr ""
+
+#: PortfolioActivity.py:90
 msgid "2 seconds"
 msgstr "2 sekunder"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "10 seconds"
 msgstr "10 sekunder"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "30 seconds"
 msgstr "30 sekunder"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "1 minute"
 msgstr "1 minut"
 
-#: PortfolioActivity.py:456
+#: PortfolioActivity.py:481
 msgid "Enter comments here."
 msgstr "Skriv kommentarer her."
 
-#: PortfolioActivity.py:484
+#: PortfolioActivity.py:509
 msgid "Adjust"
 msgstr "Tilpas"
 
-#: PortfolioActivity.py:493
+#: PortfolioActivity.py:518
 msgid "Fullscreen"
 msgstr "Fuld skærm"
 
-#: PortfolioActivity.py:498
+#: PortfolioActivity.py:523
 msgid "Autoplay"
 msgstr "Afspil automatisk"
 
-#: PortfolioActivity.py:500 PortfolioActivity.py:510
+#: PortfolioActivity.py:525 PortfolioActivity.py:535
 msgid "Adjust playback speed"
 msgstr "Justér hastighed for afspilning"
 
-#: PortfolioActivity.py:518
+#: PortfolioActivity.py:543
 msgid "Refresh"
 msgstr "Genopfrisk"
 
-#: PortfolioActivity.py:526
+#: PortfolioActivity.py:551
 msgid "Slide view"
 msgstr "Dias visning"
 
-#: PortfolioActivity.py:531
+#: PortfolioActivity.py:556
 msgid "Thumbnail view"
 msgstr "Miniaturevisning"
 
-#: PortfolioActivity.py:538
+#: PortfolioActivity.py:563
 msgid "Save as PDF"
 msgstr "Gem som PDF"
 
-#: PortfolioActivity.py:750
+#: PortfolioActivity.py:568
+msgid "Save as presentation"
+msgstr ""
+
+#: PortfolioActivity.py:782
 msgid "Do you have any items in your Journal starred?"
 msgstr "Har du elementer som er markeret med stjerner i din Journal?"
 
-#: PortfolioActivity.py:798
+#: PortfolioActivity.py:834
 msgid "This project is about..."
 msgstr "Dette projekt handler om ..."
 
-#: PortfolioActivity.py:1221
+#: PortfolioActivity.py:1275
 msgid "Save recording"
 msgstr "Gem optagelse"
 
-#: PortfolioActivity.py:1266
+#: PortfolioActivity.py:1331
 #, python-format
 msgid "audio note for %s"
 msgstr "lydnote til %s"
 
-#: PortfolioActivity.py:1537
+#: PortfolioActivity.py:1604
 msgid "Please wait."
 msgstr "Vent venligst."
 
-#: exportpdf.py:71
+#: exportpdf.py:70
 msgid "untitled"
 msgstr "unavngiven"
-
-#~ msgid "Page"
-#~ msgstr "Side"
-
-#~ msgid "Record a sound"
-#~ msgstr "Optag en lyd"
-
-#~ msgid "Record"
-#~ msgstr "Optag"
-
-#~ msgid "Start recording"
-#~ msgstr "Start optagelse"
-
-#~ msgid "Nothing to play"
-#~ msgstr "Intet at afspille"
-
-#~ msgid "Nothing to save"
-#~ msgstr "Intet af gemme"
-
-#~ msgid "Play recording"
-#~ msgstr "Afspil optagelse"
-
-#~ msgid "Stop recording"
-#~ msgstr "Stop optagelse"
-
-#~ msgid "Prev slide"
-#~ msgstr "Forrige dias"
-
-#~ msgid "Next slide"
-#~ msgstr "Næste dias"
-
-#~ msgid "Update description"
-#~ msgstr "Opdatér beskrivelse"
-
-#~ msgid "Save descriptions"
-#~ msgstr "Gem beskrivelser"
-
-#~ msgid "Save as HTML"
-#~ msgstr "Gem som HTML"

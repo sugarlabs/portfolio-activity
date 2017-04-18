@@ -1,9 +1,12 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
 # escuelab <amalia.tur1@hotmail.com>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-27 00:32-0500\n"
+"POT-Creation-Date: 2017-03-24 17:39+1100\n"
 "PO-Revision-Date: 2013-08-06 23:45+0200\n"
 "Last-Translator: Irma  <sankaypillo@gmail.com>\n"
 "Language-Team: Voluntarios quechuas Sugar Camp Lima\n"
@@ -14,127 +17,104 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : 1;\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#  "Obras"
-#. TRANS: "name" option from activity.info file
-#: PortfolioActivity.py:714
+#: activity/activity.info:2 PortfolioActivity.py:746
 msgid "Portfolio"
 msgstr "Llamk'aykuna"
 
-#  [ES] ""
-#  [ES] "crea una presentación con diapositivas de las entradas del Diario de Sugar "
-#  [ES] "que han sido marcadas como \"favoritas\""
-#. TRANS: "summary" option from activity.info file
-#. TRANS: "description" option from activity.info file
+#: activity/activity.info:3
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
 msgstr ""
 "Sugar P'anqanpi 'munasqakuna' hinata diapositivas qhawarichiqkunata kamariy"
 
-#  "2 segundos"
-#: PortfolioActivity.py:88
+#: collabwrapper.py:178
+msgid "Joining activity..."
+msgstr ""
+
+#: collabwrapper.py:179 collabwrapper.py:191
+msgid "Please wait for the connection..."
+msgstr ""
+
+#: collabwrapper.py:190
+msgid "Resuming shared activity..."
+msgstr ""
+
+#: PortfolioActivity.py:90
 msgid "2 seconds"
 msgstr "2 segundukuna"
 
-#  "10 segundos"
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "10 seconds"
 msgstr "10 segundukuna"
 
-#  "30 segundos"
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "30 seconds"
 msgstr "30 segundukuna"
 
-#  "1 minuto"
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "1 minute"
 msgstr "1 chinini"
 
-#: PortfolioActivity.py:456
+#: PortfolioActivity.py:481
 msgid "Enter comments here."
 msgstr "Rimariykunata kayman churay"
 
-#  "Ajustar"
-#: PortfolioActivity.py:484
+#: PortfolioActivity.py:509
 msgid "Adjust"
 msgstr "mat´iy"
 
-#  "Pantalla completa"
-#: PortfolioActivity.py:493
+#: PortfolioActivity.py:518
 msgid "Fullscreen"
 msgstr "Hunt'asqa pantalla"
 
-#  "Reproducción automática"
-#: PortfolioActivity.py:498
+#: PortfolioActivity.py:523
 msgid "Autoplay"
 msgstr "Sapan puriq"
 
-#  "Ajustar velocidad de reproducción"
-#: PortfolioActivity.py:500 PortfolioActivity.py:510
+#: PortfolioActivity.py:525 PortfolioActivity.py:535
 msgid "Adjust playback speed"
 msgstr "Puriqpa phawayninta mat'iy"
 
-#  "Actualizar"
-#: PortfolioActivity.py:518
+#: PortfolioActivity.py:543
 msgid "Refresh"
 msgstr "Kunanyachiy"
 
-#  "Ver diapositivas"
-#: PortfolioActivity.py:526
+#: PortfolioActivity.py:551
 msgid "Slide view"
 msgstr "Diapositiwakunata qhaway"
 
-#  "Vistas en miniatura"
-#: PortfolioActivity.py:531
+#: PortfolioActivity.py:556
 msgid "Thumbnail view"
 msgstr "Huch´uy qhawanakuna"
 
-#  [ES] "Guardar como PDF"
-#: PortfolioActivity.py:538
+#: PortfolioActivity.py:563
 msgid "Save as PDF"
 msgstr "PDF khiputahina waqaychay"
 
-#  "Tienes entradas en tu diario marcadas como favoritas?"
-#: PortfolioActivity.py:750
+#: PortfolioActivity.py:568
+msgid "Save as presentation"
+msgstr ""
+
+#: PortfolioActivity.py:782
 msgid "Do you have any items in your Journal starred?"
 msgstr "Kachkanchu p'anqaykipi ancha munasqa ch'ikusqakuna?"
 
-#: PortfolioActivity.py:798
+#: PortfolioActivity.py:834
 msgid "This project is about..."
 msgstr "Kay llamk'ayqa kaymantam..."
 
-#  [ES] "Guardar grabación"
-#: PortfolioActivity.py:1221
+#: PortfolioActivity.py:1275
 msgid "Save recording"
 msgstr "Grabasqata waqaychay"
 
-#  [ES] "nota de audio para %s"
-#: PortfolioActivity.py:1266
+#: PortfolioActivity.py:1331
 #, python-format
 msgid "audio note for %s"
 msgstr "%s kaypaq uyarinamanta willakuy"
 
-#  [ES] "Por favor espera."
-#: PortfolioActivity.py:1537
+#: PortfolioActivity.py:1604
 msgid "Please wait."
 msgstr "Suyariy."
 
-#  [ES] "sin_titulo"
-#: exportpdf.py:71
+#: exportpdf.py:70
 msgid "untitled"
 msgstr "Mana sutiyuq"
-
-#  "Página"
-#~ msgid "Page"
-#~ msgstr "Raphi"
-
-#  "Diapositiva anterior"
-#~ msgid "Prev slide"
-#~ msgstr "Ñawpa diapositiwa"
-
-#  "Diapositiva siguiente"
-#~ msgid "Next slide"
-#~ msgstr "Hamuq diapositiwa"
-
-#  "Guardar como HTML"
-#~ msgid "Save as HTML"
-#~ msgstr "HTML nisqa hinata waqaychay"

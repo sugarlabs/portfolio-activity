@@ -7,23 +7,22 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-24 17:39+1100\n"
-"PO-Revision-Date: 2013-04-19 07:41+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: hy\n"
+"Language: ibo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Pootle 2.0.5\n"
+"X-Generator: Translate Toolkit 1.11.0\n"
 
 #: activity/activity.info:2 PortfolioActivity.py:746
 msgid "Portfolio"
-msgstr "Թղթապանակ"
+msgstr ""
 
 #: activity/activity.info:3
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
-msgstr "Sugar մատյանում \"աստղանշանով\" ընտրված գրառումներով ստեղծիր սլայդ շոու"
+msgstr ""
 
 #: collabwrapper.py:178
 msgid "Joining activity..."
@@ -39,56 +38,55 @@ msgstr ""
 
 #: PortfolioActivity.py:90
 msgid "2 seconds"
-msgstr "2 վայրկյան"
+msgstr ""
 
 #: PortfolioActivity.py:90
 msgid "10 seconds"
-msgstr "10 վայրկյան"
+msgstr ""
 
 #: PortfolioActivity.py:90
 msgid "30 seconds"
-msgstr "30 վայրկյան"
+msgstr ""
 
 #: PortfolioActivity.py:90
 msgid "1 minute"
-msgstr "1 րոպե"
+msgstr ""
 
 #: PortfolioActivity.py:481
 msgid "Enter comments here."
-msgstr "Այստեղ մուտքագրել մեկնաբանություններ"
+msgstr ""
 
-# համապատասխանեցնել
 #: PortfolioActivity.py:509
 msgid "Adjust"
-msgstr "Կարգավորել"
+msgstr ""
 
 #: PortfolioActivity.py:518
 msgid "Fullscreen"
-msgstr "Էկրանի չափով"
+msgstr ""
 
 #: PortfolioActivity.py:523
 msgid "Autoplay"
-msgstr "Ավտոմատ վերարտադրիչ"
+msgstr ""
 
 #: PortfolioActivity.py:525 PortfolioActivity.py:535
 msgid "Adjust playback speed"
-msgstr "Կարգավորել վերարտադրման արագությունը"
+msgstr ""
 
 #: PortfolioActivity.py:543
 msgid "Refresh"
-msgstr "Արդիականացնել"
+msgstr ""
 
 #: PortfolioActivity.py:551
 msgid "Slide view"
-msgstr "Սլայդ ցուցադրում"
+msgstr ""
 
 #: PortfolioActivity.py:556
 msgid "Thumbnail view"
-msgstr "Մանրապատկերի տեսքով"
+msgstr ""
 
 #: PortfolioActivity.py:563
 msgid "Save as PDF"
-msgstr "Պահել PDF ձևաչափով"
+msgstr ""
 
 #: PortfolioActivity.py:568
 msgid "Save as presentation"
@@ -96,26 +94,25 @@ msgstr ""
 
 #: PortfolioActivity.py:782
 msgid "Do you have any items in your Journal starred?"
-msgstr "Ունե՞ք աստղանշված տարրեր Ձեր Մատյանում"
+msgstr ""
 
 #: PortfolioActivity.py:834
 msgid "This project is about..."
-msgstr "Այս նախագիծը .... մասին է"
+msgstr ""
 
 #: PortfolioActivity.py:1275
 msgid "Save recording"
-msgstr "Պահել ձայնագրությունը"
+msgstr ""
 
 #: PortfolioActivity.py:1331
 #, python-format
-#, python-format,
 msgid "audio note for %s"
-msgstr "աուդիո նոտա %s"
+msgstr ""
 
 #: PortfolioActivity.py:1604
 msgid "Please wait."
-msgstr "Խնդրում ենք, սպասել"
+msgstr ""
 
 #: exportpdf.py:70
 msgid "untitled"
-msgstr "անվերնագիր"
+msgstr ""

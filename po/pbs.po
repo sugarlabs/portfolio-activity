@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-27 00:32-0500\n"
+"POT-Creation-Date: 2017-03-24 17:39+1100\n"
 "PO-Revision-Date: 2012-08-21 23:02+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,122 +17,103 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#. TRANS: "name" option from activity.info file
-#: PortfolioActivity.py:714
+#: activity/activity.info:2 PortfolioActivity.py:746
 msgid "Portfolio"
 msgstr "Sad-ia se matsjau me'ets"
 
-#. TRANS: "summary" option from activity.info file
-#. TRANS: "description" option from activity.info file
+#: activity/activity.info:3
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
 msgstr ""
 
-#: PortfolioActivity.py:88
+#: collabwrapper.py:178
+msgid "Joining activity..."
+msgstr ""
+
+#: collabwrapper.py:179 collabwrapper.py:191
+msgid "Please wait for the connection..."
+msgstr ""
+
+#: collabwrapper.py:190
+msgid "Resuming shared activity..."
+msgstr ""
+
+#: PortfolioActivity.py:90
 msgid "2 seconds"
 msgstr "kanuima chich'i kusap"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "10 seconds"
 msgstr "seska'ai chich'i kusap"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "30 seconds"
 msgstr "ranju' seska'ai chich'i kusap"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "1 minute"
 msgstr "nda chi'i tijiap"
 
-#: PortfolioActivity.py:456
+#: PortfolioActivity.py:481
 msgid "Enter comments here."
 msgstr ""
 
-#: PortfolioActivity.py:484
+#: PortfolioActivity.py:509
 msgid "Adjust"
 msgstr "Makjaik skad-a le'e"
 
-#: PortfolioActivity.py:493
+#: PortfolioActivity.py:518
 msgid "Fullscreen"
 msgstr "Mi'a lipia kutau nak'ujuly'"
 
-#: PortfolioActivity.py:498
+#: PortfolioActivity.py:523
 msgid "Autoplay"
 msgstr "Mamejep liji malaleiñ"
 
-#: PortfolioActivity.py:500 PortfolioActivity.py:510
+#: PortfolioActivity.py:525 PortfolioActivity.py:535
 msgid "Adjust playback speed"
 msgstr "Matsjap manu peuk im manei me'e maleiñ"
 
-#: PortfolioActivity.py:518
+#: PortfolioActivity.py:543
 msgid "Refresh"
 msgstr "Matsjau vinkjiu"
 
-#: PortfolioActivity.py:526
+#: PortfolioActivity.py:551
 msgid "Slide view"
 msgstr "Manu kily'e me'ts"
 
-#: PortfolioActivity.py:531
+#: PortfolioActivity.py:556
 msgid "Thumbnail view"
 msgstr "Manu lyi ly'it"
 
-#: PortfolioActivity.py:538
+#: PortfolioActivity.py:563
 msgid "Save as PDF"
 msgstr "Makjat nkjai PDF"
 
-#: PortfolioActivity.py:750
+#: PortfolioActivity.py:568
+msgid "Save as presentation"
+msgstr ""
+
+#: PortfolioActivity.py:782
 msgid "Do you have any items in your Journal starred?"
 msgstr "tumei jiuk sad-ia li'iajaun' me'es pu xiñi'iu matsjau"
 
-#: PortfolioActivity.py:798
+#: PortfolioActivity.py:834
 msgid "This project is about..."
 msgstr ""
 
-#: PortfolioActivity.py:1221
+#: PortfolioActivity.py:1275
 msgid "Save recording"
 msgstr "Makjaat sania' maka'an"
 
-#: PortfolioActivity.py:1266
+#: PortfolioActivity.py:1331
 #, python-format
 msgid "audio note for %s"
 msgstr "me'ets se vatei %s"
 
-#: PortfolioActivity.py:1537
+#: PortfolioActivity.py:1604
 msgid "Please wait."
 msgstr "kitchjautmajau kivié."
 
-#: exportpdf.py:71
+#: exportpdf.py:70
 msgid "untitled"
 msgstr "Nip lumei ne ngunjiu' kily'e me'ets"
-
-#~ msgid "Page"
-#~ msgstr "Nixií"
-
-#~ msgid "Record a sound"
-#~ msgstr "Maka'an sania' lijiu"
-
-#~ msgid "Record"
-#~ msgstr "Maka'an"
-
-#~ msgid "Start recording"
-#~ msgstr "Mapup maka'an"
-
-#~ msgid "Nothing to play"
-#~ msgstr "Nip kad-er limi manaleiñ"
-
-#~ msgid "Nothing to save"
-#~ msgstr "Nip kad-er limi manakjaat"
-
-#~ msgid "Play recording"
-#~ msgstr "Maleiñ mauu' sania' maka'an"
-
-#~ msgid "Stop recording"
-#~ msgstr "Mama'ai se maka'an"
-
-#~ msgid "Prev slide"
-#~ msgstr "Nda'ujuñ kily'e me'ts sevaa ni'iujuñ"
-
-#~ msgid "Next slide"
-#~ msgstr "Nda'ujuñ kily'e me'ets se likiu'uch'"
-
-#~ msgid "Update description"
-#~ msgstr "Me'ets mamang vinkjiu"

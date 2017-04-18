@@ -6,139 +6,115 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-27 00:32-0500\n"
-"PO-Revision-Date: 2013-02-28 05:28+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"POT-Creation-Date: 2017-03-24 17:39+1100\n"
+"PO-Revision-Date: 2017-03-26 00:15+0000\n"
+"Last-Translator: Chris <cjl@sugarlabs.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 2.0.5\n"
+"X-Generator: Pootle 2.5.1.1\n"
+"X-POOTLE-MTIME: 1490487305.000000\n"
 
-#. TRANS: "name" option from activity.info file
-#: PortfolioActivity.py:714
+#: activity/activity.info:2 PortfolioActivity.py:746
 msgid "Portfolio"
 msgstr "Portfolio"
 
-#. TRANS: "summary" option from activity.info file
-#. TRANS: "description" option from activity.info file
+#: activity/activity.info:3
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
 msgstr "create a slide show from Sugar Journal entries that have been 'starred'"
 
-#: PortfolioActivity.py:88
+#: collabwrapper.py:178
+msgid "Joining activity..."
+msgstr "Joining activity..."
+
+#: collabwrapper.py:179 collabwrapper.py:191
+msgid "Please wait for the connection..."
+msgstr "Please wait for the connection..."
+
+#: collabwrapper.py:190
+msgid "Resuming shared activity..."
+msgstr "Resuming shared activity..."
+
+#: PortfolioActivity.py:90
 msgid "2 seconds"
 msgstr "2 seconds"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "10 seconds"
 msgstr "10 seconds"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "30 seconds"
 msgstr "30 seconds"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "1 minute"
 msgstr "1 minute"
 
-#: PortfolioActivity.py:456
+#: PortfolioActivity.py:481
 msgid "Enter comments here."
 msgstr "Enter comments here."
 
-#: PortfolioActivity.py:484
+#: PortfolioActivity.py:509
 msgid "Adjust"
 msgstr "Adjust"
 
-#: PortfolioActivity.py:493
+#: PortfolioActivity.py:518
 msgid "Fullscreen"
 msgstr "Fullscreen"
 
-#: PortfolioActivity.py:498
+#: PortfolioActivity.py:523
 msgid "Autoplay"
 msgstr "Autoplay"
 
-#: PortfolioActivity.py:500 PortfolioActivity.py:510
+#: PortfolioActivity.py:525 PortfolioActivity.py:535
 msgid "Adjust playback speed"
 msgstr "Adjust playback speed"
 
-#: PortfolioActivity.py:518
+#: PortfolioActivity.py:543
 msgid "Refresh"
 msgstr "Refresh"
 
-#: PortfolioActivity.py:526
+#: PortfolioActivity.py:551
 msgid "Slide view"
 msgstr "Slide view"
 
-#: PortfolioActivity.py:531
+#: PortfolioActivity.py:556
 msgid "Thumbnail view"
 msgstr "Thumbnail view"
 
-#: PortfolioActivity.py:538
+#: PortfolioActivity.py:563
 msgid "Save as PDF"
 msgstr "Save as PDF"
 
-#: PortfolioActivity.py:750
+#: PortfolioActivity.py:568
+msgid "Save as presentation"
+msgstr "Save as presentation"
+
+#: PortfolioActivity.py:782
 msgid "Do you have any items in your Journal starred?"
 msgstr "Do you have any items in your Journal starred?"
 
-#: PortfolioActivity.py:798
+#: PortfolioActivity.py:834
 msgid "This project is about..."
 msgstr "This project is about..."
 
-#: PortfolioActivity.py:1221
+#: PortfolioActivity.py:1275
 msgid "Save recording"
 msgstr "Save recording"
 
-#: PortfolioActivity.py:1266
+#: PortfolioActivity.py:1331
 #, python-format
 msgid "audio note for %s"
 msgstr "audio note for %s"
 
-#: PortfolioActivity.py:1537
+#: PortfolioActivity.py:1604
 msgid "Please wait."
 msgstr "Please wait."
 
-#: exportpdf.py:71
+#: exportpdf.py:70
 msgid "untitled"
 msgstr "untitled"
-
-#~ msgid "Page"
-#~ msgstr "Page"
-
-#~ msgid "Record a sound"
-#~ msgstr "Record a sound"
-
-#~ msgid "Record"
-#~ msgstr "Record"
-
-#~ msgid "Start recording"
-#~ msgstr "Start recording"
-
-#~ msgid "Nothing to play"
-#~ msgstr "Nothing to play"
-
-#~ msgid "Nothing to save"
-#~ msgstr "Nothing to save"
-
-#~ msgid "Play recording"
-#~ msgstr "Play recording"
-
-#~ msgid "Stop recording"
-#~ msgstr "Stop recording"
-
-#~ msgid "Prev slide"
-#~ msgstr "Prev slide"
-
-#~ msgid "Next slide"
-#~ msgstr "Next slide"
-
-#~ msgid "Update description"
-#~ msgstr "Update description"
-
-#~ msgid "Save descriptions"
-#~ msgstr "Save descriptions"
-
-#~ msgid "Save as HTML"
-#~ msgstr "Save as HTML"

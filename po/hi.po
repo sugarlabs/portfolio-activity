@@ -7,115 +7,115 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-24 17:39+1100\n"
-"PO-Revision-Date: 2013-04-19 07:41+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"PO-Revision-Date: 2017-03-30 15:29+0000\n"
+"Last-Translator: iamutkarshtiwari <iamutkarshtiwari@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: hy\n"
+"Language: hi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Pootle 2.0.5\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 2.5.1.1\n"
+"X-POOTLE-MTIME: 1490887790.000000\n"
 
 #: activity/activity.info:2 PortfolioActivity.py:746
 msgid "Portfolio"
-msgstr "Թղթապանակ"
+msgstr "पोर्टफोलियो"
 
 #: activity/activity.info:3
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
-msgstr "Sugar մատյանում \"աստղանշանով\" ընտրված գրառումներով ստեղծիր սլայդ շոու"
+msgstr ""
+"शुगर जर्नल प्रविष्टियों कि एक स्लाइड शो बनाएं जिन्हे 'तारांकित' किया गया है। "
 
 #: collabwrapper.py:178
 msgid "Joining activity..."
-msgstr ""
+msgstr "गतिविधि में शामिल हो रहे है ..."
 
 #: collabwrapper.py:179 collabwrapper.py:191
 msgid "Please wait for the connection..."
-msgstr ""
+msgstr "कृपया कनेक्शन की प्रतीक्षा करें ..."
 
 #: collabwrapper.py:190
 msgid "Resuming shared activity..."
-msgstr ""
+msgstr "सहभाजीत गतिविधि को फिरसे शुरू किया जा रहा है ..."
 
 #: PortfolioActivity.py:90
 msgid "2 seconds"
-msgstr "2 վայրկյան"
+msgstr "2 सेकन्ड"
 
 #: PortfolioActivity.py:90
 msgid "10 seconds"
-msgstr "10 վայրկյան"
+msgstr "10 सेकण्ड"
 
 #: PortfolioActivity.py:90
 msgid "30 seconds"
-msgstr "30 վայրկյան"
+msgstr "30 सेकण्ड"
 
 #: PortfolioActivity.py:90
 msgid "1 minute"
-msgstr "1 րոպե"
+msgstr "१ मिनट"
 
 #: PortfolioActivity.py:481
 msgid "Enter comments here."
-msgstr "Այստեղ մուտքագրել մեկնաբանություններ"
+msgstr "यहाँ टिप्पणी दर्ज करें।"
 
-# համապատասխանեցնել
 #: PortfolioActivity.py:509
 msgid "Adjust"
-msgstr "Կարգավորել"
+msgstr "समायोजित करें"
 
 #: PortfolioActivity.py:518
 msgid "Fullscreen"
-msgstr "Էկրանի չափով"
+msgstr "पूर्ण स्क्रीन"
 
 #: PortfolioActivity.py:523
 msgid "Autoplay"
-msgstr "Ավտոմատ վերարտադրիչ"
+msgstr "स्वचालित"
 
 #: PortfolioActivity.py:525 PortfolioActivity.py:535
 msgid "Adjust playback speed"
-msgstr "Կարգավորել վերարտադրման արագությունը"
+msgstr "बजाने की गति ठीक करें"
 
 #: PortfolioActivity.py:543
 msgid "Refresh"
-msgstr "Արդիականացնել"
+msgstr "ताज़ा करें"
 
 #: PortfolioActivity.py:551
 msgid "Slide view"
-msgstr "Սլայդ ցուցադրում"
+msgstr "स्लाइड दृश्य"
 
 #: PortfolioActivity.py:556
 msgid "Thumbnail view"
-msgstr "Մանրապատկերի տեսքով"
+msgstr "छोटे छवि दृश्य"
 
 #: PortfolioActivity.py:563
 msgid "Save as PDF"
-msgstr "Պահել PDF ձևաչափով"
+msgstr "बतौर PDF सहेजें"
 
 #: PortfolioActivity.py:568
 msgid "Save as presentation"
-msgstr ""
+msgstr "प्रस्तुति की तरह सहेजें"
 
 #: PortfolioActivity.py:782
 msgid "Do you have any items in your Journal starred?"
-msgstr "Ունե՞ք աստղանշված տարրեր Ձեր Մատյանում"
+msgstr "आप आपके जर्नल में कोई भी आइटम तारांकित है?"
 
 #: PortfolioActivity.py:834
 msgid "This project is about..."
-msgstr "Այս նախագիծը .... մասին է"
+msgstr "यह परियोजना इस बारे में है ..."
 
 #: PortfolioActivity.py:1275
 msgid "Save recording"
-msgstr "Պահել ձայնագրությունը"
+msgstr "रिकॉर्डिंग सहेजें?"
 
 #: PortfolioActivity.py:1331
 #, python-format
-#, python-format,
 msgid "audio note for %s"
-msgstr "աուդիո նոտա %s"
+msgstr "%s के लिए ऑडियो नोट"
 
 #: PortfolioActivity.py:1604
 msgid "Please wait."
-msgstr "Խնդրում ենք, սպասել"
+msgstr "कृपया प्रतीक्षा करें"
 
 #: exportpdf.py:70
 msgid "untitled"
-msgstr "անվերնագիր"
+msgstr "बेनाम"

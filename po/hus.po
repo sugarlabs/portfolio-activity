@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-27 00:32-0500\n"
+"POT-Creation-Date: 2017-03-24 17:39+1100\n"
 "PO-Revision-Date: 2012-03-01 21:41+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,122 +17,108 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
-#. TRANS: "name" option from activity.info file
-#: PortfolioActivity.py:714
+#: activity/activity.info:2 PortfolioActivity.py:746
 msgid "Portfolio"
 msgstr "Dhayáb-uw"
 
-#. TRANS: "summary" option from activity.info file
-#. TRANS: "description" option from activity.info file
+#: activity/activity.info:3
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
 msgstr ""
 
-#: PortfolioActivity.py:88
+#: collabwrapper.py:178
+msgid "Joining activity..."
+msgstr ""
+
+#: collabwrapper.py:179 collabwrapper.py:191
+msgid "Please wait for the connection..."
+msgstr ""
+
+#: collabwrapper.py:190
+msgid "Resuming shared activity..."
+msgstr ""
+
+#: PortfolioActivity.py:90
 msgid "2 seconds"
 msgstr "2 adhik k'ijchik"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "10 seconds"
 msgstr "10 adhik k'ijchik"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "30 seconds"
 msgstr "30 adhik k'ijchik"
 
-#: PortfolioActivity.py:88
+#: PortfolioActivity.py:90
 msgid "1 minute"
 msgstr "1 tsakam k'ij"
 
-#: PortfolioActivity.py:456
+#: PortfolioActivity.py:481
 msgid "Enter comments here."
 msgstr ""
 
-#: PortfolioActivity.py:484
+#: PortfolioActivity.py:509
 msgid "Adjust"
 msgstr "Xut'ut'uy"
 
-#: PortfolioActivity.py:493
+#: PortfolioActivity.py:518
 msgid "Fullscreen"
 msgstr "Putat walek"
 
-#: PortfolioActivity.py:498
+#: PortfolioActivity.py:523
 msgid "Autoplay"
 msgstr "Kwetém tejwa´mél"
 
-#: PortfolioActivity.py:500 PortfolioActivity.py:510
+#: PortfolioActivity.py:525 PortfolioActivity.py:535
 msgid "Adjust playback speed"
 msgstr "T'ojojonchidh in adhík ti tejwa'mél"
 
-#: PortfolioActivity.py:518
+#: PortfolioActivity.py:543
 msgid "Refresh"
 msgstr "Itmédha'"
 
-#: PortfolioActivity.py:526
+#: PortfolioActivity.py:551
 msgid "Slide view"
 msgstr "Ka beldha' a tsu'uxtal"
 
-#: PortfolioActivity.py:531
+#: PortfolioActivity.py:556
 msgid "Thumbnail view"
 msgstr "Thumbnail view"
 
-#: PortfolioActivity.py:538
+#: PortfolioActivity.py:563
 #, fuzzy
 msgid "Save as PDF"
 msgstr "Dhaya' jant'odha' PDF"
 
-#: PortfolioActivity.py:750
+#: PortfolioActivity.py:568
+msgid "Save as presentation"
+msgstr ""
+
+#: PortfolioActivity.py:782
 msgid "Do you have any items in your Journal starred?"
 msgstr ""
 "¿A kwa'al i otsentalábchik ta chudhél dhuchlábil axi k'wajat kits'odh abal a "
 "lej kulbetnál?"
 
-#: PortfolioActivity.py:798
+#: PortfolioActivity.py:834
 msgid "This project is about..."
 msgstr ""
 
-#: PortfolioActivity.py:1221
+#: PortfolioActivity.py:1275
 #, fuzzy
 msgid "Save recording"
 msgstr "Kubla' an ts'át'altaláb"
 
-#: PortfolioActivity.py:1266
+#: PortfolioActivity.py:1331
 #, python-format
 msgid "audio note for %s"
 msgstr ""
 
-#: PortfolioActivity.py:1537
+#: PortfolioActivity.py:1604
 msgid "Please wait."
 msgstr ""
 
-#: exportpdf.py:71
+#: exportpdf.py:70
 #, fuzzy
 msgid "untitled"
 msgstr "yab bijidh"
-
-#~ msgid "Page"
-#~ msgstr "Walxeklek"
-
-#, fuzzy
-#~ msgid "Record"
-#~ msgstr "Ts'at'a'"
-
-#, fuzzy
-#~ msgid "Start recording"
-#~ msgstr "Kubla' an ts'át'altaláb"
-
-#, fuzzy
-#~ msgid "Play recording"
-#~ msgstr "T'eney xi ts'at'badhits"
-
-#, fuzzy
-#~ msgid "Stop recording"
-#~ msgstr "Kubla' an ts'át'altaláb"
-
-#~ msgid "Prev slide"
-#~ msgstr "Wat'elom lamk'otbixtaláb"
-
-#~ msgid "Next slide"
-#~ msgstr "Ok'ox lamk'ot'bixtaláb"
-
-#~ msgid "Save as HTML"
-#~ msgstr "Dhaya' jant'odha' HTML"

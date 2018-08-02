@@ -1,12 +1,13 @@
 [Activity]
 name = Portfolio
 activity_version = 50
-license = GPLv3
+license = GPLv3+;MIT;LGPLv2.1+
 bundle_id = org.sugarlabs.PortfolioActivity
 exec = sugar-activity PortfolioActivity.PortfolioActivity
 icon = activity-portfolio
 show_launcher = yes
 max_participants = 4
-summary = create a slide show from Sugar Journal entries that have been 'starred'
-category = language teacher
-repository = https://github.com/sugarlabs/portfolio-activity.git
+summary = Create a slide show from Sugar Journal entries that have been 'starred'.
+tags = Language;Teacher
+repository = https://github.com/sugarlabs/portfolio-activity
+url = https://help.sugarlabs.org/en/portfolio.html

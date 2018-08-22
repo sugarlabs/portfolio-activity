@@ -117,3 +117,42 @@ msgstr ""
 #: exportpdf.py:70
 msgid "untitled"
 msgstr "ไม่มีหัวเรื่อง,ไม่มีชื่อเรื่อง"
+
+#~ msgid "Page"
+#~ msgstr "หน้า"
+
+#~ msgid "Record a sound"
+#~ msgstr "บันทึกเสียง"
+
+#~ msgid "Record"
+#~ msgstr "บันทึก"
+
+#~ msgid "Start recording"
+#~ msgstr "เริ่มบันทึก"
+
+#~ msgid "Nothing to play"
+#~ msgstr "ไม่มีอะไรให้เล่น"
+
+#~ msgid "Nothing to save"
+#~ msgstr "ไม่มีอะไรให้บันทึก"
+
+#~ msgid "Play recording"
+#~ msgstr "เล่นเสียงที่บันทึก"
+
+#~ msgid "Stop recording"
+#~ msgstr "หยุดบันทึก"
+
+#~ msgid "Prev slide"
+#~ msgstr "หน้าก่อน"
+
+#~ msgid "Next slide"
+#~ msgstr "หน้าต่อไป"
+
+#~ msgid "Update description"
+#~ msgstr "อัพเดทคำอธิบาย"
+
+#~ msgid "Save descriptions"
+#~ msgstr "บันทึกคำอธิบาย"
+
+#~ msgid "Save as HTML"
+#~ msgstr "บันทึกเป็น HTML"

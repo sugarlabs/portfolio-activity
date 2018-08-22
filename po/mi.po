@@ -117,3 +117,6 @@ msgstr "Taihoa koa."
 #: exportpdf.py:70
 msgid "untitled"
 msgstr "taitara kore"
+
+#~ msgid "Page"
+#~ msgstr "Whārangi"

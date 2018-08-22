@@ -118,3 +118,42 @@ msgstr "Wacht svp."
 #: exportpdf.py:70
 msgid "untitled"
 msgstr "zonder titel"
+
+#~ msgid "Page"
+#~ msgstr "Pagina"
+
+#~ msgid "Record a sound"
+#~ msgstr "Neem een geluid op"
+
+#~ msgid "Record"
+#~ msgstr "Opnemen"
+
+#~ msgid "Start recording"
+#~ msgstr "Start opnemen"
+
+#~ msgid "Nothing to play"
+#~ msgstr "Niets om af te spelen"
+
+#~ msgid "Nothing to save"
+#~ msgstr "Niets om te bewaren"
+
+#~ msgid "Play recording"
+#~ msgstr "Speel opname af"
+
+#~ msgid "Stop recording"
+#~ msgstr "Stop opnemen"
+
+#~ msgid "Prev slide"
+#~ msgstr "Vorige dia"
+
+#~ msgid "Next slide"
+#~ msgstr "Volgende dia"
+
+#~ msgid "Update description"
+#~ msgstr "Bijwerken beschrijving"
+
+#~ msgid "Save descriptions"
+#~ msgstr "Bewaar beschrijvingen"
+
+#~ msgid "Save as HTML"
+#~ msgstr "Bewaar als HTML"

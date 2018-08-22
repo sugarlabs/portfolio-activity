@@ -7,147 +7,115 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-24 17:39+1100\n"
-"PO-Revision-Date: 2017-03-31 10:46+0000\n"
-"Last-Translator: andika <andika@gmail.com>\n"
+"PO-Revision-Date: 2017-11-12 20:09+0000\n"
+"Last-Translator: Moo <hazap@hotmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: id\n"
+"Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"(n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Pootle 2.5.1.1\n"
-"X-POOTLE-MTIME: 1490957183.000000\n"
+"X-POOTLE-MTIME: 1510517340.000000\n"
 
 #: activity/activity.info:2 PortfolioActivity.py:746
 msgid "Portfolio"
-msgstr "Portfolio"
+msgstr ""
 
 #: activity/activity.info:3
 msgid "create a slide show from Sugar Journal entries that have been 'starred'"
-msgstr "buat salindia dari entri Jurnal Sugar yang telah 'dibintangi'"
+msgstr ""
 
 #: collabwrapper.py:178
 msgid "Joining activity..."
-msgstr "Bergabung ke aktivitas..."
+msgstr ""
 
 #: collabwrapper.py:179 collabwrapper.py:191
 msgid "Please wait for the connection..."
-msgstr "Harap tunggu sambungan..."
+msgstr ""
 
 #: collabwrapper.py:190
 msgid "Resuming shared activity..."
-msgstr "Melanjutkan aktivitas bersama..."
+msgstr ""
 
 #: PortfolioActivity.py:90
 msgid "2 seconds"
-msgstr "2 detik"
+msgstr "2 sekundės"
 
 #: PortfolioActivity.py:90
 msgid "10 seconds"
-msgstr "10 detik"
+msgstr "10 sekundžių"
 
 #: PortfolioActivity.py:90
 msgid "30 seconds"
-msgstr "30 detik"
+msgstr "30 sekundžių"
 
 #: PortfolioActivity.py:90
 msgid "1 minute"
-msgstr "1 menit"
+msgstr "1 minutė"
 
 #: PortfolioActivity.py:481
 msgid "Enter comments here."
-msgstr "Masukkan komentar di sini."
+msgstr "Čia įveskite komentarus."
 
 #: PortfolioActivity.py:509
 msgid "Adjust"
-msgstr "Sesuaikan"
+msgstr "Reguliuoti"
 
 #: PortfolioActivity.py:518
 msgid "Fullscreen"
-msgstr "Layar penuh"
+msgstr "Visas ekranas"
 
 #: PortfolioActivity.py:523
 msgid "Autoplay"
-msgstr "Putar otomatis"
+msgstr "Automatiškai atkurti"
 
 #: PortfolioActivity.py:525 PortfolioActivity.py:535
 msgid "Adjust playback speed"
-msgstr "Atur kecepatan putar"
+msgstr "Reguliuoti atkūrimo greitį"
 
 #: PortfolioActivity.py:543
 msgid "Refresh"
-msgstr "Segarkan"
+msgstr "Įkelti iš naujo"
 
 #: PortfolioActivity.py:551
 msgid "Slide view"
-msgstr "Tilikan slide"
+msgstr "Skaidrių rodinys"
 
 #: PortfolioActivity.py:556
 msgid "Thumbnail view"
-msgstr "Tilikan gambar mini"
+msgstr "Miniatiūrų rodinys"
 
 #: PortfolioActivity.py:563
 msgid "Save as PDF"
-msgstr "Simpan sebagai PDF"
+msgstr "Įrašyti kaip PDF"
 
 #: PortfolioActivity.py:568
 msgid "Save as presentation"
-msgstr "Simpan sebagai presentasi"
+msgstr ""
 
 #: PortfolioActivity.py:782
 msgid "Do you have any items in your Journal starred?"
-msgstr "Apakah ada butir pada Jurnal Anda yang dibintangi?"
+msgstr ""
 
 #: PortfolioActivity.py:834
 msgid "This project is about..."
-msgstr "Projek ini tentang..."
+msgstr ""
 
 #: PortfolioActivity.py:1275
 msgid "Save recording"
-msgstr "Simpan rekaman"
+msgstr ""
 
 #: PortfolioActivity.py:1331
 #, python-format
 msgid "audio note for %s"
-msgstr "catatan audio bagi %s"
+msgstr ""
 
 #: PortfolioActivity.py:1604
 msgid "Please wait."
-msgstr "Harap tunggu."
+msgstr "Prašome palaukti."
 
 #: exportpdf.py:70
 msgid "untitled"
-msgstr "nirjudul"
-
-#~ msgid "Page"
-#~ msgstr "Halaman"
-
-#~ msgid "Record a sound"
-#~ msgstr "Rekam suara"
-
-#~ msgid "Record"
-#~ msgstr "Rekam"
-
-#~ msgid "Start recording"
-#~ msgstr "Mulai merekam"
-
-#~ msgid "Nothing to play"
-#~ msgstr "Tak ada yang dapat diputar"
-
-#~ msgid "Nothing to save"
-#~ msgstr "Tak ada yang dapat disimpan"
-
-#~ msgid "Play recording"
-#~ msgstr "Putar rekaman"
-
-#~ msgid "Stop recording"
-#~ msgstr "Hentikan rekaman"
-
-#~ msgid "Prev slide"
-#~ msgstr "Slide sebelumnya"
-
-#~ msgid "Next slide"
-#~ msgstr "Slide selanjutnya"
-
-#~ msgid "Update description"
-#~ msgstr "Mutakhirkan keterangan"
+msgstr "be pavadinimo"

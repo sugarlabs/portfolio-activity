@@ -119,3 +119,42 @@ msgstr "Por favor espera."
 #: exportpdf.py:70
 msgid "untitled"
 msgstr "sem título"
+
+#~ msgid "Page"
+#~ msgstr "Página"
+
+#~ msgid "Record a sound"
+#~ msgstr "Gravar um som"
+
+#~ msgid "Record"
+#~ msgstr "Gravar"
+
+#~ msgid "Start recording"
+#~ msgstr "Iniciar gravação"
+
+#~ msgid "Nothing to play"
+#~ msgstr "Nada para tocar"
+
+#~ msgid "Nothing to save"
+#~ msgstr "Nada para guardar"
+
+#~ msgid "Play recording"
+#~ msgstr "Tocar gravação"
+
+#~ msgid "Stop recording"
+#~ msgstr "Parar gravação"
+
+#~ msgid "Prev slide"
+#~ msgstr "Slide anterior"
+
+#~ msgid "Next slide"
+#~ msgstr "Slide seguinte"
+
+#~ msgid "Update description"
+#~ msgstr "Atualizar descrição"
+
+#~ msgid "Save descriptions"
+#~ msgstr "Guardar descrições"
+
+#~ msgid "Save as HTML"
+#~ msgstr "Guardar como HTML"

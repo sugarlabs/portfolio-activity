@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-24 17:39+1100\n"
-"PO-Revision-Date: 2017-02-13 21:44+0000\n"
+"PO-Revision-Date: 2017-05-05 16:06+0000\n"
 "Last-Translator: MartínOesterreich <martin.otte80@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: gug\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Pootle 2.5.1.1\n"
-"X-POOTLE-MTIME: 1487022271.000000\n"
+"X-POOTLE-MTIME: 1494000394.000000\n"
 
 #: activity/activity.info:2 PortfolioActivity.py:746
 msgid "Portfolio"
@@ -30,15 +30,15 @@ msgstr ""
 
 #: collabwrapper.py:178
 msgid "Joining activity..."
-msgstr ""
+msgstr "Oñembojoaju Tembiapope. "
 
 #: collabwrapper.py:179 collabwrapper.py:191
 msgid "Please wait for the connection..."
-msgstr ""
+msgstr "Nei oha'arõ pe joapyha."
 
 #: collabwrapper.py:190
 msgid "Resuming shared activity..."
-msgstr ""
+msgstr "Mombyky tembiapo mboja'opapyre."
 
 #: PortfolioActivity.py:90
 msgid "2 seconds"
@@ -94,7 +94,7 @@ msgstr "Ñongatu mba'eicha PDF."
 
 #: PortfolioActivity.py:568
 msgid "Save as presentation"
-msgstr ""
+msgstr "Ñongatu mba'éicha ohechauka."
 
 #: PortfolioActivity.py:782
 msgid "Do you have any items in your Journal starred?"

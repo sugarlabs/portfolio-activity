@@ -119,3 +119,15 @@ msgstr "Παρακαλώ περιμένετε"
 #: exportpdf.py:70
 msgid "untitled"
 msgstr "χωρίς τίτλο"
+
+#~ msgid "Page"
+#~ msgstr "Σελίδα"
+
+#~ msgid "Prev slide"
+#~ msgstr "Προηγούμενη διαφάνεια"
+
+#~ msgid "Next slide"
+#~ msgstr "Επόμενη διαφάνεια"
+
+#~ msgid "Save as HTML"
+#~ msgstr "Αποθήκευση ως HMTL"

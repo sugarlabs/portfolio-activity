@@ -7,15 +7,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-24 17:39+1100\n"
-"PO-Revision-Date: 2013-05-22 00:34+0200\n"
-"Last-Translator: EdgarQuispeChambi <quispedgar@yahoo.es>\n"
+"PO-Revision-Date: 2017-10-07 13:55+0000\n"
+"Last-Translator: EdgarQuispeChambi <equispe7@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ayc\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 2.0.5\n"
+"X-Generator: Pootle 2.5.1.1\n"
+"X-POOTLE-MTIME: 1507384558.000000\n"
 
 #: activity/activity.info:2 PortfolioActivity.py:746
 msgid "Portfolio"
@@ -29,15 +30,15 @@ msgstr ""
 
 #: collabwrapper.py:178
 msgid "Joining activity..."
-msgstr ""
+msgstr "Uka wakichäwinakaru mayachaskasa..."
 
 #: collabwrapper.py:179 collabwrapper.py:191
 msgid "Please wait for the connection..."
-msgstr ""
+msgstr "Mira suma mayachasiña suma suyt'ma..."
 
 #: collabwrapper.py:190
 msgid "Resuming shared activity..."
-msgstr ""
+msgstr "Mayachata wakichäwinaka jakhthapisa..."
 
 #: PortfolioActivity.py:90
 msgid "2 seconds"
@@ -94,7 +95,7 @@ msgstr "PDF wakichatjama imaña"
 
 #: PortfolioActivity.py:568
 msgid "Save as presentation"
-msgstr ""
+msgstr "Qhanstayañataki wakichatjama imaña"
 
 #: PortfolioActivity.py:782
 msgid "Do you have any items in your Journal starred?"
@@ -120,3 +121,7 @@ msgstr "Mira suma suyt'asikmalla."
 #: exportpdf.py:70
 msgid "untitled"
 msgstr "jani_sutini"
+
+#  "Página"
+#~ msgid "Page"
+#~ msgstr "Laphi"

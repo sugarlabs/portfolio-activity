@@ -1,121 +1,118 @@
-# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# This file is distributed under the same license as the Portfolio package.
+# Božidar Putanec <bozidarp@yahoo.com>, 2017.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Portfolio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-24 17:39+1100\n"
-"PO-Revision-Date: 2017-08-22 09:10+0000\n"
-"Last-Translator: denish <mofistone@gmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: ach\n"
+"PO-Revision-Date: 2017-05-16 14:59-0700\n"
+"Last-Translator: Božidar Putanec <bozidarp@yahoo.com>\n"
+"Language-Team: Croatian <LL@li.org>\n"
+"Language: hr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Pootle 2.5.1.1\n"
-"X-POOTLE-MTIME: 1503393026.000000\n"
+"X-Generator: Poedit 2.0.1\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: activity/activity.info:2 PortfolioActivity.py:746
 msgid "Portfolio"
-msgstr ""
+msgstr "Portfelj"
 
 #: activity/activity.info:3
-msgid "create a slide show from Sugar Journal entries that have been 'starred'"
-msgstr ""
-"cwe neno ma woto ki bot jami me Journal me Sugar ma kiketo 'lacer' ii gi"
+msgid "create a slide show from Journal entries that have been 'starred'"
+msgstr "dijaprojekcija stvorena iz unosa označenih zvjezdicom u Dnevniku"
 
 #: collabwrapper.py:178
 msgid "Joining activity..."
-msgstr "Donyo i tic..."
+msgstr "Pridruživanje aktivnosti..."
 
 #: collabwrapper.py:179 collabwrapper.py:191
 msgid "Please wait for the connection..."
-msgstr "Tim ber i kur kube..."
+msgstr "Pričekaj na povezivanje..."
 
 #: collabwrapper.py:190
 msgid "Resuming shared activity..."
-msgstr "Dwogo cen i tic anywaka..."
+msgstr "Nastavljanje zajedničke aktivnosti..."
 
 #: PortfolioActivity.py:90
 msgid "2 seconds"
-msgstr "Ceken 2"
+msgstr "2 sekunde"
 
 #: PortfolioActivity.py:90
 msgid "10 seconds"
-msgstr "Ceken 10"
+msgstr "10 sekunda"
 
 #: PortfolioActivity.py:90
 msgid "30 seconds"
-msgstr "Ceken 10"
+msgstr "30 sekunda"
 
 #: PortfolioActivity.py:90
 msgid "1 minute"
-msgstr "Dakika 1"
+msgstr "1 minuta"
 
 #: PortfolioActivity.py:481
 msgid "Enter comments here."
-msgstr "Ket tam amia kany."
+msgstr "Ovdje upiši bilješke i komentare."
 
 #: PortfolioActivity.py:509
 msgid "Adjust"
-msgstr "Yubi"
+msgstr "Namjesti"
 
 #: PortfolioActivity.py:518
 msgid "Fullscreen"
-msgstr "Wang kio ma opong"
+msgstr "Po cijelom zaslonu"
 
 #: PortfolioActivity.py:523
 msgid "Autoplay"
-msgstr "Tuk pire kene"
+msgstr "Autopokretanje"
 
 #: PortfolioActivity.py:525 PortfolioActivity.py:535
 msgid "Adjust playback speed"
-msgstr "Yub dwiro me tuko pire kene"
+msgstr "Namjesti brzinu reprodukcije"
 
 #: PortfolioActivity.py:543
 msgid "Refresh"
-msgstr "Nwo cako"
+msgstr "Osvježi"
 
 #: PortfolioActivity.py:551
 msgid "Slide view"
-msgstr "Neno ma woto"
+msgstr "Prikaz slajda"
 
 #: PortfolioActivity.py:556
 msgid "Thumbnail view"
-msgstr "Neno me cal"
+msgstr "Prikaz minijatura"
 
 #: PortfolioActivity.py:563
 msgid "Save as PDF"
-msgstr "Gwok calo PDF"
+msgstr "Spremi kao PDF"
 
 #: PortfolioActivity.py:568
 msgid "Save as presentation"
-msgstr ""
+msgstr "Spremi kao prezentaciju"
 
 #: PortfolioActivity.py:782
 msgid "Do you have any items in your Journal starred?"
-msgstr "Itye ki gin mo i Journal ni ma kiketo lacer iye?"
+msgstr "Imaš li bilo koji unos u Dnevniku označen zvjezdicom?"
 
 #: PortfolioActivity.py:834
 msgid "This project is about..."
-msgstr "Purujek man tye ikom..."
+msgstr "Ovaj projekt je o..."
 
 #: PortfolioActivity.py:1275
 msgid "Save recording"
-msgstr "Gwok ma ki mako"
+msgstr "Spremi snimljeno"
 
 #: PortfolioActivity.py:1331
 #, python-format
 msgid "audio note for %s"
-msgstr "ngec me dwon pi %s"
+msgstr "audiobilješka za %s"
 
 #: PortfolioActivity.py:1604
 msgid "Please wait."
-msgstr "Tim ber ikur."
+msgstr "Pričekaj."
 
 #: exportpdf.py:70
 msgid "untitled"
-msgstr "wiye pe tye"
+msgstr "bez naslova"

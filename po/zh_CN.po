@@ -117,3 +117,42 @@ msgstr "请等候。"
 #: exportpdf.py:70
 msgid "untitled"
 msgstr "无标题"
+
+#~ msgid "Page"
+#~ msgstr "页"
+
+#~ msgid "Record a sound"
+#~ msgstr "录制声音"
+
+#~ msgid "Record"
+#~ msgstr "录音"
+
+#~ msgid "Start recording"
+#~ msgstr "开始录音"
+
+#~ msgid "Nothing to play"
+#~ msgstr "没有东西可以播放"
+
+#~ msgid "Nothing to save"
+#~ msgstr "没有东西可以保存"
+
+#~ msgid "Play recording"
+#~ msgstr "播放录音"
+
+#~ msgid "Stop recording"
+#~ msgstr "停止录音"
+
+#~ msgid "Prev slide"
+#~ msgstr "上一张幻灯片"
+
+#~ msgid "Next slide"
+#~ msgstr "下一张幻灯片"
+
+#~ msgid "Update description"
+#~ msgstr "更新描述"
+
+#~ msgid "Save descriptions"
+#~ msgstr "保存描述"
+
+#~ msgid "Save as HTML"
+#~ msgstr "另存为HTML"

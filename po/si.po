@@ -117,3 +117,15 @@ msgstr ""
 #: exportpdf.py:70
 msgid "untitled"
 msgstr ""
+
+#~ msgid "Page"
+#~ msgstr "පිටුව"
+
+#~ msgid "Prev slide"
+#~ msgstr "පෙර ස්ලයිඩය"
+
+#~ msgid "Next slide"
+#~ msgstr "ඊළඟ ස්ලයිඩය"
+
+#~ msgid "Save as HTML"
+#~ msgstr "HTML ලෙස සුරකින්න"

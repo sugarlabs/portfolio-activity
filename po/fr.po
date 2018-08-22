@@ -120,3 +120,39 @@ msgstr "Patientez quelques instants."
 #: exportpdf.py:70
 msgid "untitled"
 msgstr "sans titre"
+
+#~ msgid "Page"
+#~ msgstr "Page"
+
+#~ msgid "Record a sound"
+#~ msgstr "Enregistrer un son"
+
+#~ msgid "Record"
+#~ msgstr "Enregistrer"
+
+#~ msgid "Start recording"
+#~ msgstr "Démarrer l'enregistrement"
+
+#~ msgid "Nothing to play"
+#~ msgstr "Rien à jouer"
+
+#~ msgid "Nothing to save"
+#~ msgstr "Rien à sauvegarder"
+
+#~ msgid "Play recording"
+#~ msgstr "Jouer l'enregistrement"
+
+#~ msgid "Stop recording"
+#~ msgstr "Arrêter l'enregistrement"
+
+#~ msgid "Prev slide"
+#~ msgstr "Diapo précédente"
+
+#~ msgid "Next slide"
+#~ msgstr "Diapo suivante"
+
+#~ msgid "Update description"
+#~ msgstr "Actualiser la description"
+
+#~ msgid "Save as HTML"
+#~ msgstr "Sauvegarder en HTML"

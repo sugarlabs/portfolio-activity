@@ -119,3 +119,43 @@ msgstr "Խնդրում ենք, սպասել"
 #: exportpdf.py:70
 msgid "untitled"
 msgstr "անվերնագիր"
+
+#~ msgid "Page"
+#~ msgstr "Էջ"
+
+#~ msgid "Record a sound"
+#~ msgstr "Ձայնագրել հնչյուն"
+
+# լուսա/ձայնա/տեսա/ գրություն
+#~ msgid "Record"
+#~ msgstr "Գրանցել"
+
+#~ msgid "Start recording"
+#~ msgstr "Սկսել գրանցումը"
+
+#~ msgid "Nothing to play"
+#~ msgstr "Վերարտադրելու ոչինչ չկա"
+
+#~ msgid "Nothing to save"
+#~ msgstr "Պահելու ոչինչ չկա"
+
+#~ msgid "Play recording"
+#~ msgstr "Նվագարկել ձայնագրությունը"
+
+#~ msgid "Stop recording"
+#~ msgstr "կանգնեցնել ձայնագրությունը"
+
+#~ msgid "Prev slide"
+#~ msgstr "Նախորդ սլայդը"
+
+#~ msgid "Next slide"
+#~ msgstr "Հաջորդ սլայդը"
+
+#~ msgid "Update description"
+#~ msgstr "Արդիականացնել նկարագրությունը"
+
+#~ msgid "Save descriptions"
+#~ msgstr "Պահպանել նկարագրությունները"
+
+#~ msgid "Save as HTML"
+#~ msgstr "Պահպանել որպես HTML"

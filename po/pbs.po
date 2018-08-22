@@ -117,3 +117,36 @@ msgstr "kitchjautmajau kivié."
 #: exportpdf.py:70
 msgid "untitled"
 msgstr "Nip lumei ne ngunjiu' kily'e me'ets"
+
+#~ msgid "Page"
+#~ msgstr "Nixií"
+
+#~ msgid "Record a sound"
+#~ msgstr "Maka'an sania' lijiu"
+
+#~ msgid "Record"
+#~ msgstr "Maka'an"
+
+#~ msgid "Start recording"
+#~ msgstr "Mapup maka'an"
+
+#~ msgid "Nothing to play"
+#~ msgstr "Nip kad-er limi manaleiñ"
+
+#~ msgid "Nothing to save"
+#~ msgstr "Nip kad-er limi manakjaat"
+
+#~ msgid "Play recording"
+#~ msgstr "Maleiñ mauu' sania' maka'an"
+
+#~ msgid "Stop recording"
+#~ msgstr "Mama'ai se maka'an"
+
+#~ msgid "Prev slide"
+#~ msgstr "Nda'ujuñ kily'e me'ts sevaa ni'iujuñ"
+
+#~ msgid "Next slide"
+#~ msgstr "Nda'ujuñ kily'e me'ets se likiu'uch'"
+
+#~ msgid "Update description"
+#~ msgstr "Me'ets mamang vinkjiu"

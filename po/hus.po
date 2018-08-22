@@ -122,3 +122,31 @@ msgstr ""
 #, fuzzy
 msgid "untitled"
 msgstr "yab bijidh"
+
+#~ msgid "Page"
+#~ msgstr "Walxeklek"
+
+#, fuzzy
+#~ msgid "Record"
+#~ msgstr "Ts'at'a'"
+
+#, fuzzy
+#~ msgid "Start recording"
+#~ msgstr "Kubla' an ts'át'altaláb"
+
+#, fuzzy
+#~ msgid "Play recording"
+#~ msgstr "T'eney xi ts'at'badhits"
+
+#, fuzzy
+#~ msgid "Stop recording"
+#~ msgstr "Kubla' an ts'át'altaláb"
+
+#~ msgid "Prev slide"
+#~ msgstr "Wat'elom lamk'otbixtaláb"
+
+#~ msgid "Next slide"
+#~ msgstr "Ok'ox lamk'ot'bixtaláb"
+
+#~ msgid "Save as HTML"
+#~ msgstr "Dhaya' jant'odha' HTML"

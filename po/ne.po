@@ -117,3 +117,6 @@ msgstr "कृपया पर्खिनुहोला"
 #: exportpdf.py:70
 msgid "untitled"
 msgstr "शीर्षकहीन"
+
+#~ msgid "Page"
+#~ msgstr "पाना"

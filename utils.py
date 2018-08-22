@@ -15,8 +15,6 @@ from gi.repository import GdkPixbuf
 import os
 import subprocess
 
-from gettext import gettext as _
-
 XO1 = 'xo1'
 XO15 = 'xo1.5'
 XO175 = 'xo1.75'
@@ -149,13 +147,17 @@ def svg_rectangle(width, height, colors):
          height="%f"\
          x="2.5"\
          y="2.5"\
-         style="fill:none;stroke:%s;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />\
+         style="fill:none;stroke:%s;stroke-width:5;stroke-linecap:round;\
+stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;\
+stroke-dasharray:none" />\
       <rect\
          width="%f"\
          height="%f"\
          x="7.5"\
          y="7.5"\
-         style="fill:none;stroke:%s;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />\
+         style="fill:none;stroke:%s;stroke-width:5;stroke-linecap:round;\
+stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;\
+stroke-dasharray:none" />\
     </g>\
 </svg>' % (width, height,
            width - 5, height - 5, colors[1],

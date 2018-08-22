@@ -1,7 +1,7 @@
 [Activity]
 name = Portfolio
 activity_version = 50
-license = GPLv3+;MIT;LGPLv2.1+
+license = GPLv3+;MIT;LGPLv2.1+;GPLv2+
 bundle_id = org.sugarlabs.PortfolioActivity
 exec = sugar-activity PortfolioActivity.PortfolioActivity
 icon = activity-portfolio

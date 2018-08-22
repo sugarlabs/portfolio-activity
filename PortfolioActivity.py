@@ -35,7 +35,6 @@ from sugar3.activity.widgets import StopButton
 from sugar3.graphics.toolbarbox import ToolbarButton
 
 from sugar3.datastore import datastore
-from sugar3.graphics.alert import Alert
 
 from sprites import (Sprites, Sprite)
 from utils import (get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle,
@@ -46,8 +45,8 @@ from odp import TurtleODP
 from exportpdf import save_pdf
 from toolbar_utils import (radio_factory, button_factory, separator_factory,
                            combo_factory, label_factory)
-from grecord import Grecord
-from gplay import play_audio_from_file
+from arecord import Arecord
+from aplay import aplay
 
 from gettext import gettext as _
 
@@ -179,8 +178,7 @@ class PortfolioActivity(activity.Activity):
         self._setup_workspace()
 
         self._recording = False
-        self._grecord = None
-        self._alert = None
+        self._arecord = None
 
         self._keypress = None
         self._selected_spr = None
@@ -190,6 +188,10 @@ class PortfolioActivity(activity.Activity):
         self._dragpos = [0, 0]
 
         self._setup_presence_service()
+
+    def close(self, **kwargs):
+        aplay.close()
+        activity.Activity.close(self, **kwargs)
 
     def _set_xy_wh(self):
         orientation = self._orientation
@@ -850,8 +852,7 @@ class PortfolioActivity(activity.Activity):
             if slide.sound is not None:
                 if self._playing:
                     _logger.debug('Playing audio note')
-                    GObject.idle_add(play_audio_from_file,
-                                     slide.sound.file_path)
+                    aplay.play(slide.sound.file_path)
                 self._playback_button.set_image(self.playback_pixbuf)
                 self._playback_button.type = 'play'
                 self._playback_button.set_layer(DRAG)
@@ -1251,13 +1252,12 @@ class PortfolioActivity(activity.Activity):
             if active in UNIT_DICTIONARY:
                 self._rate = UNIT_DICTIONARY[active][1]
 
-    def _record_cb(self, button=None):
+    def _record_cb(self, button=None, cb=None):
         ''' Start/stop audio recording '''
         if self.initiating is not None and not self.initiating:
             return
-        if self._grecord is None:
-            _logger.debug('setting up grecord')
-            self._grecord = Grecord(self)
+        if self._arecord is None:
+            self._arecord = Arecord(self)
         if self.i < 0 or self.i > len(self._slides) - 1:
             _logger.debug('bad slide index %d' % (self.i))
             return
@@ -1265,7 +1265,7 @@ class PortfolioActivity(activity.Activity):
             _logger.debug('slide #%d' % (self.i))
         if self._recording:  # Was recording, so stop (and save?)
             _logger.debug('recording...True. Preparing to save.')
-            self._grecord.stop_recording_audio()
+            self._arecord.stop_recording_audio()
             self._recording = False
             self._record_button.set_image(self.record_pixbuf)
             self._record_button.type = 'record'
@@ -1275,28 +1275,24 @@ class PortfolioActivity(activity.Activity):
             self._playback_button.set_layer(DRAG)
             # Autosave if there was not already a recording
             _logger.debug('Autosaving recording')
-            self._notify_successful_save(title=_('Save recording'))
-            self._transcoding_wait_counter = 0
-            GObject.timeout_add(100, self._wait_for_transcoding_to_finish)
+            self.busy()
+            GObject.timeout_add(100, self._is_record_complete_timeout, cb)
         else:  # Wasn't recording, so start
             _logger.debug('recording...False. Start recording.')
             self._record_button.set_image(self.recording_pixbuf)
             self._record_button.type = 'recording'
             self._record_button.set_layer(DRAG)
-            self._grecord.record_audio()
+            self._arecord.record_audio()
             self._recording = True
 
-    def _wait_for_transcoding_to_finish(self, button=None):
-        self._transcoding_wait_counter += 1
-        if self._transcoding_wait_counter < 60 and \
-           not self._grecord.transcoding_complete():
-            GObject.timeout_add(1000, self._wait_for_transcoding_to_finish)
-        else:
-            if self._alert is not None:
-                self.remove_alert(self._alert)
-                self._alert = None
-            self._save_recording()
-        return False
+    def _is_record_complete_timeout(self, cb=None):
+        if not self._arecord.is_complete():
+            return True  # call back later
+        self._save_recording()
+        self.unbusy()
+        if cb is not None:
+            cb()
+        return False  # do not call back
 
     def _playback_recording_cb(self, button=None):
         ''' Play back current recording '''
@@ -1311,8 +1307,7 @@ class PortfolioActivity(activity.Activity):
         self._playback_button.set_layer(DRAG)
         self._playback_button.type = 'playing'
         GObject.timeout_add(1000, self._playback_button_reset)
-        GObject.idle_add(play_audio_from_file,
-                         self._slides[self.i].sound.file_path)
+        aplay.play(self._slides[self.i].sound.file_path)
 
     def _playback_button_reset(self):
         self._playback_button.set_image(self.playback_pixbuf)
@@ -1384,14 +1379,6 @@ class PortfolioActivity(activity.Activity):
 
     def datastore_write_error_cb(self, error):
         _logger.error('datastore_write_error_cb: %r' % error)
-
-    def _notify_successful_save(self, title='', msg=''):
-        ''' Notify user when saves are completed '''
-        self._alert = Alert()
-        self._alert.props.title = title
-        self._alert.props.msg = msg
-        self.add_alert(self._alert)
-        self._alert.show()
 
     def _keypress_cb(self, area, event):
         ''' Keyboard '''

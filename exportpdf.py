@@ -74,7 +74,6 @@ def save_pdf(activity, nick, description=None):
         h = 0
         pixbuf = None
         if os.path.exists(dsobj.file_path):
-            print dsobj.file_path
             try:
                 w = int(PAGE_WIDTH - LEFT_MARGIN * 2)
                 h = int(w * 3 / 4)

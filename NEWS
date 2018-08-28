@@ -1,3 +1,16 @@
+51
+
+* Updated metadata
+* New translations
+* Update POT file
+* Replace audio recording and playback modules
+* Flake8 fixes
+* Fix missing journal preview
+* Fix extra redraw during stop
+* Port from GObject to GLib
+* Fix warnings and extra messages in log
+* Ignore button press when no items are shown
+
 50
 
 ENHANCEMENTS

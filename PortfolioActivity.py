@@ -944,25 +944,7 @@ class PortfolioActivity(activity.Activity):
         slide.star.set_layer(STAR)
         slide.star.move((x, y))
 
-    def _draw_cb(self, win, context):
-        ''' Callback to handle window draw events '''
-        self.do_draw_event(context)
-        return True
-
-    # Handle the draw-event by drawing
-    def do_draw_event(self, context):
-
-        allocation = self.get_allocation()
-
-        # Create the cairo context
-        cr = self.canvas.props.window.cairo_create()
-
-        # Restrict Cairo to the drawn area; avoid extra work
-        cr.rectangle(allocation.x, allocation.y,
-                     allocation.width, allocation.height)
-        cr.clip()
-
-        # Refresh sprite list
+    def _draw_cb(self, canvas, cr):
         self._sprites.redraw_sprites(cr=cr)
 
     def write_file(self, file_path):

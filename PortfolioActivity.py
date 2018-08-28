@@ -14,10 +14,10 @@
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('PangoCairo', '1.0')
+from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
-from gi.repository import GObject
 from gi.repository import Pango
 from gi.repository import PangoCairo
 
@@ -723,7 +723,7 @@ class PortfolioActivity(activity.Activity):
         self._playing = False
         self._auto_button.set_icon_name('media-playback-start')
         if hasattr(self, '_timeout_id') and self._timeout_id is not None:
-            GObject.source_remove(self._timeout_id)
+            GLib.source_remove(self._timeout_id)
 
     def _loop(self):
         ''' Show a slide and then call oneself with a timeout. '''
@@ -731,8 +731,8 @@ class PortfolioActivity(activity.Activity):
         if self.i == self._nobjects:
             self.i = 0
         self._show_slide()
-        self._timeout_id = GObject.timeout_add(int(self._rate * 1000),
-                                               self._loop)
+        self._timeout_id = GLib.timeout_add(int(self._rate * 1000),
+                                            self._loop)
 
     def _save_as_pdf_cb(self, button=None):
         ''' Export an PDF version of the slideshow to the Journal. '''
@@ -1258,7 +1258,7 @@ class PortfolioActivity(activity.Activity):
             # Autosave if there was not already a recording
             _logger.debug('Autosaving recording')
             self.busy()
-            GObject.timeout_add(100, self._is_record_complete_timeout, cb)
+            GLib.timeout_add(100, self._is_record_complete_timeout, cb)
         else:  # Wasn't recording, so start
             _logger.debug('recording...False. Start recording.')
             self._record_button.set_image(self.recording_pixbuf)
@@ -1288,7 +1288,7 @@ class PortfolioActivity(activity.Activity):
         self._playback_button.set_image(self.playing_pixbuf)
         self._playback_button.set_layer(DRAG)
         self._playback_button.type = 'playing'
-        GObject.timeout_add(1000, self._playback_button_reset)
+        GLib.timeout_add(1000, self._playback_button_reset)
         aplay.play(self._slides[self.i].sound.file_path)
 
     def _playback_button_reset(self):
@@ -1715,7 +1715,7 @@ class PortfolioActivity(activity.Activity):
         for slide in self._slides:
             if slide.active and slide.fav:
                 _logger.debug('sharing %s' % (slide.uid))
-                GObject.idle_add(self._send_event, 's', {"data": (
+                GLib.idle_add(self._send_event, 's', {"data": (
                     str(self._dump(slide)))})
 
     def _send_star(self, uid, status):
@@ -1744,7 +1744,7 @@ class PortfolioActivity(activity.Activity):
             pixbuf.savev('/tmp/slide_%d.png' % x, 'png', [], [])
             image_list.append('/tmp/slide_%d.png' % x)
             self._next_cb()
-            GObject.idle_add(self._next_image, x + 1, image_list)
+            GLib.idle_add(self._next_image, x + 1, image_list)
         else:
             pres = TurtleODP()
             pres.create_presentation('/tmp/Portfolio.odp', 1024, 768)

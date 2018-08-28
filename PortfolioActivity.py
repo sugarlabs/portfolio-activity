@@ -188,6 +188,7 @@ class PortfolioActivity(activity.Activity):
         self._dragpos = [0, 0]
 
         self._setup_presence_service()
+        self._autoplay_id = None
 
     def close(self, **kwargs):
         aplay.close()
@@ -716,23 +717,24 @@ class PortfolioActivity(activity.Activity):
                 self._first_time = False
             self._playing = True
             self._auto_button.set_icon_name('media-playback-pause')
-            self._loop()
+            self._autoplay_timeout()
 
     def _stop_autoplay(self):
         ''' Stop autoplaying. '''
         self._playing = False
         self._auto_button.set_icon_name('media-playback-start')
-        if hasattr(self, '_timeout_id') and self._timeout_id is not None:
-            GLib.source_remove(self._timeout_id)
+        if self._autoplay_id is not None:
+            GLib.source_remove(self._autoplay_id)
+            self._autoplay_id = None
 
-    def _loop(self):
+    def _autoplay_timeout(self):
         ''' Show a slide and then call oneself with a timeout. '''
         self.i += 1
         if self.i == self._nobjects:
             self.i = 0
         self._show_slide()
-        self._timeout_id = GLib.timeout_add(int(self._rate * 1000),
-                                            self._loop)
+        self._autoplay_id = GLib.timeout_add(int(self._rate * 1000),
+                                             self._autoplay_timeout)
 
     def _save_as_pdf_cb(self, button=None):
         ''' Export an PDF version of the slideshow to the Journal. '''

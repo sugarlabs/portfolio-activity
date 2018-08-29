@@ -971,6 +971,8 @@ class PortfolioActivity(activity.Activity):
 
     def _button_press_cb(self, win, event):
         ''' The mouse button was pressed. Is it on a sprite? '''
+        if self._nobjects == 0:
+            return
         x, y = map(int, event.get_coords())
 
         self._dragpos = [x, y]

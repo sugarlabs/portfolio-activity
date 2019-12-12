@@ -127,7 +127,7 @@ def lighter_color(colors):
 def svg_str_to_pixbuf(svg_string):
     ''' Load pixbuf from SVG string '''
     pl = GdkPixbuf.PixbufLoader()
-    pl.write(svg_string)
+    pl.write(bytes(svg_string, 'utf-8'))
     pl.close()
     pixbuf = pl.get_pixbuf()
     return pixbuf

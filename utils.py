@@ -223,8 +223,9 @@ def get_pixbuf_from_journal(dsobject, w, h):
     try:
         pixbufloader.write(bytes(dsobject.metadata['preview'], 'utf-8'))
         pixbuf = pixbufloader.get_pixbuf()
-    except:
+    except Exception as e:
         pixbuf = None
+        print("Error:",e)
     pixbufloader.close()
     return pixbuf
 

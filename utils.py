@@ -221,7 +221,7 @@ def get_pixbuf_from_journal(dsobject, w, h):
         GdkPixbuf.PixbufLoader.new_with_mime_type('image/png')
     pixbufloader.set_size(min(300, int(w)), min(225, int(h)))
     try:
-        pixbufloader.write(dsobject.metadata['preview'])
+        pixbufloader.write(bytes(dsobject.metadata['preview'], 'utf-8'))
         pixbuf = pixbufloader.get_pixbuf()
     except:
         pixbuf = None

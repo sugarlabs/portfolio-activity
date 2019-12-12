@@ -1595,7 +1595,7 @@ class PortfolioActivity(activity.Activity):
                       'params=%r state=%d', id, initiator, type, service,
                       params, state)
 
-        if (type == TelepathyGLib.IFACE_CHANNEL_TYPE_DBUS_TUBES and service == SERVICE):
+        if (type == TelepathyGLib.IFACE_CHANNEL_TYPE_DBUS_TUBE and service == SERVICE):
             if state == TelepathyGLib.TubeState.LOCAL_PENDING:
                 self.tubes_chan[
                     TelepathyGLib.IFACE_CHANNEL_TYPE_TUBES].AcceptDBusTube(id)

@@ -60,7 +60,7 @@ import json
 
 import telepathy
 from dbus.service import signal
-from dbus.gobject_service import ExportedGObject
+from dbus.gi_service import ExportedGObject
 from sugar3.presence import presenceservice
 
 try:
@@ -973,7 +973,7 @@ class PortfolioActivity(activity.Activity):
         ''' The mouse button was pressed. Is it on a sprite? '''
         if self._nobjects == 0:
             return
-        x, y = map(int, event.get_coords())
+        x, y = list(map(int, event.get_coords()))
 
         self._dragpos = [x, y]
         self._total_drag = [0, 0]
@@ -1145,7 +1145,7 @@ class PortfolioActivity(activity.Activity):
             self._dragpos = [0, 0]
             return False
         win.grab_focus()
-        x, y = map(int, event.get_coords())
+        x, y = list(map(int, event.get_coords()))
         dx = x - self._dragpos[0]
         dy = y - self._dragpos[1]
         spr.move_relative([dx, dy])
@@ -1162,7 +1162,7 @@ class PortfolioActivity(activity.Activity):
         ''' Button event is used to swap slides or goto next slide. '''
         win.grab_focus()
         self._dragpos = [0, 0]
-        x, y = map(int, event.get_coords())
+        x, y = list(map(int, event.get_coords()))
 
         if self._press is None:
             return

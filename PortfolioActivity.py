@@ -41,7 +41,7 @@ from utils import (get_path, lighter_color, svg_str_to_pixbuf, svg_rectangle,
                    get_pixbuf_from_journal, genblank, get_hardware, rgb,
                    pixbuf_to_base64, base64_to_pixbuf, get_pixbuf_from_file,
                    parse_comments, get_tablet_mode)
-from odp import TurtleODP
+
 from exportpdf import save_pdf
 from toolbar_utils import (radio_factory, button_factory, separator_factory,
                            combo_factory, label_factory)
@@ -567,11 +567,6 @@ class PortfolioActivity(activity.Activity):
                                         self.toolbar,
                                         self._save_as_pdf_cb,
                                         tooltip=_('Save as PDF'))
-
-        self._save_odp = button_factory('save-as-odp',
-                                        self.toolbar,
-                                        self._save_as_odp_cb,
-                                        tooltip=_('Save as presentation'))
 
         separator_factory(toolbox.toolbar, True, False)
 
@@ -1732,56 +1727,6 @@ class PortfolioActivity(activity.Activity):
             _logger.debug('>>> %s' % command)
             data["command"] = command
             self.collab.post(data)
-
-    def _save_as_odp_cb(self, button=None):
-        self._get_image_list()
-
-    def _next_image(self, x, image_list):
-        if x < len(self._slides):
-            self.i = x
-            self._show_slide()
-            window = self._canvas.get_window()
-            pixbuf = Gdk.pixbuf_get_from_window(window, 0, 0,
-                                                Gdk.Screen.width(),
-                                                Gdk.Screen.height())
-
-            pixbuf.savev('/tmp/slide_%d.png' % x, 'png', [], [])
-            image_list.append('/tmp/slide_%d.png' % x)
-            self._next_cb()
-            GLib.idle_add(self._next_image, x + 1, image_list)
-        else:
-            pres = TurtleODP()
-            pres.create_presentation('/tmp/Portfolio.odp', 1024, 768)
-            for file_path in image_list:
-                pres.add_image(file_path)
-
-            pres.save_presentation()
-            dsobject = datastore.create()
-            dsobject.metadata['title'] = '%s.odp' % (
-                self.metadata['title'])
-            dsobject.metadata['icon-color'] = \
-                profile.get_color().to_string()
-            dsobject.metadata['mime_type'] = \
-                'application/vnd.oasis.opendocument.presentation'
-            dsobject.set_file_path('/tmp/Portfolio.odp')
-            datastore.write(dsobject)
-            dsobject.destroy()
-            os.remove('/tmp/Portfolio.odp')
-            self.i = 0
-            self._show_slide()
-
-    def _get_image_list(self):
-        image_list = []
-        tmp_dir = os.listdir("/tmp")
-
-        for x in tmp_dir:
-            if x.startswith("slide_"):
-                try:
-                    os.remove("/tmp/" + x)
-                except:
-                    pass
-
-        self._next_image(0, image_list)
 
 
 class ChatTube(ExportedGObject):

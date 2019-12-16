@@ -1748,18 +1748,6 @@ class PortfolioActivity(activity.Activity):
             pass
             # FIXME reverify this code
 
-    def _get_image_list(self):
-        image_list = []
-        tmp_dir = os.listdir("/tmp")
-
-        for x in tmp_dir:
-            if x.startswith("slide_"):
-                try:
-                    os.remove("/tmp/" + x)
-                except:
-                    pass
-
-        self._next_image(0, image_list)
 
 
 class ChatTube(ExportedGObject):

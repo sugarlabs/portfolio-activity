@@ -1731,25 +1731,7 @@ class PortfolioActivity(activity.Activity):
             self.collab.post(data)
 
 
-    def _next_image(self, x, image_list):
-        if x < len(self._slides):
-            self.i = x
-            self._show_slide()
-            window = self._canvas.get_window()
-            pixbuf = Gdk.pixbuf_get_from_window(window, 0, 0,
-                                                Gdk.Screen.width(),
-                                                Gdk.Screen.height())
-
-            pixbuf.savev('/tmp/slide_%d.png' % x, 'png', [], [])
-            image_list.append('/tmp/slide_%d.png' % x)
-            self._next_cb()
-            GLib.idle_add(self._next_image, x + 1, image_list)
-        else:
-            pass
-            # FIXME reverify this code
-
-
-
+    
 class ChatTube(ExportedGObject):
 
     ''' Class for setting up tube for sharing '''

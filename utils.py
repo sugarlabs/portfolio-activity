@@ -127,7 +127,7 @@ def lighter_color(colors):
 def svg_str_to_pixbuf(svg_string):
     ''' Load pixbuf from SVG string '''
     pl = GdkPixbuf.PixbufLoader()
-    pl.write(svg_string)
+    pl.write(bytes(svg_string, 'utf-8'))
     pl.close()
     pixbuf = pl.get_pixbuf()
     return pixbuf
@@ -221,11 +221,15 @@ def get_pixbuf_from_journal(dsobject, w, h):
         GdkPixbuf.PixbufLoader.new_with_mime_type('image/png')
     pixbufloader.set_size(min(300, int(w)), min(225, int(h)))
     try:
-        pixbufloader.write(dsobject.metadata['preview'])
+        pixbufloader.write(bytes(dsobject.metadata['preview'], 'utf-8'))
         pixbuf = pixbufloader.get_pixbuf()
-    except:
+    except Exception as e:
         pixbuf = None
-    pixbufloader.close()
+        print("E: :",e)
+    try:
+        pixbufloader.close()
+    except Exception as e:
+        print("Warning :",e)
     return pixbuf
 
 

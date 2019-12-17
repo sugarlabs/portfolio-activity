@@ -114,7 +114,7 @@ def show_text(cr, fd, label, size, x, y):
     pl = PangoCairo.create_layout(cr)
     fd.set_size(int(size * Pango.SCALE))
     pl.set_font_description(fd)
-    if isinstance(label, str) or isinstance(label, unicode):
+    if isinstance(label, str) or isinstance(label, str):
         pl.set_text(label.replace('\0', ' '), -1)
     else:
         pl.set_text(str(label), -1)

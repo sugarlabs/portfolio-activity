@@ -1,3 +1,11 @@
+52
+
+* Remove Save as presentation feature (Srevin Saju)
+* Port to TelepathyGLib (Srevin Saju)
+* Update CollabWrapper (Srevin Saju)
+* Port to Python 3 (Srevin Saju)
+* Fix PyGObject warnings (Srevin Saju)
+
 51
 
 * Updated metadata

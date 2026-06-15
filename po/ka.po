@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-08-22 12:28+1000\n"
-"PO-Revision-Date: 2026-04-01 08:11+0000\n"
+"PO-Revision-Date: 2026-06-15 16:05+0000\n"
 "Last-Translator: NF <rkavt@smartprojects.ge>\n"
 "Language-Team: Georgian <http://weblate.sugarlabs.org/projects/"
 "sugar-activities/portfolio/ka/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: activity/activity.info:2 PortfolioActivity.py:749
 msgid "Portfolio"
-msgstr ""
+msgstr "პორტფოლიო"
 
 #: activity/activity.info:3
 msgid ""
@@ -50,7 +50,7 @@ msgstr ""
 
 #: PortfolioActivity.py:512
 msgid "Adjust"
-msgstr ""
+msgstr "გასწორება"
 
 #: PortfolioActivity.py:521
 msgid "Fullscreen"
@@ -58,7 +58,7 @@ msgstr "სრულ ეკრანზე"
 
 #: PortfolioActivity.py:526
 msgid "Autoplay"
-msgstr ""
+msgstr "ავტოდაკვრა"
 
 #: PortfolioActivity.py:528 PortfolioActivity.py:538
 msgid "Adjust playback speed"
@@ -66,7 +66,7 @@ msgstr ""
 
 #: PortfolioActivity.py:546
 msgid "Refresh"
-msgstr ""
+msgstr "განახლება"
 
 #: PortfolioActivity.py:554
 msgid "Slide view"
@@ -119,4 +119,4 @@ msgstr ""
 
 #: exportpdf.py:70
 msgid "untitled"
-msgstr ""
+msgstr "უსათაურო"
